@@ -1,0 +1,800 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AQA — End Semester Question Paper Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       DESIGN SYSTEM  —  White & Blue Professional Theme
+    ═══════════════════════════════════════════════════════════ */
+    :root {
+      /* Core palette */
+      --white:        #ffffff;
+      --off-white:    #f4f7fd;
+      --bg:           #eef3fc;
+      --blue-deep:    #0a2463;
+      --blue:         #1a56db;
+      --blue-mid:     #2563eb;
+      --blue-light:   #3b82f6;
+      --blue-soft:    #eff6ff;
+      --blue-rim:     rgba(37,99,235,0.18);
+      --blue-glow:    rgba(37,99,235,0.12);
+      --blue-vglow:   rgba(26,86,219,0.22);
+
+      /* V1 — Royal Blue */
+      --v1:           #1a56db;
+      --v1-soft:      #eff6ff;
+      --v1-rim:       rgba(26,86,219,0.22);
+
+      /* V2 — Indigo */
+      --v2:           #4f46e5;
+      --v2-soft:      #eef2ff;
+      --v2-rim:       rgba(79,70,229,0.22);
+
+      /* V3 — Cyan/Teal (Question Bank) */
+      --v3:           #0891b2;
+      --v3-soft:      #ecfeff;
+      --v3-rim:       rgba(8,145,178,0.22);
+
+      /* Typography */
+      --text-dark:    #0f1c3f;
+      --text-body:    #374151;
+      --text-muted:   #6b7280;
+      --text-faint:   #9ca3af;
+      --border:       rgba(37,99,235,0.10);
+      --border-mid:   rgba(37,99,235,0.16);
+      --shadow-sm:    0 2px 8px rgba(10,36,99,0.08);
+      --shadow-md:    0 8px 32px rgba(10,36,99,0.12);
+      --shadow-lg:    0 24px 64px rgba(10,36,99,0.16);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND LAYERS ──────────────────────────────── */
+    .scene {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; overflow: hidden;
+    }
+
+    /* Main white-blue gradient */
+    .scene-base {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 0% 0%,   rgba(219,234,254,0.90) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 100% 100%, rgba(199,210,254,0.70) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 50% 50%,  rgba(239,246,255,0.60) 0%, transparent 70%),
+        linear-gradient(160deg, #dbeafe 0%, #eff6ff 40%, #eef3fc 70%, #e0e7ff 100%);
+    }
+
+    /* Subtle dot-grid */
+    .scene-dots {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(37,99,235,0.13) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    /* Blueprint-style thin lines */
+    .scene-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+
+    /* Floating colour blobs */
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px);
+      animation: blobFloat 14s ease-in-out infinite alternate;
+    }
+    .blob-1 {
+      width: 560px; height: 560px;
+      background: radial-gradient(circle, rgba(96,165,250,0.22), transparent 70%);
+      top: -180px; left: -100px;
+    }
+    .blob-2 {
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(167,139,250,0.16), transparent 70%);
+      bottom: -160px; right: -100px;
+      animation-delay: -7s;
+    }
+    .blob-3 {
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(34,211,238,0.14), transparent 70%);
+      top: 40%; right: 15%;
+      animation-delay: -3.5s;
+    }
+    @keyframes blobFloat {
+      0%   { transform: translate(0,   0) scale(1);    }
+      100% { transform: translate(24px, 18px) scale(1.07); }
+    }
+
+    /* Particle canvas */
+    #particles {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── WRAPPER ─────────────────────────────────────────── */
+    .wrapper {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 24px 90px;
+    }
+
+    /* ── TOP NAV BAR ─────────────────────────────────────── */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 36px;
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-mid);
+      box-shadow: 0 2px 16px rgba(10,36,99,0.07);
+      animation: slideDown 0.7s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes slideDown {
+      from { opacity:0; transform: translateY(-100%); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .brand-logo {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue-deep), var(--blue-light));
+      display: grid; place-items: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 700; color: #fff;
+      box-shadow: 0 4px 14px rgba(26,86,219,0.35);
+    }
+    .brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 700; color: var(--blue-deep);
+      letter-spacing: 0.5px;
+    }
+    .brand-sep { color: var(--text-faint); font-size: 14px; }
+    .brand-subtitle {
+      font-size: 12px; color: var(--text-muted); font-weight: 400;
+    }
+    .topbar-right {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px; font-weight: 500; letter-spacing: 1.8px;
+      text-transform: uppercase; padding: 5px 14px; border-radius: 999px;
+      border: 1px solid var(--border-mid);
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+    .live-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #22c55e; box-shadow: 0 0 8px #22c55e;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+    /* ── HEADER ──────────────────────────────────────────── */
+    .header-zone {
+      text-align: center;
+      margin-bottom: 72px; margin-top: 20px;
+      animation: riseIn 0.9s cubic-bezier(.22,1,.36,1) 0.1s both;
+    }
+
+    .institution-pill {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 8px 22px; border-radius: 999px;
+      border: 1.5px solid var(--blue-rim);
+      background: rgba(255,255,255,0.75);
+      margin-bottom: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 2.4px; text-transform: uppercase;
+      color: var(--blue);
+      box-shadow: var(--shadow-sm);
+    }
+    .pill-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--blue-light);
+      box-shadow: 0 0 8px var(--blue-light);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(48px, 8.5vw, 100px);
+      font-weight: 700; line-height: 1.0;
+      letter-spacing: -2px; color: var(--blue-deep);
+      margin-bottom: 10px;
+    }
+    .hero-title em {
+      font-style: italic;
+      background: linear-gradient(120deg, var(--blue), #6366f1, var(--blue-light), var(--blue));
+      background-size: 220% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 5s linear infinite;
+    }
+    @keyframes shimmer { 0%{background-position:0%} 100%{background-position:220%} }
+
+    .divider-row {
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+      margin: 26px 0 20px;
+    }
+    .divider-line {
+      height: 1px; width: 80px;
+      background: linear-gradient(90deg, transparent, var(--blue-light), transparent);
+    }
+    .divider-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .hero-desc {
+      font-size: 16px; font-weight: 300; color: var(--text-body);
+      max-width: 520px; margin: 0 auto; line-height: 1.80;
+    }
+
+    /* ── CARDS GRID ──────────────────────────────────────── */
+    .cards-grid {
+      display: flex; gap: 22px; flex-wrap: wrap; justify-content: center;
+      max-width: 1140px; width: 100%;
+      margin-bottom: 40px;
+    }
+
+    /* ── SINGLE CARD ─────────────────────────────────────── */
+    .v-card {
+      flex: 1; min-width: 300px; max-width: 356px;
+      position: relative; overflow: hidden;
+      border-radius: 24px;
+      border: 1.5px solid rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.78);
+      backdrop-filter: blur(16px);
+      text-decoration: none; color: inherit;
+      display: flex; flex-direction: column;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      transition:
+        transform 0.44s cubic-bezier(.22,1,.36,1),
+        border-color 0.30s,
+        box-shadow 0.44s;
+    }
+    .v-card:nth-child(1){ animation: riseIn .9s cubic-bezier(.22,1,.36,1) 0.20s both; }
+    .v-card:nth-child(2){ animation: riseIn .9s cubic-bezier(.22,1,.36,1) 0.32s both; }
+    .v-card:nth-child(3){ animation: riseIn .9s cubic-bezier(.22,1,.36,1) 0.44s both; }
+
+    /* Hover glow overlay */
+    .v-card::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: 24px;
+      background: linear-gradient(140deg, rgba(255,255,255,0.6) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.4s; pointer-events: none; z-index: 0;
+    }
+    .v-card:hover {
+      transform: translateY(-12px) scale(1.015);
+    }
+    .v-card:hover::before { opacity: 1; }
+
+    .v-card.v1:hover { border-color: rgba(26,86,219,0.45);  box-shadow: 0 32px 80px rgba(26,86,219,0.20), 0 0 0 1px rgba(26,86,219,0.10); }
+    .v-card.v2:hover { border-color: rgba(79,70,229,0.45);  box-shadow: 0 32px 80px rgba(79,70,229,0.18), 0 0 0 1px rgba(79,70,229,0.10); }
+    .v-card.v3:hover { border-color: rgba(8,145,178,0.45);  box-shadow: 0 32px 80px rgba(8,145,178,0.18), 0 0 0 1px rgba(8,145,178,0.10); }
+
+    /* Colour accent bar on top */
+    .card-bar { height: 4px; width: 100%; flex-shrink: 0; border-radius: 24px 24px 0 0; }
+    .v1 .card-bar { background: linear-gradient(90deg, #1a56db, #60a5fa, #818cf8); }
+    .v2 .card-bar { background: linear-gradient(90deg, #4f46e5, #818cf8, #c084fc); }
+    .v3 .card-bar { background: linear-gradient(90deg, #0891b2, #22d3ee, #6ee7b7); }
+
+    .card-inner {
+      padding: 28px 30px 26px;
+      position: relative; z-index: 1;
+      flex: 1; display: flex; flex-direction: column;
+    }
+
+    /* Giant translucent watermark number */
+    .card-wm {
+      position: absolute; right: -4px; top: -18px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 148px; font-weight: 700; line-height: 1;
+      opacity: 0.055; user-select: none; pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .v1 .card-wm { color: var(--v1); }
+    .v2 .card-wm { color: var(--v2); }
+    .v3 .card-wm { color: var(--v3); }
+    .v-card:hover .card-wm { opacity: 0.09; }
+
+    /* Card icon badge */
+    .card-icon {
+      width: 46px; height: 46px; border-radius: 14px;
+      display: grid; place-items: center; font-size: 20px;
+      margin-bottom: 16px; flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    }
+    .v1 .card-icon { background: linear-gradient(135deg, var(--v1-soft), #dbeafe); border: 1.5px solid rgba(26,86,219,0.18); }
+    .v2 .card-icon { background: linear-gradient(135deg, var(--v2-soft), #ede9fe); border: 1.5px solid rgba(79,70,229,0.18); }
+    .v3 .card-icon { background: linear-gradient(135deg, var(--v3-soft), #cffafe); border: 1.5px solid rgba(8,145,178,0.18); }
+
+    .card-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; font-weight: 500;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .v1 .card-tag { color: var(--v1); }
+    .v2 .card-tag { color: var(--v2); }
+    .v3 .card-tag { color: var(--v3); }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px; font-weight: 700; line-height: 1.1;
+      color: var(--blue-deep); margin-bottom: 10px; letter-spacing: -0.4px;
+    }
+
+    .card-desc {
+      font-size: 13px; font-weight: 300; color: var(--text-body);
+      line-height: 1.75; margin-bottom: 18px;
+    }
+    .card-desc strong { color: var(--text-dark); font-weight: 600; }
+
+    /* NEW BADGE — for Version 3 */
+    .new-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 999px;
+      background: linear-gradient(90deg, #0891b2, #22d3ee);
+      color: #fff; margin-left: 8px;
+      box-shadow: 0 2px 8px rgba(8,145,178,0.35);
+      vertical-align: middle;
+      animation: badgePop 0.6s cubic-bezier(.34,1.56,.64,1) 0.8s both;
+    }
+    @keyframes badgePop {
+      from { opacity:0; transform: scale(0.6); }
+      to   { opacity:1; transform: scale(1); }
+    }
+
+    /* Marks row */
+    .marks-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+    .m-badge {
+      font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 500;
+      padding: 4px 10px; border-radius: 7px;
+      background: var(--blue-soft); border: 1px solid var(--border-mid);
+      color: var(--blue); white-space: nowrap;
+    }
+    .m-badge-cyan {
+      background: #ecfeff; border-color: rgba(8,145,178,0.20); color: var(--v3);
+    }
+
+    /* Feature pills */
+    .features { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+    .feat-pill {
+      font-size: 10.5px; font-weight: 500;
+      padding: 4px 11px; border-radius: 999px; border: 1px solid; white-space: nowrap;
+    }
+    .v1 .feat-pill { border-color: rgba(26,86,219,0.25);  background: rgba(26,86,219,0.06);  color: var(--v1); }
+    .v2 .feat-pill { border-color: rgba(79,70,229,0.25);  background: rgba(79,70,229,0.06);  color: var(--v2); }
+    .v3 .feat-pill { border-color: rgba(8,145,178,0.25);  background: rgba(8,145,178,0.06);  color: var(--v3); }
+
+    /* CTA */
+    .card-cta { margin-top: auto; }
+    .card-btn {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 18px; border-radius: 12px;
+      border: 1.5px solid var(--border-mid);
+      background: var(--blue-soft);
+      font-size: 13px; font-weight: 600;
+      color: var(--blue-deep);
+      transition: all 0.30s ease;
+    }
+    .v1:hover .card-btn { background: var(--v1); border-color: var(--v1); color: #fff; }
+    .v2:hover .card-btn { background: var(--v2); border-color: var(--v2); color: #fff; }
+    .v3:hover .card-btn { background: var(--v3); border-color: var(--v3); color: #fff; }
+
+    .btn-arrow {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: rgba(37,99,235,0.10);
+      display: grid; place-items: center; font-size: 16px;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .v-card:hover .btn-arrow {
+      transform: translateX(5px);
+      background: rgba(255,255,255,0.22);
+    }
+
+    /* ── TEMPLATE DOWNLOAD ───────────────────────────────── */
+    .download-strip {
+      max-width: 1140px; width: 100%;
+      animation: riseIn 0.9s cubic-bezier(.22,1,.36,1) 0.56s both;
+    }
+
+    .dl-card {
+      display: flex; align-items: center; gap: 22px; flex-wrap: wrap;
+      padding: 24px 30px; border-radius: 20px;
+      border: 1.5px solid var(--blue-rim);
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .dl-icon {
+      width: 56px; height: 56px; border-radius: 16px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      display: grid; place-items: center; font-size: 24px;
+      box-shadow: 0 6px 20px rgba(26,86,219,0.32);
+    }
+    .dl-text { flex: 1; min-width: 180px; }
+    .dl-text h3 { font-size: 15px; font-weight: 600; color: var(--blue-deep); margin-bottom: 4px; }
+    .dl-text p  { font-size: 12px; color: var(--text-muted); font-weight: 300; }
+    .dl-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .dl-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 10px;
+      font-size: 12.5px; font-weight: 600; font-family: 'Outfit', sans-serif;
+      cursor: pointer; text-decoration: none; border: 1.5px solid;
+      transition: all 0.28s ease;
+    }
+    .dl-primary {
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      border-color: transparent; color: #fff;
+      box-shadow: 0 4px 16px rgba(26,86,219,0.30);
+    }
+    .dl-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(26,86,219,0.40); }
+    .dl-ghost {
+      background: var(--blue-soft); border-color: var(--blue-rim); color: var(--blue);
+    }
+    .dl-ghost:hover { background: var(--blue); color: #fff; transform: translateY(-3px); }
+
+    /* ── STATS ROW ───────────────────────────────────────── */
+    .stats-row {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 40px;
+      animation: riseIn 0.9s cubic-bezier(.22,1,.36,1) 0.08s both;
+    }
+    .stat-chip {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 18px; border-radius: 999px;
+      background: rgba(255,255,255,0.75); border: 1px solid var(--border-mid);
+      backdrop-filter: blur(8px); box-shadow: var(--shadow-sm);
+      font-size: 12px; font-weight: 500; color: var(--text-body);
+    }
+    .stat-chip .stat-icon { font-size: 14px; }
+    .stat-chip strong { color: var(--blue-deep); font-weight: 700; }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    .footer {
+      margin-top: 64px;
+      text-align: center;
+      font-size: 11.5px; color: var(--text-muted);
+      letter-spacing: 0.3px;
+      animation: riseIn 1s ease 0.7s both;
+    }
+    .footer span { color: var(--blue-light); }
+
+    /* ── ANIMATIONS ──────────────────────────────────────── */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(26px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .topbar { padding: 12px 18px; }
+      .brand-subtitle { display: none; }
+      .hero-title { font-size: 46px; letter-spacing: -1px; }
+      .cards-grid { flex-direction: column; align-items: center; }
+      .v-card { max-width: 100%; min-width: 0; }
+      .dl-card { flex-direction: column; align-items: flex-start; }
+      .stats-row { gap: 7px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── BACKGROUND SCENE ───────────────────────────── -->
+<div class="scene">
+  <div class="scene-base"></div>
+  <div class="scene-dots"></div>
+  <div class="scene-grid"></div>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- Particle canvas -->
+<canvas id="particles"></canvas>
+
+<!-- ── TOP NAV ────────────────────────────────────── -->
+<nav class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-logo">A</div>
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="brand-name">AQA</span>
+        <span class="brand-sep">·</span>
+        <span class="brand-subtitle">Assessment &amp; Question Automation</span>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="nav-pill">KCET R2021 · CBCS</span>
+    <div class="live-dot"></div>
+  </div>
+</nav>
+
+<!-- ── MAIN CONTENT ───────────────────────────────── -->
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header class="header-zone">
+    <div class="institution-pill">
+      <span class="pill-dot"></span>
+      B.E. / B.Tech Degree Examinations &nbsp;·&nbsp; Question Paper Generator
+    </div>
+
+    <h1 class="hero-title">
+      End Semester<br>
+      <em>Question Paper</em><br>
+      Generator
+    </h1>
+
+    <div class="divider-row">
+      <div class="divider-line"></div>
+      <span class="divider-text">Select Your Version Below</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <p class="hero-desc">
+      Choose a version to generate a professional, regulation-compliant
+      question paper aligned with Bloom's Taxonomy and CO mapping.
+    </p>
+  </header>
+
+  <!-- STATS CHIPS -->
+  <div class="stats-row">
+    <div class="stat-chip"><span class="stat-icon">📋</span> Part A &nbsp;·&nbsp; <strong>10 × 2 = 20 Marks</strong></div>
+    <div class="stat-chip"><span class="stat-icon">📝</span> Part B &nbsp;·&nbsp; <strong>5 × 16 = 80 Marks</strong></div>
+    <div class="stat-chip"><span class="stat-icon">🎯</span> <strong>CO</strong> &amp; Bloom's Taxonomy Mapping</div>
+    <div class="stat-chip"><span class="stat-icon">⏱️</span> <strong>3 Hours</strong> &nbsp;·&nbsp; 100 Marks</div>
+  </div>
+
+  <!-- VERSION CARDS -->
+  <div class="cards-grid">
+
+    <!-- ── VERSION 1 ─────────────────────────────── -->
+    <a class="v-card v1" href="version1.html">
+      <div class="card-bar"></div>
+      <div class="card-inner">
+        <span class="card-wm">1</span>
+
+        <div class="card-icon">📄</div>
+        <div class="card-tag">&#9632;&nbsp; Version 1 &nbsp;·&nbsp; Standard Format</div>
+        <h2 class="card-title">Classic<br>Structure</h2>
+        <p class="card-desc">
+          Each Part B set has a <strong>single common toggle</strong> — choose
+          a whole 16-mark question or split both (a) &amp; (b) into
+          two 8-mark sub-parts (i) &amp; (ii) together.
+        </p>
+
+        <div class="marks-row">
+          <span class="m-badge">Part A · 10 × 2</span>
+          <span class="m-badge">Part B · 5 × 16</span>
+        </div>
+
+        <div class="features">
+          <span class="feat-pill">Common Toggle per Set</span>
+          <span class="feat-pill">Single 16M or Split 8+8</span>
+          <span class="feat-pill">CO &amp; BTL Mapping</span>
+          <span class="feat-pill">Bloom's Table</span>
+          <span class="feat-pill">DOCX Export</span>
+        </div>
+
+        <div class="card-cta">
+          <div class="card-btn">
+            Open Version 1
+            <span class="btn-arrow">→</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- ── VERSION 2 ─────────────────────────────── -->
+    <a class="v-card v2" href="version2.html">
+      <div class="card-bar"></div>
+      <div class="card-inner">
+        <span class="card-wm">2</span>
+
+        <div class="card-icon">📑</div>
+        <div class="card-tag">&#9632;&nbsp; Version 2 &nbsp;·&nbsp; Flexible Format</div>
+        <h2 class="card-title">Flexible<br>Structure</h2>
+        <p class="card-desc">
+          Sub-questions <strong>(a) and (b) toggle independently</strong> — each
+          can be a single 16-mark question or split into two 8-mark parts,
+          giving full per-question freedom.
+        </p>
+
+        <div class="marks-row">
+          <span class="m-badge">Part A · 10 × 2</span>
+          <span class="m-badge">Part B · 5 × 16</span>
+        </div>
+
+        <div class="features">
+          <span class="feat-pill">Independent (a)/(b) Toggle</span>
+          <span class="feat-pill">Mix Single &amp; Split Freely</span>
+          <span class="feat-pill">CO &amp; BTL Mapping</span>
+          <span class="feat-pill">Bloom's Table</span>
+          <span class="feat-pill">DOCX Export</span>
+        </div>
+
+        <div class="card-cta">
+          <div class="card-btn">
+            Open Version 2
+            <span class="btn-arrow">→</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+    <!-- ── VERSION 3 ─────────────────────────────── -->
+    <a class="v-card v3" href="version3.html">
+      <div class="card-bar"></div>
+      <div class="card-inner">
+        <span class="card-wm">3</span>
+
+        <div class="card-icon">🗃️</div>
+        <div class="card-tag">
+          &#9632;&nbsp; Version 3 &nbsp;·&nbsp; Question Bank
+          <span class="new-badge">✦ NEW</span>
+        </div>
+        <h2 class="card-title">Question<br>Bank Mode</h2>
+        <p class="card-desc">
+          Generate the question paper <strong>directly from a Question Bank</strong>.
+          No manual question entry needed — select questions automatically
+          from the total bank with CO &amp; Bloom's level balancing.
+        </p>
+
+        <div class="marks-row">
+          <span class="m-badge m-badge-cyan">Part A · 10 × 2</span>
+          <span class="m-badge m-badge-cyan">Part B · 5 × 16</span>
+        </div>
+
+        <div class="features">
+          <span class="feat-pill">Auto Question Selection</span>
+          <span class="feat-pill">No Manual Entry</span>
+          <span class="feat-pill">Bank-Based Generation</span>
+          <span class="feat-pill">CO &amp; BTL Balancing</span>
+          <span class="feat-pill">DOCX Export</span>
+        </div>
+
+        <div class="card-cta">
+          <div class="card-btn">
+            Open Version 3
+            <span class="btn-arrow">→</span>
+          </div>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- TEMPLATE DOWNLOAD -->
+  <div class="download-strip">
+    <div class="dl-card">
+      <div class="dl-icon">📂</div>
+      <div class="dl-text">
+        <h3>Official Question Paper Template (DOCX)</h3>
+        <p>KCET R2021 CBCS format &nbsp;·&nbsp; B.E./B.Tech Degree Examinations &nbsp;·&nbsp; Also available on GitHub Repository</p>
+      </div>
+      <div class="dl-btns">
+        <a class="dl-btn dl-primary"
+           href="Question_Paper_Template_-_Sem.docx"
+           download="Question_Paper_Template_-_Sem.docx">
+          ⬇&nbsp; Download Template
+        </a>
+        <a class="dl-btn dl-ghost"
+           href="https://github.com/your-username/your-repo/raw/main/Question_Paper_Template_-_Sem.docx"
+           target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+              0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+              -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+              .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+              -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
+              .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+              .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+              0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          GitHub Repo
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    AQA System &nbsp;<span>·</span>&nbsp; KCET R2021 CBCS
+    &nbsp;<span>·</span>&nbsp; B.E. / B.Tech Degree Examinations
+    &nbsp;<span>·</span>&nbsp; All Rights Reserved
+  </footer>
+
+</div>
+
+<!-- ── PARTICLES ──────────────────────────────────── -->
+<script>
+(function () {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, ptcs = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* Blue-white palette for light theme */
+  const COLS = [
+    'rgba(37,99,235,',
+    'rgba(96,165,250,',
+    'rgba(99,102,241,',
+    'rgba(8,145,178,',
+    'rgba(255,255,255,',
+  ];
+
+  class P {
+    constructor() { this.init(); }
+    init() {
+      this.x  = Math.random() * W;
+      this.y  = Math.random() * H;
+      this.r  = Math.random() * 2.2 + 0.4;
+      this.vx = (Math.random() - 0.5) * 0.18;
+      this.vy = (Math.random() - 0.5) * 0.18;
+      this.a  = Math.random() * 0.35 + 0.08;
+      this.c  = COLS[Math.floor(Math.random() * COLS.length)];
+      this.l  = 0;
+      this.ml = 220 + Math.random() * 280;
+    }
+    step() {
+      this.x += this.vx; this.y += this.vy; this.l++;
+      if (this.l > this.ml || this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.init();
+    }
+    draw() {
+      const t = this.l;
+      const f = t < 50 ? t / 50 : t > this.ml - 50 ? (this.ml - t) / 50 : 1;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = this.c + (this.a * f) + ')';
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 130; i++) ptcs.push(new P());
+
+  (function loop() {
+    ctx.clearRect(0, 0, W, H);
+    ptcs.forEach(p => { p.step(); p.draw(); });
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>
+
+</body>
+</html>
