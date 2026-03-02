@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>KCET – Question Paper Generator v4</title>
+<title>KCET – Question Paper Generator v5</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-:root {
+:root{
   --ink:#0d1b2a;--ink2:#1c3557;--ink3:#2d5282;
   --sky:#1a73e8;--skyl:#4a90d9;--skyll:#d0e8ff;--skybg:#eef5ff;
-  --white:#ffffff;--g50:#f7f9fc;--g100:#edf0f5;--g200:#d8dfe9;
+  --white:#fff;--g50:#f7f9fc;--g100:#edf0f5;--g200:#d8dfe9;
   --g300:#b0bac9;--g400:#8a96a9;--g500:#6b7688;--g600:#4e5a6b;
   --g700:#3a4455;--g800:#222c3c;--g900:#111827;
   --green:#0a7c59;--greenbg:#e8f5f0;
@@ -24,13 +24,11 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);background:var(--g50);min-height:100vh;}
-
 .topbar{background:var(--ink);padding:0 32px;height:56px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.3);}
 .logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--sky),#2563eb);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 .logo-name{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px;}
 .logo-sub{font-size:10px;color:var(--g400);margin-top:-2px;font-family:var(--mono);}
 .topbar-badge{margin-left:auto;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--skyll);font-size:11px;font-family:var(--mono);padding:4px 12px;border-radius:20px;}
-
 .steps-bar{background:var(--white);border-bottom:1px solid var(--g200);padding:0 32px;overflow-x:auto;}
 .steps-inner{max-width:1180px;margin:0 auto;display:flex;}
 .step-item{display:flex;align-items:center;gap:8px;padding:13px 18px 13px 0;border-bottom:3px solid transparent;cursor:default;position:relative;white-space:nowrap;transition:border-color var(--t);}
@@ -43,49 +41,42 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .step-item.active .step-label{color:var(--ink2);font-weight:600;}
 .step-item.done .step-num{background:var(--green);color:#fff;}
 .step-item.done .step-label{color:var(--green);}
-
 .main{max-width:1180px;margin:0 auto;padding:28px 32px 100px;}
 .sh{display:flex;align-items:center;gap:12px;margin:32px 0 14px;}
 .sh:first-child{margin-top:0;}
 .sh h2{font-size:15px;font-weight:700;color:var(--g900);letter-spacing:-.2px;}
 .sh .sn{width:26px;height:26px;border-radius:50%;background:var(--sky);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .sh .pill{font-size:10px;font-weight:600;font-family:var(--mono);text-transform:uppercase;padding:2px 8px;border-radius:20px;letter-spacing:.3px;background:var(--skybg);color:var(--sky);}
-
 .card{background:var(--white);border:1px solid var(--g200);border-radius:var(--rlg);box-shadow:0 1px 2px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden;}
 .card-header{padding:14px 20px;border-bottom:1px solid var(--g100);display:flex;align-items:center;gap:10px;}
 .card-header h3{font-size:13.5px;font-weight:600;color:var(--g800);}
 .card-body{padding:20px 22px;}
-
 .upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .upload-zone{border:2px dashed var(--g300);border-radius:var(--r);padding:28px 20px;text-align:center;cursor:pointer;transition:all var(--t);background:var(--g50);position:relative;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;}
 .upload-zone:hover{border-color:var(--skyl);background:var(--skybg);}
 .upload-zone.dragover{border-color:var(--sky);background:var(--skybg);transform:scale(1.01);}
 .upload-zone.uploaded{border-color:var(--green);background:var(--greenbg);border-style:solid;}
 .upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.upload-icon{font-size:26px;}.upload-title{font-size:13px;font-weight:600;color:var(--g700);}
+.upload-icon{font-size:26px;}
+.upload-title{font-size:13px;font-weight:600;color:var(--g700);}
 .upload-sub{font-size:11px;color:var(--g400);font-family:var(--mono);}
 .upload-done{font-size:12px;color:var(--green);font-weight:600;}
 .upload-size{font-size:10px;color:var(--g400);font-family:var(--mono);}
-
 .form-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 .fg{display:flex;flex-direction:column;gap:5px;}
 .fg label{font-size:10.5px;font-weight:600;color:var(--g500);text-transform:uppercase;letter-spacing:.5px;}
 .fg input,.fg select,.sel{border:1.5px solid var(--g200);background:var(--white);color:var(--g800);padding:8px 12px;border-radius:var(--rsm);font-family:var(--font);font-size:13px;outline:none;transition:border-color var(--t),box-shadow var(--t);width:100%;}
 .fg input:focus,.fg select:focus,.sel:focus{border-color:var(--skyl);box-shadow:0 0 0 3px var(--skybg);}
 .fg input::placeholder{color:var(--g300);}
-
 .meta-strip{display:flex;gap:20px;flex-wrap:wrap;background:var(--skybg);border:1px solid var(--skyll);border-radius:var(--r);padding:12px 18px;margin-top:14px;}
 .mi .mk{font-size:9.5px;font-weight:700;color:var(--sky);text-transform:uppercase;letter-spacing:.5px;}
 .mi .mv{font-size:13px;font-weight:600;color:var(--ink2);}
-
 .parta-tbl{width:100%;border-collapse:collapse;font-size:13px;}
 .parta-tbl thead th{background:var(--ink2);color:#fff;padding:9px 13px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
 .parta-tbl tbody tr{border-bottom:1px solid var(--g100);transition:background var(--t);}
 .parta-tbl tbody tr:hover{background:var(--skybg);}
 .parta-tbl td{padding:9px 13px;vertical-align:middle;}
 .parta-tbl td:first-child{font-weight:700;color:var(--sky);font-family:var(--mono);width:55px;}
-
-/* Availability display */
 .avail-wrap{display:flex;flex-direction:column;gap:3px;}
 .avail-row{display:flex;align-items:center;gap:6px;}
 .avail-lbl{font-size:9.5px;font-weight:700;color:var(--g500);text-transform:uppercase;font-family:var(--mono);width:60px;flex-shrink:0;}
@@ -94,8 +85,6 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .ab-s{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
 .ab-m{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
 .ab-0{background:var(--g100);color:var(--g400);border:1px solid var(--g200);}
-
-/* Part B */
 .pb-grid{display:flex;flex-direction:column;gap:10px;}
 .pb-row{display:grid;grid-template-columns:120px 1fr 1fr 1fr 1fr;gap:10px;align-items:start;background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:12px 14px;transition:border-color var(--t);}
 .pb-row:hover{border-color:var(--skyl);}
@@ -103,22 +92,17 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .pb-qn{font-size:22px;font-weight:800;color:var(--sky);font-family:var(--mono);line-height:1;}
 .pb-un{font-size:9.5px;color:var(--g400);font-family:var(--mono);text-transform:uppercase;margin-top:2px;}
 .pb-pool-lbl{font-size:9px;font-weight:700;color:var(--g500);text-transform:uppercase;font-family:var(--mono);margin-top:6px;margin-bottom:2px;}
-
-/* Mode badge */
 .mode-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);}
 .mb-split{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
 .mb-single{background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;}
-
 .badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;font-family:var(--mono);}
 .b-blue{background:var(--skybg);color:var(--sky);}
-
 .alert{padding:10px 14px;border-radius:var(--rsm);font-size:12.5px;display:flex;align-items:flex-start;gap:8px;margin-top:12px;}
 .a-info{background:var(--skybg);border:1px solid var(--skyll);color:var(--ink2);}
 .a-warn{background:var(--amberbg);border:1px solid #fcd34d;color:var(--amber);}
 .a-success{background:var(--greenbg);border:1px solid #6ee7b7;color:var(--green);}
 .a-error{background:var(--redbg);border:1px solid #fca5a5;color:var(--red);}
 .ai{font-size:14px;flex-shrink:0;}
-
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border:none;border-radius:var(--rsm);font-family:var(--font);font-size:13.5px;font-weight:600;cursor:pointer;transition:all var(--t);text-decoration:none;white-space:nowrap;}
 .btn-primary{background:var(--sky);color:#fff;}
 .btn-primary:hover:not(:disabled){background:var(--ink3);transform:translateY(-1px);}
@@ -129,7 +113,6 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .btn-lg{padding:12px 28px;font-size:15px;border-radius:var(--r);}
 .btn:disabled{opacity:.4;cursor:not-allowed!important;transform:none!important;}
 .btn-row{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap;}
-
 .spinner-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,40,.82);backdrop-filter:blur(5px);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
 .spinner-overlay.show{display:flex;}
 .spinner{width:42px;height:42px;border:3px solid rgba(255,255,255,.12);border-top-color:var(--skyl);border-radius:50%;animation:spin .7s linear infinite;}
@@ -138,7 +121,6 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .sps{color:var(--skyll);font-size:11px;font-family:var(--mono);}
 .prog-track{width:260px;height:5px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden;margin-top:4px;}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--skyl));border-radius:3px;transition:width .35s ease;width:0%;}
-
 .preview-wrap{overflow-x:auto;}
 .qp-tbl{width:100%;border-collapse:collapse;font-size:13px;font-family:'Times New Roman',serif;}
 .qp-tbl th{background:var(--ink2);color:#fff;padding:9px 11px;font-size:11px;font-weight:700;text-align:center;border:1px solid var(--ink3);}
@@ -154,7 +136,10 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .row-even td{background:var(--g50);}
 .q-text{line-height:1.75;}
 .q-text img{max-width:100%;max-height:180px;margin-top:6px;border-radius:4px;border:1px solid var(--g200);display:block;}
-
+.q-eq{font-family:'Times New Roman',serif;font-style:italic;background:#fff7e6;border:1px solid #fcd34d;border-radius:3px;padding:1px 6px;font-size:13px;color:#92400e;display:inline-block;vertical-align:middle;margin:2px;}
+.q-nested-tbl{border-collapse:collapse;margin:6px 0;font-size:12px;font-family:'Times New Roman',serif;}
+.q-nested-tbl td,.q-nested-tbl th{border:1px solid var(--g300);padding:3px 8px;text-align:center;}
+.q-nested-tbl th{background:var(--ink2);color:#fff;font-weight:700;}
 .bloom-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:4px;}
 .bloom-card{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px 10px;text-align:center;}
 .bloom-card .bk{font-size:10.5px;font-weight:700;color:var(--sky);font-family:var(--mono);text-transform:uppercase;}
@@ -163,21 +148,17 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .bloom-card.btotal{background:var(--ink2);border-color:var(--ink2);}
 .bloom-card.btotal .bk,.bloom-card.btotal .bn{color:var(--g300);}
 .bloom-card.btotal .bv{color:#fff;}
-
 .dl-panel{display:none;background:linear-gradient(140deg,var(--ink) 0%,var(--ink2) 100%);border-radius:var(--rlg);padding:36px;text-align:center;margin-top:18px;}
 .dl-panel.show{display:block;}
 .dl-panel h3{font-size:20px;font-weight:800;color:#fff;margin-bottom:6px;}
 .dl-panel p{color:var(--g300);font-size:12.5px;margin-bottom:20px;}
-
 .co-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px;}
 .co-tbl th{background:var(--ink2);color:#fff;padding:7px 11px;text-align:left;font-size:10px;text-transform:uppercase;font-weight:600;}
 .co-tbl td{padding:7px 11px;border-bottom:1px solid var(--g100);}
 .co-tbl td:first-child{font-family:var(--mono);font-weight:700;color:var(--sky);width:60px;}
-
-.debug-panel{background:#1a1a2e;border:1px solid #2d2d5e;border-radius:var(--r);padding:14px;margin-top:10px;font-family:var(--mono);font-size:11px;color:#88c0d0;max-height:240px;overflow-y:auto;display:none;}
+.debug-panel{background:#1a1a2e;border:1px solid #2d2d5e;border-radius:var(--r);padding:14px;margin-top:10px;font-family:var(--mono);font-size:11px;color:#88c0d0;max-height:300px;overflow-y:auto;display:none;}
 .debug-panel.show{display:block;}
 .dl .ok{color:#a3e635;}.dl .warn{color:#fbbf24;}.dl .err{color:#f87171;}
-
 @media(max-width:900px){
   .main{padding:16px;}.topbar,.steps-bar{padding:0 16px;}
   .form-row{grid-template-columns:1fr 1fr;}.upload-grid{grid-template-columns:1fr;}
@@ -199,7 +180,10 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 
 <div class="topbar">
   <div class="logo-mark">📋</div>
-  <div><div class="logo-name">KCET Question Paper Generator</div><div class="logo-sub">AQA → Exam Template · KCET R2021 (CBCS) · v4</div></div>
+  <div>
+    <div class="logo-name">KCET Question Paper Generator</div>
+    <div class="logo-sub">AQA → Exam Template · KCET R2021 (CBCS) · v5</div>
+  </div>
   <div class="topbar-badge" id="bankCount">No AQA loaded</div>
 </div>
 
@@ -215,162 +199,161 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 
 <div class="main">
 
-  <div class="sh"><div class="sn">1</div><h2>Upload Source Files</h2></div>
-  <div class="card">
-    <div class="card-body">
-      <div class="upload-grid">
-        <div class="upload-zone" id="aqaZone">
-          <input type="file" id="aqaFile" accept=".docx"/>
-          <div class="upload-icon">📋</div>
-          <div class="upload-title">AQA Question Bank</div>
-          <div class="upload-sub">Drag & drop or click · .DOCX</div>
-          <div class="upload-done" id="aqaDone" style="display:none"></div>
-          <div class="upload-size" id="aqaSize"></div>
-        </div>
-        <div class="upload-zone" id="tplZone">
-          <input type="file" id="tplFile" accept=".docx"/>
-          <div class="upload-icon">📄</div>
-          <div class="upload-title">Question Paper Template</div>
-          <div class="upload-sub">Drag & drop or click · .DOCX</div>
-          <div class="upload-done" id="tplDone" style="display:none"></div>
-          <div class="upload-size" id="tplSize"></div>
-        </div>
-      </div>
-      <div id="parseAlert" style="display:none"></div>
-      <div id="metaStrip" class="meta-strip" style="display:none"></div>
-      <div id="coBlock" style="margin-top:14px;display:none">
-        <div style="font-size:10px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">Course Outcomes Detected</div>
-        <table class="co-tbl"><thead><tr><th>CO</th><th>Description</th></tr></thead><tbody id="coTBody"></tbody></table>
-      </div>
+<div class="sh"><div class="sn">1</div><h2>Upload Source Files</h2></div>
+<div class="card"><div class="card-body">
+  <div class="upload-grid">
+    <div class="upload-zone" id="aqaZone">
+      <input type="file" id="aqaFile" accept=".docx"/>
+      <div class="upload-icon">📋</div>
+      <div class="upload-title">AQA Question Bank</div>
+      <div class="upload-sub">Drag &amp; drop or click · .DOCX</div>
+      <div class="upload-done" id="aqaDone" style="display:none"></div>
+      <div class="upload-size" id="aqaSize"></div>
+    </div>
+    <div class="upload-zone" id="tplZone">
+      <input type="file" id="tplFile" accept=".docx"/>
+      <div class="upload-icon">📄</div>
+      <div class="upload-title">Question Paper Template</div>
+      <div class="upload-sub">Drag &amp; drop or click · .DOCX</div>
+      <div class="upload-done" id="tplDone" style="display:none"></div>
+      <div class="upload-size" id="tplSize"></div>
     </div>
   </div>
-
-  <div class="sh"><div class="sn">2</div><h2>Exam Header Details</h2></div>
-  <div class="card">
-    <div class="card-body">
-      <div class="form-row">
-        <div class="fg"><label>Exam Duration (Month &amp; Year)</label><input type="text" id="monthDuration" placeholder="e.g. APR 2026"/></div>
-        <div class="fg"><label>Semester</label>
-          <select id="semester"><option>First</option><option>Second</option><option>Third</option><option>Fourth</option><option>Fifth</option><option>Sixth</option><option>Seventh</option></select>
-        </div>
-        <div class="fg"><label>Question Paper Code</label><input type="text" id="qpCode" placeholder="e.g. VEC311-A"/></div>
-      </div>
-    </div>
+  <div id="parseAlert" style="display:none"></div>
+  <div id="metaStrip" class="meta-strip" style="display:none"></div>
+  <div id="coBlock" style="margin-top:14px;display:none">
+    <div style="font-size:10px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">Course Outcomes Detected</div>
+    <table class="co-tbl"><thead><tr><th>CO</th><th>Description</th></tr></thead><tbody id="coTBody"></tbody></table>
   </div>
+</div></div>
 
-  <div class="sh"><div class="sn">3</div><h2>Part A — Configure (10 × 2 = 20 Marks)</h2><div class="pill">Q1–Q10</div></div>
-  <div class="card">
-    <div class="card-header"><span style="font-size:16px">🔵</span><h3>Select Type &amp; Portion per Question &nbsp;·&nbsp; <span style="color:var(--sky);font-size:12px">Portion I = 1st Half Syllabus &nbsp;|&nbsp; Portion II = 2nd Half Syllabus</span></h3></div>
-    <div class="card-body" style="padding:0">
-      <table class="parta-tbl">
-        <thead><tr>
-          <th style="width:55px">Q.No</th><th style="width:100px">Unit</th>
-          <th style="width:145px">Type</th><th style="width:135px">Portion</th>
-          <th>Available — Short &amp; MCQ per Half</th>
-        </tr></thead>
-        <tbody id="partaBody"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--g400)">Upload AQA file to configure…</td></tr></tbody>
-      </table>
+<div class="sh"><div class="sn">2</div><h2>Exam Header Details</h2></div>
+<div class="card"><div class="card-body">
+  <div class="form-row">
+    <div class="fg"><label>Exam Duration (Month &amp; Year)</label><input type="text" id="monthDuration" placeholder="e.g. APR 2026"/></div>
+    <div class="fg"><label>Semester</label>
+      <select id="semester"><option>First</option><option>Second</option><option>Third</option><option>Fourth</option><option>Fifth</option><option>Sixth</option><option>Seventh</option></select>
     </div>
+    <div class="fg"><label>Question Paper Code</label><input type="text" id="qpCode" placeholder="e.g. VEC311-A"/></div>
   </div>
+</div></div>
 
-  <div class="sh" style="margin-top:22px"><div class="sn" style="background:var(--skyl)">B</div><h2>Part B — Configure (5 × 16 = 80 Marks)</h2><div class="pill">Q11–Q15</div></div>
-  <div class="card">
-    <div class="card-body">
-      <div class="alert a-info" style="margin-top:0;margin-bottom:14px">
-        <span class="ai">💡</span>
-        <span>Each Q11–Q15 can independently be <strong>Split (8+8)</strong> or <strong>Single (16)</strong>.
-        Split generates 4 slots: (a)(i), (a)(ii), (b)(i), (b)(ii) — Single generates 2 slots: (a), (b).</span>
-      </div>
-      <div class="pb-grid" id="partbGrid"><div style="text-align:center;padding:20px;color:var(--g400)">Upload AQA file to configure…</div></div>
-    </div>
+<div class="sh"><div class="sn">3</div><h2>Part A — Configure (10 × 2 = 20 Marks)</h2><div class="pill">Q1–Q10</div></div>
+<div class="card">
+  <div class="card-header"><span style="font-size:16px">🔵</span><h3>Select Type &amp; Portion &nbsp;·&nbsp; <span style="color:var(--sky);font-size:12px">Portion I = 1st Half &nbsp;|&nbsp; Portion II = 2nd Half</span></h3></div>
+  <div class="card-body" style="padding:0">
+    <table class="parta-tbl">
+      <thead><tr>
+        <th style="width:55px">Q.No</th><th style="width:100px">Unit</th>
+        <th style="width:145px">Type</th><th style="width:135px">Portion</th>
+        <th>Available Pool</th>
+      </tr></thead>
+      <tbody id="partaBody"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--g400)">Upload AQA file to configure…</td></tr></tbody>
+    </table>
   </div>
-
-  <div class="sh"><div class="sn" style="background:var(--g500)">→</div><h2>Generate Question Paper</h2></div>
-  <div class="card">
-    <div class="card-body">
-      <div class="alert a-info">
-        <span class="ai">ℹ️</span>
-        <span>
-          Placeholders <code>&lt;qp_code&gt;</code>, <code>&lt;sem&gt;</code>, <code>&lt;month duration&gt;</code> are replaced even if split across XML runs in the template.
-          Split mode removes 16-mark parent rows; Single mode removes 8-mark sub-rows — per question independently.
-        </span>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary btn-lg" id="generateBtn" onclick="doGenerate()" disabled>⚡ Generate Question Paper</button>
-        <button class="btn btn-sec" id="previewBtn" onclick="togglePreview()" style="display:none">👁 Toggle Preview</button>
-        <button class="btn btn-sec" id="reshuffleBtn" onclick="doShuffle()" style="display:none">🔀 Re-shuffle</button>
-        <button class="btn btn-sec" id="debugBtn" onclick="toggleDebug()" style="display:none;font-size:11px">🔍 Debug</button>
-      </div>
-      <div id="genAlert" style="margin-top:12px;display:none"></div>
-      <div class="debug-panel" id="debugPanel"></div>
-    </div>
-  </div>
-
-  <div id="previewSection" style="display:none">
-    <div class="sh"><div class="sn" style="background:var(--green)">✓</div><h2>Question Paper Preview</h2></div>
-    <div class="card">
-      <div class="card-body">
-        <div id="qpHdr" style="text-align:center;padding:12px 0 16px;border-bottom:2px solid var(--ink2);margin-bottom:16px"></div>
-        <div class="preview-wrap"><table class="qp-tbl" id="qpTbl"></table></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span style="font-size:16px">📊</span><h3>Bloom's Taxonomy Distribution</h3></div>
-      <div class="card-body"><div class="bloom-grid" id="bloomCards"></div></div>
-    </div>
-  </div>
-
-  <div class="dl-panel" id="downloadPanel">
-    <div style="font-size:42px;margin-bottom:14px">✅</div>
-    <h3>Question Paper Ready!</h3>
-    <p id="dlDesc">KCET Question Paper generated.</p>
-    <button class="btn btn-success btn-lg" onclick="downloadDocx()">⬇ Download DOCX</button>
-  </div>
-
 </div>
+
+<div class="sh" style="margin-top:22px"><div class="sn" style="background:var(--skyl)">B</div><h2>Part B — Configure (5 × 16 = 80 Marks)</h2><div class="pill">Q11–Q15</div></div>
+<div class="card"><div class="card-body">
+  <div class="alert a-info" style="margin-top:0;margin-bottom:14px">
+    <span class="ai">💡</span>
+    <span>Each Q11–Q15 can be <strong>Split (8+8)</strong> or <strong>Single (16)</strong>. Split → 4 slots: (a)(i),(a)(ii),(b)(i),(b)(ii). Single → 2 slots: (a),(b).</span>
+  </div>
+  <div class="pb-grid" id="partbGrid"><div style="text-align:center;padding:20px;color:var(--g400)">Upload AQA file to configure…</div></div>
+</div></div>
+
+<div class="sh"><div class="sn" style="background:var(--g500)">→</div><h2>Generate Question Paper</h2></div>
+<div class="card"><div class="card-body">
+  <div class="alert a-info">
+    <span class="ai">ℹ️</span>
+    <span>v5: Equations (OMML) and nested tables are fully preserved in preview and DOCX. Three-strategy AQA parser handles varied column formats automatically.</span>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary btn-lg" id="generateBtn" onclick="doGenerate()" disabled>⚡ Generate Question Paper</button>
+    <button class="btn btn-sec" id="previewBtn" onclick="togglePreview()" style="display:none">👁 Toggle Preview</button>
+    <button class="btn btn-sec" id="reshuffleBtn" onclick="doShuffle()" style="display:none">🔀 Re-shuffle</button>
+    <button class="btn btn-sec" id="debugBtn" onclick="toggleDebug()" style="display:none;font-size:11px">🔍 Debug</button>
+  </div>
+  <div id="genAlert" style="margin-top:12px;display:none"></div>
+  <div class="debug-panel" id="debugPanel"></div>
+</div></div>
+
+<div id="previewSection" style="display:none">
+  <div class="sh"><div class="sn" style="background:var(--green)">✓</div><h2>Question Paper Preview</h2></div>
+  <div class="card"><div class="card-body">
+    <div id="qpHdr" style="text-align:center;padding:12px 0 16px;border-bottom:2px solid var(--ink2);margin-bottom:16px"></div>
+    <div class="preview-wrap"><table class="qp-tbl" id="qpTbl"></table></div>
+  </div></div>
+  <div class="card">
+    <div class="card-header"><span style="font-size:16px">📊</span><h3>Bloom's Taxonomy Distribution</h3></div>
+    <div class="card-body"><div class="bloom-grid" id="bloomCards"></div></div>
+  </div>
+</div>
+
+<div class="dl-panel" id="downloadPanel">
+  <div style="font-size:42px;margin-bottom:14px">✅</div>
+  <h3>Question Paper Ready!</h3>
+  <p id="dlDesc">KCET Question Paper generated.</p>
+  <button class="btn btn-success btn-lg" onclick="downloadDocx()">⬇ Download DOCX</button>
+</div>
+
+</div><!-- /main -->
 
 <script>
 'use strict';
 
-/* ═══════════ GLOBALS ═══════════ */
-let G = {
-  aqaBank:[], aqaMeta:{}, coOutcomes:{},
-  tplArrayBuffer:null, lastSlots:null, lastBloom:null,
-  docxBlob:null, units:[], debugLog:[],
-  // Per-question mode: key=qno(11-15), value='split'|'single'
-  partBModes:{}
-};
-const WNS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+var G={aqaBank:[],aqaMeta:{},coOutcomes:{},tplArrayBuffer:null,docxBlob:null,units:[],debugLog:[],partBModes:{}};
+var WNS='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+var MNS='http://schemas.openxmlformats.org/officeDocument/2006/math';
 
-function dbg(m,c=''){G.debugLog.push({m,c});const p=document.getElementById('debugPanel');p.innerHTML=G.debugLog.slice(-100).map(d=>`<div class="dl ${d.c}">${esc(d.m)}</div>`).join('');p.scrollTop=p.scrollHeight;}
-const dbgOk=m=>dbg(m,'ok');
-const dbgWarn=m=>dbg(m,'warn');
-const dbgErr=m=>dbg(m,'err');
+function dbg(m,c){c=c||'';G.debugLog.push({m:m,c:c});var p=document.getElementById('debugPanel');p.innerHTML=G.debugLog.slice(-150).map(function(d){return '<div class="dl '+d.c+'">'+xesc(d.m)+'</div>';}).join('');p.scrollTop=p.scrollHeight;}
+function dbgOk(m){dbg(m,'ok');}
+function dbgWarn(m){dbg(m,'warn');}
+function dbgErr(m){dbg(m,'err');}
 
-/* ═══════════ UPLOAD ═══════════ */
-document.getElementById('aqaFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)handleAQA(f);});
-document.getElementById('tplFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)handleTpl(f);});
-setupDrop('aqaZone',f=>handleAQA(f));
-setupDrop('tplZone',f=>handleTpl(f));
+/* ── OMML to text ── */
+function ommlToText(node){
+  if(!node)return'';
+  var ln=node.localName||'';
+  if(ln==='oMathPara'){var inn=node.getElementsByTagNameNS(MNS,'oMath');return inn.length?ommlToText(inn[0]):ommlChildren(node);}
+  if(ln==='f'){var num=node.getElementsByTagNameNS(MNS,'num'),den=node.getElementsByTagNameNS(MNS,'den');return'('+( num.length?ommlChildren(num[0]):'?')+')/('+(den.length?ommlChildren(den[0]):'?')+')';}
+  if(ln==='sSup'){var e=node.getElementsByTagNameNS(MNS,'e'),s=node.getElementsByTagNameNS(MNS,'sup');return(e.length?ommlChildren(e[0]):'?')+'^{'+(s.length?ommlChildren(s[0]):'?')+'}';}
+  if(ln==='sSub'){var e2=node.getElementsByTagNameNS(MNS,'e'),s2=node.getElementsByTagNameNS(MNS,'sub');return(e2.length?ommlChildren(e2[0]):'?')+'_{'+(s2.length?ommlChildren(s2[0]):'?')+'}';}
+  if(ln==='sSubSup'){var e3=node.getElementsByTagNameNS(MNS,'e'),sb=node.getElementsByTagNameNS(MNS,'sub'),sp=node.getElementsByTagNameNS(MNS,'sup');return(e3.length?ommlChildren(e3[0]):'?')+'_{'+(sb.length?ommlChildren(sb[0]):'')+'}^{'+(sp.length?ommlChildren(sp[0]):'')+'}';}
+  if(ln==='rad'){var e4=node.getElementsByTagNameNS(MNS,'e'),deg=node.getElementsByTagNameNS(MNS,'deg');var degT=(deg.length&&deg[0].textContent.trim())?ommlChildren(deg[0])+'√':'√';return degT+'('+(e4.length?ommlChildren(e4[0]):'?')+')';}
+  if(ln==='nary'){var chrEl=node.getElementsByTagNameNS(MNS,'chr'),chr=chrEl.length?(chrEl[0].getAttributeNS(MNS,'val')||'∑'):'∑';var nsub=node.getElementsByTagNameNS(MNS,'sub'),nsup=node.getElementsByTagNameNS(MNS,'sup'),ne=node.getElementsByTagNameNS(MNS,'e');return chr+(nsub.length?'_{'+ommlChildren(nsub[0])+'}':'')+(nsup.length?'^{'+ommlChildren(nsup[0])+'}':'')+'('+(ne.length?ommlChildren(ne[0]):'')+')';  }
+  if(ln==='func'){var fn=node.getElementsByTagNameNS(MNS,'fName'),fe=node.getElementsByTagNameNS(MNS,'e');return(fn.length?ommlChildren(fn[0]):'')+' ('+(fe.length?ommlChildren(fe[0]):'')+')'; }
+  if(ln==='d'){var beg='(',end=')';var dPr=node.getElementsByTagNameNS(MNS,'dPr');if(dPr.length){var bc=dPr[0].getElementsByTagNameNS(MNS,'begChr'),ec=dPr[0].getElementsByTagNameNS(MNS,'endChr');if(bc.length)beg=bc[0].getAttributeNS(MNS,'val')||'(';if(ec.length)end=ec[0].getAttributeNS(MNS,'val')||')';}var parts=[],des=node.getElementsByTagNameNS(MNS,'e');for(var i=0;i<des.length;i++)parts.push(ommlChildren(des[i]));return beg+parts.join(',')+end;}
+  if(ln==='r'){var txt='';var mts=node.getElementsByTagNameNS(MNS,'t');for(var i=0;i<mts.length;i++)txt+=mts[i].textContent;var wts=node.getElementsByTagNameNS(WNS,'t');for(var i=0;i<wts.length;i++)txt+=wts[i].textContent;return txt;}
+  return ommlChildren(node);
+}
+function ommlChildren(node){var r='';for(var i=0;i<node.childNodes.length;i++){if(node.childNodes[i].nodeType===1)r+=ommlToText(node.childNodes[i]);}return r;}
+
+/* ── Upload ── */
+document.getElementById('aqaFile').addEventListener('change',function(e){var f=e.target.files[0];if(f)handleAQA(f);});
+document.getElementById('tplFile').addEventListener('change',function(e){var f=e.target.files[0];if(f)handleTpl(f);});
+setupDrop('aqaZone',handleAQA);
+setupDrop('tplZone',handleTpl);
 
 function setupDrop(id,cb){
-  const z=document.getElementById(id);
-  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('dragover');});
-  z.addEventListener('dragleave',()=>z.classList.remove('dragover'));
-  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.name.endsWith('.docx'))cb(f);});
+  var z=document.getElementById(id);
+  z.addEventListener('dragover',function(e){e.preventDefault();z.classList.add('dragover');});
+  z.addEventListener('dragleave',function(){z.classList.remove('dragover');});
+  z.addEventListener('drop',function(e){e.preventDefault();z.classList.remove('dragover');var f=e.dataTransfer.files[0];if(f&&f.name.toLowerCase().endsWith('.docx'))cb(f);});
 }
 
 async function handleAQA(file){
-  showPA('loading',`Parsing "${file.name}"…`);
+  showPA('loading','Parsing "'+file.name+'"…');
   try{
     await parseAQA(await file.arrayBuffer());
     document.getElementById('aqaZone').classList.add('uploaded');
     document.getElementById('aqaDone').style.display='block';
     document.getElementById('aqaDone').textContent='✓ '+file.name;
     document.getElementById('aqaSize').textContent=fmtB(file.size);
-    showPA('success',`Loaded ${G.aqaBank.length} questions from ${G.units.length} units`);
-    renderMeta();renderCO();buildPartA();buildPartB();
-    checkReady();setStep(2);
+    var eqC=G.aqaBank.filter(function(q){return q.has_equation;}).length;
+    var tblC=G.aqaBank.filter(function(q){return q.has_nested_table;}).length;
+    showPA('success','Loaded '+G.aqaBank.length+' questions from '+G.units.length+' units · '+eqC+' equations · '+tblC+' tables');
+    renderMeta();renderCO();buildPartA();buildPartB();checkReady();setStep(2);
   }catch(e){showPA('error','Parse failed: '+e.message);console.error(e);}
 }
 
@@ -380,753 +363,742 @@ async function handleTpl(file){
   document.getElementById('tplDone').style.display='block';
   document.getElementById('tplDone').textContent='✓ '+file.name;
   document.getElementById('tplSize').textContent=fmtB(file.size);
-  // Debug: scan template rows
   try{
-    const zip=await JSZip.loadAsync(G.tplArrayBuffer);
-    const xs=await zip.file('word/document.xml').async('string');
-    const xd=new DOMParser().parseFromString(xs,'application/xml');
-    const tbls=xd.getElementsByTagNameNS(WNS,'tbl');
-    dbg(`Template: ${tbls.length} tables`);
-    for(let ti=0;ti<tbls.length;ti++){
-      const rows=tbls[ti].getElementsByTagNameNS(WNS,'tr');
-      for(let ri=0;ri<rows.length;ri++){
-        const tcs=rows[ri].getElementsByTagNameNS(WNS,'tc');
-        if(tcs.length>=2){
-          const c0=cellTxt(tcs[0]).trim(),c1=cellTxt(tcs[1]).trim();
-          if(c1&&/\d/.test(c1)) dbg(`  T${ti}R${ri}: [${c0}][${c1}]`);
-        }
+    var zip=await JSZip.loadAsync(G.tplArrayBuffer);
+    var xs=await zip.file('word/document.xml').async('string');
+    var xd=new DOMParser().parseFromString(xs,'application/xml');
+    var tbls=xd.getElementsByTagNameNS(WNS,'tbl');
+    dbg('Template: '+tbls.length+' tables');
+    for(var ti=0;ti<tbls.length;ti++){
+      var rows=tbls[ti].getElementsByTagNameNS(WNS,'tr');
+      for(var ri=0;ri<rows.length;ri++){
+        var tcs=rows[ri].getElementsByTagNameNS(WNS,'tc');
+        if(tcs.length>=2){var c0=cellTxt(tcs[0]).trim(),c1=cellTxt(tcs[1]).trim();if(c1&&/\d/.test(c1))dbg('  T'+ti+'R'+ri+': ['+c0+']['+c1+']');}
       }
     }
   }catch(e){dbgErr('Tpl scan: '+e.message);}
   checkReady();
 }
 
-function checkReady(){
-  const ok=G.aqaBank.length>0&&G.tplArrayBuffer!==null;
-  document.getElementById('generateBtn').disabled=!ok;
-  if(ok)setStep(3);
-}
+function checkReady(){var ok=G.aqaBank.length>0&&G.tplArrayBuffer!==null;document.getElementById('generateBtn').disabled=!ok;if(ok)setStep(3);}
 
-/* ═══════════ AQA PARSER ═══════════ */
+/* ═══════════════════════════════════════════
+   AQA PARSER — 3-strategy robust parser
+═══════════════════════════════════════════ */
 async function parseAQA(ab){
-  const zip=await JSZip.loadAsync(ab);
-  const relsXml=await zip.file('word/_rels/document.xml.rels').async('string');
-  const relsDoc=new DOMParser().parseFromString(relsXml,'application/xml');
-  const imgMap={};
-  for(const rel of relsDoc.querySelectorAll('Relationship')){
-    if((rel.getAttribute('Type')||'').includes('/image')){
-      const rId=rel.getAttribute('Id'),target=rel.getAttribute('Target');
-      const path=target.startsWith('/')?target.slice(1):'word/'+target.replace('../','');
-      try{
-        const f=zip.file(path)||zip.file('word/media/'+target.split('/').pop());
-        if(f){const b64=await f.async('base64');const ext=target.split('.').pop().toLowerCase();imgMap[rId]={b64,ct:ext==='png'?'image/png':ext==='gif'?'image/gif':'image/jpeg',origRId:rId};}
-      }catch(e){}
-    }
+  var zip=await JSZip.loadAsync(ab);
+  var relsXml=await zip.file('word/_rels/document.xml.rels').async('string');
+  var relsDoc=new DOMParser().parseFromString(relsXml,'application/xml');
+  var imgMap={};
+  var rels=relsDoc.querySelectorAll('Relationship');
+  for(var ri=0;ri<rels.length;ri++){
+    var rel=rels[ri];
+    if(!(rel.getAttribute('Type')||'').includes('/image'))continue;
+    var rId=rel.getAttribute('Id'),target=rel.getAttribute('Target');
+    var path=target.startsWith('/')?target.slice(1):'word/'+target.replace('../','');
+    try{var f=zip.file(path)||zip.file('word/media/'+target.split('/').pop());if(f){var b64=await f.async('base64');var ext=target.split('.').pop().toLowerCase();imgMap[rId]={b64:b64,ct:ext==='png'?'image/png':ext==='gif'?'image/gif':'image/jpeg',origRId:rId};}}catch(e){}
   }
-  const xs=await zip.file('word/document.xml').async('string');
-  const xd=new DOMParser().parseFromString(xs,'application/xml');
+  var xs=await zip.file('word/document.xml').async('string');
+  var xd=new DOMParser().parseFromString(xs,'application/xml');
   G.aqaBank=[];G.aqaMeta={};G.coOutcomes={};
-  const tbls=xd.getElementsByTagNameNS(WNS,'tbl');
-  let curUnit=null;const seen=new Set();
+  var tbls=xd.getElementsByTagNameNS(WNS,'tbl');
+  var curUnit=null,seen={};
+  dbg('AQA: '+tbls.length+' tables');
 
+  /* meta from first table */
   if(tbls.length>0){
-    const rows=tbls[0].getElementsByTagNameNS(WNS,'tr');
-    for(let r=0;r<rows.length;r++){
-      const cells=xmlCells(rows[r]);
-      for(let i=0;i<cells.length-1;i++){
-        const k=cells[i].t.toLowerCase(),v=cells[i+1].t;
-        if(k.includes('course code')&&!G.aqaMeta.course_code)G.aqaMeta.course_code=v;
-        if(k.includes('department')&&!G.aqaMeta.department)G.aqaMeta.department=v;
-        if(k.includes('course name')&&!G.aqaMeta.course_name)G.aqaMeta.course_name=v;
+    var mrows=tbls[0].getElementsByTagNameNS(WNS,'tr');
+    for(var r=0;r<mrows.length;r++){
+      var cells=xmlCells(mrows[r]);
+      for(var ci=0;ci<cells.length-1;ci++){
+        var kk=cells[ci].t.toLowerCase(),vv=cells[ci+1].t;
+        if(kk.includes('course code')&&!G.aqaMeta.course_code)G.aqaMeta.course_code=vv;
+        if(kk.includes('department')&&!G.aqaMeta.department)G.aqaMeta.department=vv;
+        if(kk.includes('course name')&&!G.aqaMeta.course_name)G.aqaMeta.course_name=vv;
       }
     }
   }
-  for(let ti=0;ti<tbls.length;ti++){
-    const rows=tbls[ti].getElementsByTagNameNS(WNS,'tr');
-    for(let r=0;r<rows.length;r++){
-      const cells=xmlCells(rows[r]);
-      if(cells.length>=2&&/^CO\d+$/i.test(cells[0].t.trim()))
-        G.coOutcomes[cells[0].t.trim().toUpperCase()]=cells[1].t.trim();
+  /* CO outcomes */
+  for(var ti=0;ti<tbls.length;ti++){
+    var rows2=tbls[ti].getElementsByTagNameNS(WNS,'tr');
+    for(var r=0;r<rows2.length;r++){
+      var c2=xmlCells(rows2[r]);
+      if(c2.length>=2&&/^CO\d+$/i.test(c2[0].t.trim()))G.coOutcomes[c2[0].t.trim().toUpperCase()]=c2[1].t.trim();
     }
   }
-  for(let ti=0;ti<tbls.length;ti++){
-    const rows=tbls[ti].getElementsByTagNameNS(WNS,'tr');
-    for(let ri=0;ri<rows.length;ri++){
-      const row=rows[ri];const cells=xmlCells(row);const rowTxt=cells.map(c=>c.t).join(' ');
-      const um=rowTxt.match(/UNIT\s*[-–]?\s*(\d+)/i);
-      if(um&&cells.length<=3){curUnit=`UNIT-${um[1]}`;continue;}
-      if(cells.length>0){const um2=cells[0].t.match(/^UNIT\s*[-–]?\s*(\d+)/i);if(um2){curUnit=`UNIT-${um2[1]}`;continue;}}
-      if(!curUnit||cells.length<6)continue;
-      const co=/^CO\d+$/i.test(cells[1].t.trim())?cells[1].t.trim().toUpperCase():null;
-      const k=/^K\d+$/i.test(cells[2].t.trim())?cells[2].t.trim().toUpperCase():null;
-      if(!co||!k)continue;
-      const mm=cells[4].t.match(/\b(2|4|8|16)\b/);if(!mm)continue;
-      const marks=parseInt(mm[1]),portion=cells[5].t.trim();
-      const qTc=row.getElementsByTagNameNS(WNS,'tc')[3];if(!qTc)continue;
-      const paras=parseQParas(qTc,imgMap);
-      const plainText=paras.map(p=>p.text).filter(Boolean).join('\n');
-      const images=paras.flatMap(p=>p.images||[]);
-      const is_mcq=marks===2&&detectMCQ(paras);
-      const dkey=`${curUnit}_${marks}_${plainText.substring(0,80)}`;
-      if(seen.has(dkey))continue;seen.add(dkey);
-      G.aqaBank.push({uid:`${curUnit}_${marks}_${G.aqaBank.length}`,unit:curUnit,co,k,marks,portion,text:plainText,paras,images,is_mcq,has_image:images.length>0,has_equation:hasEq(qTc)});
+  /* questions */
+  for(var ti=0;ti<tbls.length;ti++){
+    var rows3=tbls[ti].getElementsByTagNameNS(WNS,'tr');
+    var hdrRow=detectHeaderRow(rows3);
+    var colMap=hdrRow>=0?mapColumns(rows3[hdrRow]):null;
+    dbg('Tbl '+ti+': '+rows3.length+' rows hdr@'+hdrRow);
+    for(var ri=0;ri<rows3.length;ri++){
+      var row=rows3[ri];
+      var cells3=xmlCells(row);
+      var rowTxt=cells3.map(function(c){return c.t;}).join(' ');
+      var um=rowTxt.match(/UNIT\s*[-–]?\s*(\d+)/i);
+      if(um&&cells3.length<=4){curUnit='UNIT-'+um[1];dbgOk('  Unit→'+curUnit);continue;}
+      if(cells3.length>0){var um2=cells3[0].t.match(/^UNIT\s*[-–]?\s*(\d+)/i);if(um2){curUnit='UNIT-'+um2[1];dbgOk('  Unit→'+curUnit);continue;}}
+      if(!curUnit)continue;
+      var q=tryParseFixed(row,cells3,curUnit,imgMap)||
+            (colMap?tryParseMapped(row,cells3,curUnit,imgMap,colMap):null)||
+            tryParseSearch(row,cells3,curUnit,imgMap);
+      if(q){var dk=q.unit+'_'+q.marks+'_'+q.text.substring(0,80);if(!seen[dk]){seen[dk]=true;G.aqaBank.push(q);dbgOk('  +Q u='+q.unit+' m='+q.marks+' co='+q.co+' k='+q.k+(q.has_equation?' [EQ]':'')+(q.has_nested_table?' [TBL]':''));}}
     }
   }
-  G.units=[...new Set(G.aqaBank.map(q=>q.unit))].sort((a,b)=>parseInt(a.split('-')[1])-parseInt(b.split('-')[1]));
+  G.units=[];var us={};
+  G.aqaBank.forEach(function(q){if(!us[q.unit]){us[q.unit]=true;G.units.push(q.unit);}});
+  G.units.sort(function(a,b){return parseInt(a.split('-')[1])-parseInt(b.split('-')[1]);});
+  dbgOk('Total: '+G.aqaBank.length+' Qs · units: '+G.units.join(', '));
 }
-function xmlCells(row){return Array.from(row.getElementsByTagNameNS(WNS,'tc')).map(tc=>({t:cellTxt(tc),el:tc}));}
+
+function detectHeaderRow(rows){
+  for(var i=0;i<Math.min(rows.length,5);i++){
+    var txt='';var tcs=rows[i].getElementsByTagNameNS(WNS,'tc');
+    for(var j=0;j<tcs.length;j++)txt+=cellTxt(tcs[j]).toLowerCase()+' ';
+    if((txt.includes('question')||txt.includes('q.no')||txt.includes('s.no'))&&(txt.includes('co')||txt.includes('bloom')||txt.includes('marks')))return i;
+  }
+  return -1;
+}
+function mapColumns(headerRow){
+  var tcs=headerRow.getElementsByTagNameNS(WNS,'tc');
+  var map={sno:-1,co:-1,k:-1,question:-1,marks:-1,portion:-1};
+  for(var i=0;i<tcs.length;i++){
+    var t=cellTxt(tcs[i]).toLowerCase().replace(/\s+/g,'');
+    if(/s\.?no|sl\.?no/.test(t))map.sno=i;
+    else if(/^co$|course\s*outcome/.test(t))map.co=i;
+    else if(/^k\.?level$|bloom|btl/.test(t))map.k=i;
+    else if(/question/.test(t))map.question=i;
+    else if(/mark/.test(t))map.marks=i;
+    else if(/portion|half|part/.test(t))map.portion=i;
+  }
+  return map;
+}
+
+function normPortion(txt){
+  txt=(txt||'').trim().toUpperCase();
+  if(txt==='2'||txt.includes('II')||txt.includes('2ND')||txt.includes('SECOND'))return'II';
+  return'I';
+}
+
+/* Strategy A: fixed cols 0=SNo 1=CO 2=K 3=Question 4=Marks 5=Portion */
+function tryParseFixed(row,cells,unit,imgMap){
+  if(cells.length<6)return null;
+  var co=cells[1].t.trim().toUpperCase(),k=cells[2].t.trim().toUpperCase();
+  if(!/^CO\d+$/i.test(co)||!/^K\d+$/i.test(k))return null;
+  var mm=cells[4].t.match(/\b(2|4|8|16)\b/);if(!mm)return null;
+  var marks=parseInt(mm[1]),portion=normPortion(cells[5].t);
+  var tcs=row.getElementsByTagNameNS(WNS,'tc');var qTc=tcs[3];if(!qTc)return null;
+  return buildQObj(qTc,unit,co,k,marks,portion,imgMap);
+}
+/* Strategy B: header-mapped */
+function tryParseMapped(row,cells,unit,imgMap,cm){
+  if(cm.co<0||cm.k<0||cm.question<0||cm.marks<0)return null;
+  if(cm.co>=cells.length||cm.k>=cells.length||cm.question>=cells.length||cm.marks>=cells.length)return null;
+  var co=cells[cm.co].t.trim().toUpperCase(),k=cells[cm.k].t.trim().toUpperCase();
+  if(!/^CO\d+$/i.test(co)||!/^K\d+$/i.test(k))return null;
+  var mm=cells[cm.marks].t.match(/\b(2|4|8|16)\b/);if(!mm)return null;
+  var marks=parseInt(mm[1]);
+  var portion='I';if(cm.portion>=0&&cm.portion<cells.length)portion=normPortion(cells[cm.portion].t);
+  var tcs=row.getElementsByTagNameNS(WNS,'tc');var qTc=tcs[cm.question];if(!qTc)return null;
+  return buildQObj(qTc,unit,co,k,marks,portion,imgMap);
+}
+/* Strategy C: scan row for CO/K patterns */
+function tryParseSearch(row,cells,unit,imgMap){
+  var rowTxt=cells.map(function(c){return c.t;}).join(' ');
+  var coM=rowTxt.match(/\b(CO\d+)\b/i);if(!coM)return null;
+  var co=coM[1].toUpperCase();
+  var kM=rowTxt.match(/\b(K\d+)\b/i);if(!kM)return null;
+  var k=kM[1].toUpperCase();
+  var mM=rowTxt.match(/\b(2|4|8|16)\b/);if(!mM)return null;
+  var marks=parseInt(mM[1]);
+  var portion=/\bII\b|2nd\s*half|portion\s*ii|portion\s*2/i.test(rowTxt)?'II':'I';
+  var maxLen=0,qTcIdx=-1;
+  for(var i=0;i<cells.length;i++){
+    if(cells[i].t.length>maxLen&&!/^CO\d+$/i.test(cells[i].t.trim())&&!/^K\d+$/i.test(cells[i].t.trim())&&!/^\d+$/.test(cells[i].t.trim())){
+      maxLen=cells[i].t.length;qTcIdx=i;
+    }
+  }
+  if(qTcIdx<0||maxLen<5)return null;
+  var tcs=row.getElementsByTagNameNS(WNS,'tc');var qTc=tcs[qTcIdx];if(!qTc)return null;
+  return buildQObj(qTc,unit,co,k,marks,portion,imgMap);
+}
+
+function buildQObj(qTc,unit,co,k,marks,portion,imgMap){
+  var paras=parseQParas(qTc,imgMap);
+  var plainText=paras.map(function(p){return p.text;}).filter(Boolean).join('\n');
+  var images=[],equations=[],nestedTables=[];
+  paras.forEach(function(p){
+    (p.images||[]).forEach(function(i){images.push(i);});
+    (p.equations||[]).forEach(function(e){equations.push(e);});
+    (p.tables||[]).forEach(function(t){nestedTables.push(t);});
+  });
+  var hasMath=equations.length>0||qTc.getElementsByTagNameNS(MNS,'oMath').length>0;
+  var hasTbl=nestedTables.length>0;
+  return{
+    uid:unit+'_'+marks+'_'+G.aqaBank.length,
+    unit:unit,co:co,k:k,marks:marks,portion:portion,
+    text:plainText,paras:paras,images:images,equations:equations,nestedTables:nestedTables,
+    is_mcq:marks===2&&detectMCQ(paras),
+    has_image:images.length>0,has_equation:hasMath,has_nested_table:hasTbl,
+    _qTcNode:qTc
+  };
+}
+
+function parseQParas(tc,imgMap){
+  var result=[];
+  var children=[];
+  for(var i=0;i<tc.childNodes.length;i++){if(tc.childNodes[i].nodeType===1)children.push(tc.childNodes[i]);}
+  for(var ci=0;ci<children.length;ci++){
+    var child=children[ci],ln=child.localName||child.tagName||'';
+    if(ln==='p'){
+      var text='',images=[],equations=[];
+      var pch=[];for(var pi=0;pi<child.childNodes.length;pi++){if(child.childNodes[pi].nodeType===1)pch.push(child.childNodes[pi]);}
+      for(var pci=0;pci<pch.length;pci++){
+        var pc=pch[pci],pln=pc.localName||pc.tagName||'';
+        if(pln==='r'){
+          var wts=pc.getElementsByTagNameNS(WNS,'t');for(var ti=0;ti<wts.length;ti++)text+=wts[ti].textContent;
+          var allEls=pc.getElementsByTagName('*');
+          for(var ai=0;ai<allEls.length;ai++){
+            var eln=allEls[ai].localName||allEls[ai].tagName||'';
+            if(eln==='blip'){var rId=null;for(var bi=0;bi<allEls[ai].attributes.length;bi++){if(allEls[ai].attributes[bi].localName==='embed'){rId=allEls[ai].attributes[bi].value;break;}}if(rId&&imgMap[rId])images.push(Object.assign({},imgMap[rId]));}
+          }
+        }else if(pln==='oMath'||pln==='oMathPara'){
+          var mathNode=(pln==='oMathPara')?(pc.getElementsByTagNameNS(MNS,'oMath')[0]||pc):pc;
+          var eqTxt=ommlToText(mathNode);
+          equations.push({text:eqTxt,node:mathNode});
+          text+=' '+eqTxt+' ';
+        }
+      }
+      result.push({text:text.trim(),images:images,equations:equations,tables:[]});
+    }else if(ln==='tbl'){
+      var tblRows=child.getElementsByTagNameNS(WNS,'tr');
+      var gridRows=[];
+      for(var ri2=0;ri2<tblRows.length;ri2++){
+        var tblCells=tblRows[ri2].getElementsByTagNameNS(WNS,'tc');
+        var gridRow=[];
+        for(var gci=0;gci<tblCells.length;gci++){
+          var cTxt=cellTxt(tblCells[gci]);
+          var cMaths=tblCells[gci].getElementsByTagNameNS(MNS,'oMath');
+          var eqParts=[];for(var mi=0;mi<cMaths.length;mi++)eqParts.push(ommlToText(cMaths[mi]));
+          if(eqParts.length)cTxt=(cTxt+' '+eqParts.join(' ')).trim();
+          var rPr=tblCells[gci].getElementsByTagNameNS(WNS,'rPr')[0];
+          gridRow.push({text:cTxt,bold:rPr?!!rPr.getElementsByTagNameNS(WNS,'b')[0]:false,italic:rPr?!!rPr.getElementsByTagNameNS(WNS,'i')[0]:false});
+        }
+        if(gridRow.length)gridRows.push(gridRow);
+      }
+      result.push({text:'',images:[],equations:[],tables:[{rows:gridRows,node:child}]});
+    }else if(ln==='oMathPara'){
+      var mn2=child.getElementsByTagNameNS(MNS,'oMath')[0]||child;
+      var et2=ommlToText(mn2);
+      result.push({text:et2,images:[],equations:[{text:et2,node:mn2}],tables:[]});
+    }
+  }
+  return result;
+}
+
+function detectMCQ(paras){
+  var t=paras.map(function(p){return p.text;}).filter(Boolean);
+  if(t.length<4)return false;
+  if((t.join('\n').match(/\b[a-d]\s*[\)\.]|\b[A-D]\s*[\)\.]/g)||[]).length>=3)return true;
+  if(t.slice(1).filter(function(x){return x.length<120;}).length>=3)return true;
+  return false;
+}
+function xmlCells(row){var tcs=row.getElementsByTagNameNS(WNS,'tc');var r=[];for(var i=0;i<tcs.length;i++)r.push({t:cellTxt(tcs[i]),el:tcs[i]});return r;}
 function cellTxt(cell){
-  const lines=[];
-  for(const p of cell.getElementsByTagNameNS(WNS,'p')){
-    let l='';for(const r of p.getElementsByTagNameNS(WNS,'r'))for(const t of r.getElementsByTagNameNS(WNS,'t'))l+=t.textContent;
+  var lines=[];
+  var paras=cell.getElementsByTagNameNS(WNS,'p');
+  for(var pi=0;pi<paras.length;pi++){
+    var l='';
+    var rs=paras[pi].getElementsByTagNameNS(WNS,'r');
+    for(var ri=0;ri<rs.length;ri++){var ts=rs[ri].getElementsByTagNameNS(WNS,'t');for(var ti=0;ti<ts.length;ti++)l+=ts[ti].textContent;}
+    var maths=paras[pi].getElementsByTagNameNS(MNS,'oMath');
+    for(var mi=0;mi<maths.length;mi++)l+=' '+ommlToText(maths[mi]);
     if(l.trim())lines.push(l.trim());
   }
   return lines.join('\n');
 }
-function parseQParas(tc,imgMap){
-  return Array.from(tc.getElementsByTagNameNS(WNS,'p')).map(p=>{
-    let text='';const images=[];
-    for(const r of p.getElementsByTagNameNS(WNS,'r')){
-      for(const t of r.getElementsByTagNameNS(WNS,'t'))text+=t.textContent;
-      for(const el of r.getElementsByTagName('*')){
-        if((el.localName||el.tagName)==='blip'){
-          let rId=null;for(let i=0;i<el.attributes.length;i++)if(el.attributes[i].localName==='embed'){rId=el.attributes[i].value;break;}
-          if(rId&&imgMap[rId])images.push({...imgMap[rId]});
-        }
-      }
-    }
-    return{text:text.trim(),images};
-  });
-}
-function detectMCQ(paras){
-  const t=paras.map(p=>p.text).filter(Boolean);
-  if(t.length<4)return false;
-  if((t.join('\n').match(/\b[a-d]\s*[\)\.]|\b[A-D]\s*[\)\.]/g)||[]).length>=3)return true;
-  if(t.slice(1).filter(x=>x.length<120).length>=3)return true;
-  return false;
-}
-function hasEq(tc){for(const el of tc.getElementsByTagName('*'))if(['oMath','oMathPara'].includes(el.localName||el.tagName))return true;return false;}
 
-/* ═══════════ UI BUILDERS ═══════════ */
+/* ── UI Builders ── */
 function renderMeta(){
-  const s=document.getElementById('metaStrip');s.style.display='flex';
-  s.innerHTML=`
-    <div class="mi"><div class="mk">Department</div><div class="mv">${esc(G.aqaMeta.department||'—')}</div></div>
-    <div class="mi"><div class="mk">Course Code</div><div class="mv">${esc(G.aqaMeta.course_code||'—')}</div></div>
-    <div class="mi"><div class="mk">Course Name</div><div class="mv">${esc(G.aqaMeta.course_name||'—')}</div></div>
-    <div class="mi"><div class="mk">Total Qs</div><div class="mv">${G.aqaBank.length}</div></div>
-    <div class="mi"><div class="mk">Images</div><div class="mv">${G.aqaBank.filter(q=>q.has_image).length}</div></div>
-    <div class="mi"><div class="mk">MCQ</div><div class="mv">${G.aqaBank.filter(q=>q.is_mcq).length}</div></div>
-  `;
-  document.getElementById('bankCount').textContent=`${G.aqaBank.length} Questions · ${G.units.length} Units`;
+  var s=document.getElementById('metaStrip');s.style.display='flex';
+  var eqC=G.aqaBank.filter(function(q){return q.has_equation;}).length;
+  var tblC=G.aqaBank.filter(function(q){return q.has_nested_table;}).length;
+  s.innerHTML='<div class="mi"><div class="mk">Department</div><div class="mv">'+xesc(G.aqaMeta.department||'—')+'</div></div>'+
+    '<div class="mi"><div class="mk">Course Code</div><div class="mv">'+xesc(G.aqaMeta.course_code||'—')+'</div></div>'+
+    '<div class="mi"><div class="mk">Course Name</div><div class="mv">'+xesc(G.aqaMeta.course_name||'—')+'</div></div>'+
+    '<div class="mi"><div class="mk">Total Qs</div><div class="mv">'+G.aqaBank.length+'</div></div>'+
+    '<div class="mi"><div class="mk">Images</div><div class="mv">'+G.aqaBank.filter(function(q){return q.has_image;}).length+'</div></div>'+
+    '<div class="mi"><div class="mk">MCQ</div><div class="mv">'+G.aqaBank.filter(function(q){return q.is_mcq;}).length+'</div></div>'+
+    '<div class="mi"><div class="mk">Equations</div><div class="mv" style="color:var(--amber)">'+eqC+'</div></div>'+
+    '<div class="mi"><div class="mk">Tables</div><div class="mv" style="color:var(--green)">'+tblC+'</div></div>';
+  document.getElementById('bankCount').textContent=G.aqaBank.length+' Questions · '+G.units.length+' Units';
 }
 function renderCO(){
-  const entries=Object.entries(G.coOutcomes);if(!entries.length)return;
+  var entries=Object.entries(G.coOutcomes);if(!entries.length)return;
   document.getElementById('coBlock').style.display='block';
-  document.getElementById('coTBody').innerHTML=entries.map(([co,d])=>`<tr><td>${co}</td><td>${esc(d)}</td></tr>`).join('');
+  document.getElementById('coTBody').innerHTML=entries.map(function(e){return'<tr><td>'+e[0]+'</td><td>'+xesc(e[1])+'</td></tr>';}).join('');
 }
 
-const UNIT_MAP={1:'UNIT-1',2:'UNIT-1',3:'UNIT-2',4:'UNIT-2',5:'UNIT-3',6:'UNIT-3',7:'UNIT-4',8:'UNIT-4',9:'UNIT-5',10:'UNIT-5'};
+var UNIT_MAP={1:'UNIT-1',2:'UNIT-1',3:'UNIT-2',4:'UNIT-2',5:'UNIT-3',6:'UNIT-3',7:'UNIT-4',8:'UNIT-4',9:'UNIT-5',10:'UNIT-5'};
 
 function availHtml(unit,marks){
-  const pIs=G.aqaBank.filter(q=>q.unit===unit&&q.marks===marks&&!q.is_mcq&&q.portion==='I').length;
-  const pIIs=G.aqaBank.filter(q=>q.unit===unit&&q.marks===marks&&!q.is_mcq&&q.portion==='II').length;
-  const pIm=G.aqaBank.filter(q=>q.unit===unit&&q.marks===marks&&q.is_mcq&&q.portion==='I').length;
-  const pIIm=G.aqaBank.filter(q=>q.unit===unit&&q.marks===marks&&q.is_mcq&&q.portion==='II').length;
-  const showMCQ=marks===2;
-  return`<div class="avail-wrap">
-    <div class="avail-row"><span class="avail-lbl">I (1st½)</span><div class="avail-badges">
-      <span class="ab ab-s ${pIs===0?'ab-0':''}">✍ ${pIs}</span>
-      ${showMCQ?`<span class="ab ab-m ${pIm===0?'ab-0':''}">⊙ ${pIm} MCQ</span>`:''}
-    </div></div>
-    <div class="avail-row"><span class="avail-lbl">II (2nd½)</span><div class="avail-badges">
-      <span class="ab ab-s ${pIIs===0?'ab-0':''}">✍ ${pIIs}</span>
-      ${showMCQ?`<span class="ab ab-m ${pIIm===0?'ab-0':''}">⊙ ${pIIm} MCQ</span>`:''}
-    </div></div>
-  </div>`;
+  var pIs=G.aqaBank.filter(function(q){return q.unit===unit&&q.marks===marks&&!q.is_mcq&&q.portion==='I';}).length;
+  var pIIs=G.aqaBank.filter(function(q){return q.unit===unit&&q.marks===marks&&!q.is_mcq&&q.portion==='II';}).length;
+  var pIm=G.aqaBank.filter(function(q){return q.unit===unit&&q.marks===marks&&q.is_mcq&&q.portion==='I';}).length;
+  var pIIm=G.aqaBank.filter(function(q){return q.unit===unit&&q.marks===marks&&q.is_mcq&&q.portion==='II';}).length;
+  var sm=marks===2;
+  return'<div class="avail-wrap">'+
+    '<div class="avail-row"><span class="avail-lbl">I (1st½)</span><div class="avail-badges">'+
+    '<span class="ab ab-s '+(pIs===0?'ab-0':'')+'">✍ '+pIs+'</span>'+
+    (sm?'<span class="ab ab-m '+(pIm===0?'ab-0':'')+'">⊙ '+pIm+' MCQ</span>':'')+
+    '</div></div>'+
+    '<div class="avail-row"><span class="avail-lbl">II (2nd½)</span><div class="avail-badges">'+
+    '<span class="ab ab-s '+(pIIs===0?'ab-0':'')+'">✍ '+pIIs+'</span>'+
+    (sm?'<span class="ab ab-m '+(pIIm===0?'ab-0':'')+'">⊙ '+pIIm+' MCQ</span>':'')+
+    '</div></div></div>';
 }
 
 function buildPartA(){
-  const tbody=document.getElementById('partaBody');tbody.innerHTML='';
-  for(let qno=1;qno<=10;qno++){
-    const unit=UNIT_MAP[qno];
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>Q${qno}</td>
-      <td><span class="badge b-blue">${unit}</span></td>
-      <td><select id="pa_type_${qno}" class="sel" style="width:100%"><option value="short">Short Answer</option><option value="mcq">MCQ</option></select></td>
-      <td><select id="pa_port_${qno}" class="sel" style="width:100%">
-        <option value="I">Portion I (1st Half)</option>
-        <option value="II">Portion II (2nd Half)</option>
-        <option value="any">Any</option>
-      </select></td>
-      <td>${availHtml(unit,2)}</td>
-    `;
+  var tbody=document.getElementById('partaBody');tbody.innerHTML='';
+  for(var qno=1;qno<=10;qno++){
+    var unit=UNIT_MAP[qno];
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>Q'+qno+'</td><td><span class="badge b-blue">'+unit+'</span></td>'+
+      '<td><select id="pa_type_'+qno+'" class="sel" style="width:100%"><option value="short">Short Answer</option><option value="mcq">MCQ</option></select></td>'+
+      '<td><select id="pa_port_'+qno+'" class="sel" style="width:100%"><option value="I">Portion I (1st Half)</option><option value="II">Portion II (2nd Half)</option><option value="any">Any</option></select></td>'+
+      '<td>'+availHtml(unit,2)+'</td>';
     tbody.appendChild(tr);
   }
 }
-
 function buildPartB(){
-  const grid=document.getElementById('partbGrid');grid.innerHTML='';
-  for(let i=0;i<5;i++){
-    const qno=11+i,unit=G.units[i]||`UNIT-${i+1}`;
-    const d=document.createElement('div');d.className='pb-row';
-    d.innerHTML=`
-      <div class="pb-info">
-        <div class="pb-qn">Q${qno}</div>
-        <div class="pb-un">${unit}</div>
-        <div class="pb-pool-lbl">8-Mark Pool</div>${availHtml(unit,8)}
-        <div class="pb-pool-lbl">16-Mark Pool</div>${availHtml(unit,16)}
-      </div>
-      <div class="fg">
-        <label>Type</label>
-        <select id="pb_type_${qno}" class="sel" onchange="updateModeBadge(${qno})">
-          <option value="split">Split (8+8)</option>
-          <option value="single">Single (16)</option>
-        </select>
-        <span class="mode-badge mb-split" id="pb_badge_${qno}" style="margin-top:6px;align-self:flex-start">8+8 Split</span>
-      </div>
-      <div class="fg">
-        <label>Q(a) Portion</label>
-        <select id="pb_porta_${qno}" class="sel">
-          <option value="I">Portion I (1st Half)</option>
-          <option value="II">Portion II (2nd Half)</option>
-          <option value="any">Any</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Q(b) Portion</label>
-        <select id="pb_portb_${qno}" class="sel">
-          <option value="II">Portion II (2nd Half)</option>
-          <option value="I">Portion I (1st Half)</option>
-          <option value="any">Any</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>K-Level</label>
-        <select id="pb_kmatch_${qno}" class="sel">
-          <option value="same">Same K-Level</option>
-          <option value="any">Any K-Level</option>
-        </select>
-      </div>
-    `;
+  var grid=document.getElementById('partbGrid');grid.innerHTML='';
+  for(var i=0;i<5;i++){
+    var qno=11+i,unit=G.units[i]||'UNIT-'+(i+1);
+    var d=document.createElement('div');d.className='pb-row';
+    d.innerHTML='<div class="pb-info"><div class="pb-qn">Q'+qno+'</div><div class="pb-un">'+unit+'</div>'+
+      '<div class="pb-pool-lbl">8-Mark Pool</div>'+availHtml(unit,8)+
+      '<div class="pb-pool-lbl">16-Mark Pool</div>'+availHtml(unit,16)+'</div>'+
+      '<div class="fg"><label>Type</label><select id="pb_type_'+qno+'" class="sel" onchange="updateModeBadge('+qno+')"><option value="split">Split (8+8)</option><option value="single">Single (16)</option></select>'+
+      '<span class="mode-badge mb-split" id="pb_badge_'+qno+'" style="margin-top:6px;align-self:flex-start">8+8 Split</span></div>'+
+      '<div class="fg"><label>Q(a) Portion</label><select id="pb_porta_'+qno+'" class="sel"><option value="I">Portion I</option><option value="II">Portion II</option><option value="any">Any</option></select></div>'+
+      '<div class="fg"><label>Q(b) Portion</label><select id="pb_portb_'+qno+'" class="sel"><option value="II">Portion II</option><option value="I">Portion I</option><option value="any">Any</option></select></div>'+
+      '<div class="fg"><label>K-Level</label><select id="pb_kmatch_'+qno+'" class="sel"><option value="same">Same K-Level</option><option value="any">Any K-Level</option></select></div>';
     grid.appendChild(d);
   }
 }
-
 function updateModeBadge(qno){
-  const v=document.getElementById(`pb_type_${qno}`).value;
-  const b=document.getElementById(`pb_badge_${qno}`);
-  b.className=`mode-badge ${v==='split'?'mb-split':'mb-single'}`;
+  var v=document.getElementById('pb_type_'+qno).value;
+  var b=document.getElementById('pb_badge_'+qno);
+  b.className='mode-badge '+(v==='split'?'mb-split':'mb-single');
   b.textContent=v==='split'?'8+8 Split':'16 Single';
 }
 
-/* ═══════════ SELECTION ENGINE ═══════════ */
-const shuf=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-function pick(pool,used){for(const q of shuf(pool)){if(!used.has(q.uid)){used.add(q.uid);return q;}}return null;}
+/* ── Selection Engine ── */
+function shuf(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function pick(pool,used){var s=shuf(pool);for(var i=0;i<s.length;i++){if(!used[s[i].uid]){used[s[i].uid]=true;return s[i];}}return null;}
 function pickPair(pA,pB,used,strict){
-  const sA=shuf(pA),sB=shuf(pB);
-  if(strict){for(const a of sA){if(used.has(a.uid))continue;for(const b of sB){if(!used.has(b.uid)&&a.k===b.k){used.add(a.uid);used.add(b.uid);return[a,b];}}}}
-  for(const a of sA){if(used.has(a.uid))continue;for(const b of sB){if(!used.has(b.uid)){used.add(a.uid);used.add(b.uid);return[a,b];}}}
+  var sA=shuf(pA),sB=shuf(pB);
+  if(strict){for(var i=0;i<sA.length;i++){if(used[sA[i].uid])continue;for(var j=0;j<sB.length;j++){if(!used[sB[j].uid]&&sA[i].k===sB[j].k){used[sA[i].uid]=true;used[sB[j].uid]=true;return[sA[i],sB[j]];}}}}
+  for(var i=0;i<sA.length;i++){if(used[sA[i].uid])continue;for(var j=0;j<sB.length;j++){if(!used[sB[j].uid]){used[sA[i].uid]=true;used[sB[j].uid]=true;return[sA[i],sB[j]];}}}
   return[null,null];
 }
-function getPool(unit,marks,port){return G.aqaBank.filter(q=>q.unit===unit&&q.marks===marks&&(port==='any'||q.portion===port));}
-function fallQ(qno,ab,sub,marks){const lbl=sub?`Q${qno}(${ab})(${sub})`:`Q${qno}(${ab})`;return{uid:`na${qno}${ab}${sub}`,text:`[Not available — ${lbl}]`,marks,co:'?',k:'?',paras:[],images:[],has_image:false,is_mcq:false};}
+function getPool(unit,marks,port){return G.aqaBank.filter(function(q){return q.unit===unit&&q.marks===marks&&(port==='any'||q.portion===port);});}
+function fallQ(qno,ab,sub,marks){var lbl=sub?'Q'+qno+'('+ab+')('+sub+')':'Q'+qno+'('+ab+')';return{uid:'na'+qno+ab+sub,text:'[Not available — '+lbl+']',marks:marks,co:'?',k:'?',paras:[],images:[],equations:[],nestedTables:[],has_image:false,is_mcq:false,has_equation:false,has_nested_table:false};}
 
-/* ═══════════ MAIN GENERATE ═══════════ */
+/* ── Generate ── */
 async function doGenerate(){
-  const monthDur=document.getElementById('monthDuration').value.trim();
-  const semester=document.getElementById('semester').value;
-  const qpCode  =document.getElementById('qpCode').value.trim();
+  var monthDur=document.getElementById('monthDuration').value.trim();
+  var semester=document.getElementById('semester').value;
+  var qpCode=document.getElementById('qpCode').value.trim();
   if(!monthDur||!qpCode){showGA('warn','Fill Exam Duration and QP Code.');return;}
-
   G.debugLog=[];
   document.getElementById('debugBtn').style.display='inline-flex';
   document.getElementById('debugPanel').classList.remove('show');
-
   showSpin('Selecting Questions…','Part A',0);await delay(30);
-  const usedSet=new Set(),slots={},warns=[];
+  var usedSet={},slots={},warns=[];
 
-  // ── PART A ──
-  for(let qno=1;qno<=10;qno++){
-    const unit=UNIT_MAP[qno];
-    const type=document.getElementById(`pa_type_${qno}`)?.value||'short';
-    const port=document.getElementById(`pa_port_${qno}`)?.value||'any';
-    let pool=G.aqaBank.filter(q=>q.unit===unit&&q.marks===2&&(type==='mcq'?q.is_mcq:!q.is_mcq)&&(port==='any'||q.portion===port));
-    let q=pick(pool,usedSet);
-    if(!q){q=pick(G.aqaBank.filter(q2=>q2.unit===unit&&q2.marks===2),usedSet);if(q)warns.push(`Q${qno}: used fallback`);}
+  for(var qno=1;qno<=10;qno++){
+    var unit=UNIT_MAP[qno];
+    var type=(document.getElementById('pa_type_'+qno)||{}).value||'short';
+    var port=(document.getElementById('pa_port_'+qno)||{}).value||'any';
+    var pool=G.aqaBank.filter(function(q){return q.unit===unit&&q.marks===2&&(type==='mcq'?q.is_mcq:!q.is_mcq)&&(port==='any'||q.portion===port);});
+    var q=pick(pool,usedSet);
+    if(!q){q=pick(G.aqaBank.filter(function(q2){return q2.unit===unit&&q2.marks===2;}),usedSet);if(q)warns.push('Q'+qno+': fallback');}
     slots[String(qno)]=q||fallQ(qno,'','',2);
-    dbgOk(`Q${qno} → "${(slots[String(qno)]?.text||'').substring(0,50)}"`);
+    dbgOk('Q'+qno+' → "'+(slots[String(qno)].text||'').substring(0,50)+'"');
     setSpinProg(qno*4);
   }
 
-  // ── PART B ──
-  // Store mode per question so DOCX builder can use it
   G.partBModes={};
-  showSpin('Selecting Questions…','Part B — K-level matching',40);await delay(30);
-
-  for(let i=0;i<5;i++){
-    const qno=11+i,unit=G.units[i]||`UNIT-${i+1}`;
-    const type =document.getElementById(`pb_type_${qno}`)?.value||'split';
-    const portA=document.getElementById(`pb_porta_${qno}`)?.value||'I';
-    const portB=document.getElementById(`pb_portb_${qno}`)?.value||'II';
-    const kMode=document.getElementById(`pb_kmatch_${qno}`)?.value||'same';
-
-    // Record this question's mode for the DOCX builder
-    G.partBModes[qno]=type;
-
-    if(type==='split'){
-      // Split: 4 slots using 8-mark questions
-      const pA=getPool(unit,8,portA),pB=getPool(unit,8,portB);
-      const[a1,b1]=pickPair(pA,pB,usedSet,kMode==='same');
-      const[a2,b2]=pickPair(pA,pB,usedSet,kMode==='same');
-      slots[`${qno} (a) (i)`] =a1||fallQ(qno,'a','i',8);
-      slots[`${qno} (b) (i)`] =b1||fallQ(qno,'b','i',8);
-      slots[`${qno} (a) (ii)`]=a2||fallQ(qno,'a','ii',8);
-      slots[`${qno} (b) (ii)`]=b2||fallQ(qno,'b','ii',8);
-      dbgOk(`Q${qno} SPLIT: (a)(i)="${(a1?.text||'').substring(0,40)}" [${a1?.k||'?'}]`);
-      dbgOk(`Q${qno} SPLIT: (b)(i)="${(b1?.text||'').substring(0,40)}" [${b1?.k||'?'}]`);
-      dbgOk(`Q${qno} SPLIT: (a)(ii)="${(a2?.text||'').substring(0,40)}"`);
-      dbgOk(`Q${qno} SPLIT: (b)(ii)="${(b2?.text||'').substring(0,40)}"`);
-      if(!a1||!b1)warns.push(`Q${qno}(i): 8-mark K-pair not found in ${unit}`);
-      if(!a2||!b2)warns.push(`Q${qno}(ii): 2nd 8-mark pair missing in ${unit}`);
+  showSpin('Selecting Questions…','Part B',40);await delay(30);
+  for(var i=0;i<5;i++){
+    var qno2=11+i,unit2=G.units[i]||'UNIT-'+(i+1);
+    var type2=(document.getElementById('pb_type_'+qno2)||{}).value||'split';
+    var portA=(document.getElementById('pb_porta_'+qno2)||{}).value||'I';
+    var portB=(document.getElementById('pb_portb_'+qno2)||{}).value||'II';
+    var kMode=(document.getElementById('pb_kmatch_'+qno2)||{}).value||'same';
+    G.partBModes[qno2]=type2;
+    if(type2==='split'){
+      var pA2=getPool(unit2,8,portA),pB2=getPool(unit2,8,portB);
+      var p1=pickPair(pA2,pB2,usedSet,kMode==='same'),p2=pickPair(pA2,pB2,usedSet,kMode==='same');
+      slots[qno2+' (a) (i)']=p1[0]||fallQ(qno2,'a','i',8);slots[qno2+' (b) (i)']=p1[1]||fallQ(qno2,'b','i',8);
+      slots[qno2+' (a) (ii)']=p2[0]||fallQ(qno2,'a','ii',8);slots[qno2+' (b) (ii)']=p2[1]||fallQ(qno2,'b','ii',8);
+      if(!p1[0]||!p1[1])warns.push('Q'+qno2+'(i): 8-mark pair missing in '+unit2);
+      if(!p2[0]||!p2[1])warns.push('Q'+qno2+'(ii): 2nd 8-mark pair missing');
     }else{
-      // Single: 2 slots using 16-mark questions
-      const pA=getPool(unit,16,portA),pB=getPool(unit,16,portB);
-      const[qa,qb]=pickPair(pA,pB,usedSet,kMode==='same');
-      slots[`${qno} (a)`]=qa||fallQ(qno,'a','',16);
-      slots[`${qno} (b)`]=qb||fallQ(qno,'b','',16);
-      dbgOk(`Q${qno} SINGLE: (a)="${(qa?.text||'').substring(0,40)}" [${qa?.k||'?'}]`);
-      dbgOk(`Q${qno} SINGLE: (b)="${(qb?.text||'').substring(0,40)}" [${qb?.k||'?'}]`);
-      if(!qa||!qb)warns.push(`Q${qno}: 16-mark pair not found in ${unit}`);
+      var pA3=getPool(unit2,16,portA),pB3=getPool(unit2,16,portB);
+      var p3=pickPair(pA3,pB3,usedSet,kMode==='same');
+      slots[qno2+' (a)']=p3[0]||fallQ(qno2,'a','',16);slots[qno2+' (b)']=p3[1]||fallQ(qno2,'b','',16);
+      if(!p3[0]||!p3[1])warns.push('Q'+qno2+': 16-mark pair not found in '+unit2);
     }
     setSpinProg(40+i*8);
   }
 
-  G.lastSlots=slots;
-  const bloom={K1:0,K2:0,K3:0,K4:0};
-  Object.values(slots).forEach(q=>{if(q?.k){const kk=q.k.toUpperCase();if(kk in bloom)bloom[kk]+=q.marks||0;}});
-  G.lastBloom=bloom;
+  var bloom={K1:0,K2:0,K3:0,K4:0};
+  Object.values(slots).forEach(function(q){if(q&&q.k){var kk=q.k.toUpperCase();if(kk in bloom)bloom[kk]+=q.marks||0;}});
 
-  showSpin('Building DOCX…','Embedding questions & images',70);await delay(30);
-
+  showSpin('Building DOCX…','Equations & Tables',70);await delay(30);
   try{
-    G.docxBlob=await buildDocx(slots,bloom,{semester,monthDuration:monthDur,qpCode});
+    G.docxBlob=await buildDocx(slots,bloom,{semester:semester,monthDuration:monthDur,qpCode:qpCode});
     setSpinProg(100);await delay(200);hideSpinner();
-    renderPreview(slots,bloom,{semester,monthDuration:monthDur,qpCode});
+    renderPreview(slots,bloom,{semester:semester,monthDuration:monthDur,qpCode:qpCode});
     if(warns.length)showGA('warn',warns.join('<br/>'));
-    else showGA('success',`✓ Generated — ${Object.keys(slots).length} slots filled`);
+    else showGA('success','✓ Generated — '+Object.keys(slots).length+' slots filled');
     document.getElementById('downloadPanel').classList.add('show');
     document.getElementById('previewSection').style.display='block';
     document.getElementById('previewBtn').style.display='inline-flex';
     document.getElementById('reshuffleBtn').style.display='inline-flex';
-    document.getElementById('dlDesc').textContent=`${G.aqaMeta.course_code} – ${G.aqaMeta.course_name} | ${semester} Sem | ${monthDur} | ${qpCode}`;
+    document.getElementById('dlDesc').textContent=(G.aqaMeta.course_code||'')+' – '+(G.aqaMeta.course_name||'')+' | '+semester+' Sem | '+monthDur+' | '+qpCode;
     setStep(5);
     document.getElementById('downloadPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
-  }catch(err){
-    hideSpinner();
-    showGA('error','DOCX build failed: '+err.message);
-    dbgErr(err.stack||err.message);
-    document.getElementById('debugPanel').classList.add('show');
-    console.error(err);
-  }
+  }catch(err){hideSpinner();showGA('error','DOCX build failed: '+err.message);dbgErr(err.stack||err.message);document.getElementById('debugPanel').classList.add('show');console.error(err);}
 }
 async function doShuffle(){await doGenerate();}
 
-/* ═══════════════════════════════════════════════════════════════
-   DOCX BUILDER — v4 CORE FIXES
-   
-   KEY FIX: Per-question mode-aware row handling
-   
-   Template contains BOTH kinds of rows for each Part B question:
-     "11 (a) (i)", "11 (a) (ii)"  ← used by SPLIT mode
-     "11 (a)"                      ← used by SINGLE mode
-     "11 (b) (i)", "11 (b) (ii)"  ← used by SPLIT mode
-     "11 (b)"                      ← used by SINGLE mode
-   
-   For each Q11-Q15:
-     - If SPLIT  → fill (a)(i),(a)(ii),(b)(i),(b)(ii) rows; DELETE (a),(b) parent rows
-     - If SINGLE → fill (a),(b) rows; DELETE (a)(i),(a)(ii),(b)(i),(b)(ii) sub-rows
-══════════════════════════════════════════════════════════════ */
-
-function normQ(s){
-  return String(s||'')
-    .replace(/\s+/g,' ')
-    .replace(/\(\s*/g,'(').replace(/\s*\)/g,')')
-    .replace(/[\u2013\u2014]/g,'-')
-    .trim().toLowerCase();
-}
-function buildSlotMap(slots){
-  const m={};
-  for(const k of Object.keys(slots))m[normQ(k)]=k;
-  return m;
-}
+/* ═══════════════════════════════════════════
+   DOCX BUILDER
+═══════════════════════════════════════════ */
+function normQ(s){return String(s||'').replace(/\s+/g,' ').replace(/\(\s*/g,'(').replace(/\s*\)/g,')').replace(/[\u2013\u2014]/g,'-').trim().toLowerCase();}
+function buildSlotMap(slots){var m={};Object.keys(slots).forEach(function(k){m[normQ(k)]=k;});return m;}
 function findSlot(slots,slotMap,raw){
   if(!raw||!raw.trim())return null;
-  const t=raw.trim();
-  if(t in slots)return slots[t];
-  const n=normQ(t);
-  if(n in slotMap)return slots[slotMap[n]];
-  const noQ=t.replace(/^Q\s*/i,'');
-  if(noQ in slots)return slots[noQ];
-  const noQn=normQ(noQ);
-  if(noQn in slotMap)return slots[slotMap[noQn]];
-  if(/^\d+$/.test(t)&&t in slots)return slots[t];
-  // Bracket variant builder for (i)/(ii) patterns
-  const bm=t.match(/^(\d+)\s*\(([ab])\)\s*\(([iv]+)\)$/i);
-  if(bm){
-    for(const c of[`${bm[1]} (${bm[2]}) (${bm[3]})`,`${bm[1]} (${bm[2]})(${bm[3]})`,`${bm[1]}(${bm[2]})(${bm[3]})`]){
-      if(c in slots)return slots[c];const cn=normQ(c);if(cn in slotMap)return slots[slotMap[cn]];
-    }
-  }
-  // Bracket variant for plain (a)/(b) patterns
-  const bm2=t.match(/^(\d+)\s*\(([ab])\)$/i);
-  if(bm2){
-    for(const c of[`${bm2[1]} (${bm2[2]})`,`${bm2[1]}(${bm2[2]})`]){
-      if(c in slots)return slots[c];const cn=normQ(c);if(cn in slotMap)return slots[slotMap[cn]];
-    }
-  }
-  dbgWarn(`  no slot: "${t}"`);
-  return null;
+  var t=raw.trim();
+  if(slots[t])return slots[t];
+  var n=normQ(t);if(slotMap[n])return slots[slotMap[n]];
+  var noQ=t.replace(/^Q\s*/i,'');if(slots[noQ])return slots[noQ];
+  var noQn=normQ(noQ);if(slotMap[noQn])return slots[slotMap[noQn]];
+  if(/^\d+$/.test(t)&&slots[t])return slots[t];
+  var bm=t.match(/^(\d+)\s*\(([ab])\)\s*\(([iv]+)\)$/i);
+  if(bm){var atts=[bm[1]+' ('+bm[2]+') ('+bm[3]+')',bm[1]+' ('+bm[2]+')'+'('+bm[3]+')',bm[1]+'('+bm[2]+')'+'('+bm[3]+')'];for(var ai=0;ai<atts.length;ai++){if(slots[atts[ai]])return slots[atts[ai]];var cn=normQ(atts[ai]);if(slotMap[cn])return slots[slotMap[cn]];}}
+  var bm2=t.match(/^(\d+)\s*\(([ab])\)$/i);
+  if(bm2){var atts2=[bm2[1]+' ('+bm2[2]+')',bm2[1]+'('+bm2[2]+')'];for(var ai=0;ai<atts2.length;ai++){if(slots[atts2[ai]])return slots[atts2[ai]];var cn2=normQ(atts2[ai]);if(slotMap[cn2])return slots[slotMap[cn2]];}}
+  dbgWarn('  no slot: "'+t+'"');return null;
 }
+function getRowQno(label){var m=label.match(/^(\d+)/);return m?parseInt(m[1]):null;}
+function isSubRow(label){return /\([iv]+\)/i.test(label);}
+function isParentRow(label){return /\([ab]\)/i.test(label)&&!/\([iv]+\)/i.test(label);}
 
-/* ── Determine if a row label belongs to a particular Q and mode ── */
-function getRowQno(label){
-  const m=label.match(/^(\d+)/);
-  return m?parseInt(m[1]):null;
-}
-function isSubRow(label){
-  // Sub-row: has (i) or (ii)  e.g. "11 (a) (i)"
-  return /\([iv]+\)/i.test(label);
-}
-function isParentRow(label){
-  // Parent row: has (a) or (b) but NOT (i)/(ii)  e.g. "11 (a)"
-  return /\([ab]\)/i.test(label)&&!/\([iv]+\)/i.test(label);
-}
-
-/* ── Fix split-run placeholders ── */
 function fixPlaceholders(xmlDoc,replacements){
-  const paras=xmlDoc.getElementsByTagNameNS(WNS,'p');
-  for(let pi=0;pi<paras.length;pi++){
-    const para=paras[pi];
-    const runs=Array.from(para.getElementsByTagNameNS(WNS,'r'));
+  var paras=xmlDoc.getElementsByTagNameNS(WNS,'p');
+  for(var pi=0;pi<paras.length;pi++){
+    var runs=toArr(paras[pi].getElementsByTagNameNS(WNS,'r'));
     if(!runs.length)continue;
-    let full='';const tNodes=[];
-    for(const run of runs)for(const t of run.getElementsByTagNameNS(WNS,'t')){full+=t.textContent;tNodes.push(t);}
-    for(const[ph,val]of replacements){
-      const re=new RegExp(escRx(ph),'gi');
-      if(re.test(full)){
-        const nxt=full.replace(re,val);
-        dbgOk(`  PH: "${ph}" → "${val}"`);
-        if(tNodes.length>0){tNodes[0].textContent=nxt;tNodes[0].setAttribute('xml:space','preserve');for(let i=1;i<tNodes.length;i++)tNodes[i].textContent='';}
-        full=nxt;
-      }
+    var full='',tNodes=[];
+    for(var ri=0;ri<runs.length;ri++){var ts=runs[ri].getElementsByTagNameNS(WNS,'t');for(var ti=0;ti<ts.length;ti++){full+=ts[ti].textContent;tNodes.push(ts[ti]);}}
+    for(var xi=0;xi<replacements.length;xi++){
+      var ph=replacements[xi][0],val=replacements[xi][1];
+      var re=new RegExp(escRx(ph),'gi');
+      if(re.test(full)){var nxt=full.replace(re,val);dbgOk('  PH: "'+ph+'"→"'+val+'"');if(tNodes.length>0){tNodes[0].textContent=nxt;tNodes[0].setAttribute('xml:space','preserve');for(var ni=1;ni<tNodes.length;ni++)tNodes[ni].textContent='';}full=nxt;}
     }
   }
 }
 
 async function buildDocx(slots,bloom,config){
-  const zip=await JSZip.loadAsync(G.tplArrayBuffer);
-  const slotMap=buildSlotMap(slots);
-  dbgOk(`Slots: ${Object.keys(slots).join(' | ')}`);
+  var zip=await JSZip.loadAsync(G.tplArrayBuffer);
+  var slotMap=buildSlotMap(slots);
+  var xmlStr=await zip.file('word/document.xml').async('string');
+  var xmlDoc=new DOMParser().parseFromString(xmlStr,'application/xml');
 
-  const xmlStr=await zip.file('word/document.xml').async('string');
-  const xmlDoc=new DOMParser().parseFromString(xmlStr,'application/xml');
-
-  // ── Replace placeholders ──
-  const repls=[
+  var repls=[
     ['<month duration>',config.monthDuration],['<sem>',config.semester],
     ['<department>',G.aqaMeta.department||''],['<course code>',G.aqaMeta.course_code||''],
     ['<course name>',G.aqaMeta.course_name||''],['<qp_code>',config.qpCode],
     ['<MONTH DURATION>',config.monthDuration],['<SEM>',config.semester],
     ['<DEPARTMENT>',G.aqaMeta.department||''],['<COURSE CODE>',G.aqaMeta.course_code||''],
-    ['<COURSE NAME>',G.aqaMeta.course_name||''],['<QP_CODE>',config.qpCode],
+    ['<COURSE NAME>',G.aqaMeta.course_name||''],['<QP_CODE>',config.qpCode]
   ];
   fixPlaceholders(xmlDoc,repls);
 
-  // ── Image remap ──
-  const relsXml=await zip.file('word/_rels/document.xml.rels').async('string');
-  let maxRId=0;
-  for(const m of relsXml.matchAll(/Id="rId(\d+)"/g)){const n=parseInt(m[1]);if(n>maxRId)maxRId=n;}
-  const neededImgs={};
-  for(const q of Object.values(slots))if(q?.images)for(const img of q.images)neededImgs[img.origRId||img.rId]=img;
-  const rIdRemap={};const newRelLines=[];
-  for(const[origRId,img]of Object.entries(neededImgs)){
-    maxRId++;const newRId=`rId${maxRId}`;rIdRemap[origRId]=newRId;
-    const ext=(img.ct||'image/jpeg').split('/')[1].replace('jpeg','jpg');
-    const mp=`word/media/kcetimg_${maxRId}.${ext}`;
-    zip.file(mp,img.b64,{base64:true});
-    newRelLines.push(`<Relationship Id="${newRId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/kcetimg_${maxRId}.${ext}"/>`);
-  }
-  zip.file('word/_rels/document.xml.rels',relsXml.replace('</Relationships>',newRelLines.join('\n')+'\n</Relationships>'));
+  var relsXml=await zip.file('word/_rels/document.xml.rels').async('string');
+  var maxRId=0;
+  var rIdM=relsXml.match(/Id="rId(\d+)"/g)||[];
+  for(var ri=0;ri<rIdM.length;ri++){var n=parseInt(rIdM[ri].match(/\d+/)[0]);if(n>maxRId)maxRId=n;}
+  var neededImgs={},rIdRemap={},newRelLines=[];
+  Object.values(slots).forEach(function(q){if(q&&q.images)q.images.forEach(function(img){neededImgs[img.origRId||img.rId]=img;});});
+  Object.keys(neededImgs).forEach(function(origRId){
+    maxRId++;var newRId='rId'+maxRId,img=neededImgs[origRId];
+    rIdRemap[origRId]=newRId;
+    var ext=(img.ct||'image/jpeg').split('/')[1].replace('jpeg','jpg');
+    zip.file('word/media/kcetimg_'+maxRId+'.'+ext,img.b64,{base64:true});
+    newRelLines.push('<Relationship Id="'+newRId+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/kcetimg_'+maxRId+'.'+ext+'"/>');
+  });
+  if(newRelLines.length)zip.file('word/_rels/document.xml.rels',relsXml.replace('</Relationships>',newRelLines.join('\n')+'\n</Relationships>'));
 
-  // ── Find question table ──
-  const allTbls=xmlDoc.getElementsByTagNameNS(WNS,'tbl');
-  let qtable=null;
-  for(let ti=0;ti<allTbls.length;ti++){
-    const txt=getTblTxt(allTbls[ti]).toUpperCase();
-    if((txt.includes('PART A')||txt.includes('Q. NO')||txt.includes('Q.NO'))&&txt.includes('MARK')){qtable=allTbls[ti];dbgOk(`QTable at T${ti}`);break;}
-  }
-  if(!qtable){let mx=0;for(let ti=0;ti<allTbls.length;ti++){const rc=allTbls[ti].getElementsByTagNameNS(WNS,'tr').length;if(rc>mx){mx=rc;qtable=allTbls[ti];}}dbgWarn(`Fallback table (${qtable?.getElementsByTagNameNS(WNS,'tr').length} rows)`);}
+  var allTbls=xmlDoc.getElementsByTagNameNS(WNS,'tbl');
+  var qtable=null;
+  for(var ti=0;ti<allTbls.length;ti++){var txt=getTblTxt(allTbls[ti]).toUpperCase();if((txt.includes('PART A')||txt.includes('Q. NO')||txt.includes('Q.NO'))&&txt.includes('MARK')){qtable=allTbls[ti];dbgOk('QTable@T'+ti);break;}}
+  if(!qtable){var mx=0;for(var ti=0;ti<allTbls.length;ti++){var rc=allTbls[ti].getElementsByTagNameNS(WNS,'tr').length;if(rc>mx){mx=rc;qtable=allTbls[ti];}}dbgWarn('Fallback tbl ('+mx+' rows)');}
 
-  const bloomFilled={K1:0,K2:0,K3:0,K4:0};
-
+  var bloomFilled={K1:0,K2:0,K3:0,K4:0};
   if(qtable){
-    const rows=Array.from(qtable.getElementsByTagNameNS(WNS,'tr'));
-    const rowsToRemove=[];
-
+    var rows=toArr(qtable.getElementsByTagNameNS(WNS,'tr'));
+    var rowsToRemove=[];
     dbg('--- Row processing ---');
-    for(let ri=0;ri<rows.length;ri++){
-      const row=rows[ri];
-      const tcs=Array.from(row.getElementsByTagNameNS(WNS,'tc'));
-      if(tcs.length<2)continue;
-
-      // Detect Q-number column
-      const c0t=cellTxt(tcs[0]).trim();
-      const c1t=(tcs.length>1?cellTxt(tcs[1]):'').trim();
-      let qnoText='',qnoCol=1;
-      if(c1t&&/\d/.test(c1t)){qnoText=c1t;qnoCol=1;}
-      else if(c0t&&/\d/.test(c0t)){qnoText=c0t;qnoCol=0;}
-      else{qnoText=c1t;qnoCol=1;}
-
+    for(var ri=0;ri<rows.length;ri++){
+      var row=rows[ri];var tcs=toArr(row.getElementsByTagNameNS(WNS,'tc'));if(tcs.length<2)continue;
+      var c0t=cellTxt(tcs[0]).trim(),c1t=tcs.length>1?cellTxt(tcs[1]).trim():'';
+      var qnoText='',qnoCol=1;
+      if(c1t&&/\d/.test(c1t)){qnoText=c1t;qnoCol=1;}else if(c0t&&/\d/.test(c0t)){qnoText=c0t;qnoCol=0;}else{qnoText=c1t;qnoCol=1;}
       if(!qnoText)continue;
-
-      // Skip known header rows
-      const qU=qnoText.toUpperCase();
-      if(['Q. NO','Q.NO','Q NO','CO, BTL','CO,BTL','(OR)','OR','PART A','PART B',
-          'ANSWER ALL','S.NO','S. NO','QUESTION','MARKS'].some(h=>qU.includes(h)))continue;
+      var qU=qnoText.toUpperCase();
+      if(['Q. NO','Q.NO','Q NO','CO, BTL','CO,BTL','(OR)','OR','PART A','PART B','ANSWER ALL','S.NO','S. NO','QUESTION','MARKS'].some(function(h){return qU.includes(h);}))continue;
       if(/^answer all/i.test(qnoText))continue;
-
-      const qno=getRowQno(qnoText);
-      const isPartB=qno>=11&&qno<=15;
-
+      var qno3=getRowQno(qnoText),isPartB=qno3>=11&&qno3<=15;
       if(isPartB){
-        const mode=G.partBModes[qno]||'split';
-        const sub=isSubRow(qnoText);   // has (i) or (ii)
-        const parent=isParentRow(qnoText); // has (a)/(b) only
-
-        if(mode==='split'&&parent){
-          // SPLIT mode: remove 16-mark parent rows like "11 (a)" and "11 (b)"
-          dbgWarn(`  DELETE R${ri}: "${qnoText}" — split mode, parent row unneeded`);
-          rowsToRemove.push(row);continue;
-        }
-        if(mode==='single'&&sub){
-          // SINGLE mode: remove 8-mark sub-rows like "11 (a) (i)", "11 (a) (ii)"
-          dbgWarn(`  DELETE R${ri}: "${qnoText}" — single mode, sub-row unneeded`);
-          rowsToRemove.push(row);continue;
-        }
+        var mode=G.partBModes[qno3]||'split',sub=isSubRow(qnoText),par=isParentRow(qnoText);
+        if(mode==='split'&&par){rowsToRemove.push(row);dbgWarn('  DEL R'+ri+': "'+qnoText+'"');continue;}
+        if(mode==='single'&&sub){rowsToRemove.push(row);dbgWarn('  DEL R'+ri+': "'+qnoText+'"');continue;}
       }
-
-      // Try to fill this row
-      const slot=findSlot(slots,slotMap,qnoText);
-
+      var slot=findSlot(slots,slotMap,qnoText);
       if(slot){
-        dbgOk(`  ✓ R${ri}: "${qnoText}" → ${slot.co},${slot.k},${slot.marks}m`);
-        // CO,BTL cell
-        if(qnoCol===1&&tcs[0])setCellContent(tcs[0],xmlDoc,[mkPara(xmlDoc,`${slot.co||'?'}, ${slot.k||'?'}`,{italic:true,sz:16,center:true})]);
-        // Question cell
-        const qci=tcs.length>=4?2:(tcs.length===3?1:tcs.length-2);
-        if(tcs[qci])setCellContent(tcs[qci],xmlDoc,buildQXml(xmlDoc,slot,rIdRemap));
-        // Marks cell
+        dbgOk('  ✓ R'+ri+': "'+qnoText+'" → '+slot.co+','+slot.k+','+slot.marks+'m'+(slot.has_equation?' [EQ]':'')+(slot.has_nested_table?' [TBL]':''));
+        if(qnoCol===1&&tcs[0])setCellContent(tcs[0],xmlDoc,[mkPara(xmlDoc,(slot.co||'?')+', '+(slot.k||'?'),{italic:true,sz:16,center:true})]);
+        var qci=tcs.length>=4?2:(tcs.length===3?1:tcs.length-2);
+        if(tcs[qci]){
+          if((slot.has_equation||slot.has_nested_table)&&slot._qTcNode){cloneTcContent(tcs[qci],xmlDoc,slot._qTcNode,rIdRemap);dbgOk('    →cloned raw tc');}
+          else{setCellContent(tcs[qci],xmlDoc,buildQXml(xmlDoc,slot,rIdRemap));}
+        }
         setCellContent(tcs[tcs.length-1],xmlDoc,[mkPara(xmlDoc,String(slot.marks||''),{bold:true,sz:20,center:true})]);
-        // Bloom
-        const kk=(slot.k||'').toUpperCase();if(kk in bloomFilled)bloomFilled[kk]+=slot.marks||0;
-      }else{
-        dbgWarn(`  ? R${ri}: no slot match for "${qnoText}"`);
-      }
+        var kk=(slot.k||'').toUpperCase();if(kk in bloomFilled)bloomFilled[kk]+=slot.marks||0;
+      }else{dbgWarn('  ? R'+ri+': no slot for "'+qnoText+'"');}
     }
-    for(const r of rowsToRemove)if(r.parentNode)r.parentNode.removeChild(r);
-    dbgOk(`Removed ${rowsToRemove.length} unused rows`);
+    rowsToRemove.forEach(function(r){if(r.parentNode)r.parentNode.removeChild(r);});
+    dbgOk('Removed '+rowsToRemove.length+' rows');
   }
 
-  // ── Bloom taxonomy table ──
-  for(let ti=0;ti<allTbls.length;ti++){
-    const txt=getTblTxt(allTbls[ti]).toUpperCase();
-    if(!(txt.includes('REMEMBER')||txt.includes('K-1')))continue;
-    const tblRows=Array.from(allTbls[ti].getElementsByTagNameNS(WNS,'tr'));
-    let hdrIdx=-1;
-    for(let ri=0;ri<tblRows.length;ri++){
-      if(getRowTxt(tblRows[ri]).toUpperCase().match(/K-1|REMEMBER/)){hdrIdx=ri;break;}
-    }
-    if(hdrIdx<0||hdrIdx+1>=tblRows.length)continue;
-    const hdrTcs=Array.from(tblRows[hdrIdx].getElementsByTagNameNS(WNS,'tc'));
-    const valTcs=Array.from(tblRows[hdrIdx+1].getElementsByTagNameNS(WNS,'tc'));
-    const tot=Object.values(bloomFilled).reduce((a,b)=>a+b,0);
-    for(let ci=0;ci<hdrTcs.length&&ci<valTcs.length;ci++){
-      const ht=cellTxt(hdrTcs[ci]).toUpperCase().replace(/\s/g,'');
-      let val='';
+  /* bloom table */
+  for(var ti=0;ti<allTbls.length;ti++){
+    var txt2=getTblTxt(allTbls[ti]).toUpperCase();
+    if(!(txt2.includes('REMEMBER')||txt2.includes('K-1')))continue;
+    var brows=toArr(allTbls[ti].getElementsByTagNameNS(WNS,'tr'));
+    var hdrIdx=-1;for(var ri=0;ri<brows.length;ri++){if(getRowTxt(brows[ri]).toUpperCase().match(/K-1|REMEMBER/)){hdrIdx=ri;break;}}
+    if(hdrIdx<0||hdrIdx+1>=brows.length)continue;
+    var hdrTcs=toArr(brows[hdrIdx].getElementsByTagNameNS(WNS,'tc')),valTcs=toArr(brows[hdrIdx+1].getElementsByTagNameNS(WNS,'tc'));
+    var tot=Object.values(bloomFilled).reduce(function(a,b){return a+b;},0);
+    for(var ci=0;ci<hdrTcs.length&&ci<valTcs.length;ci++){
+      var ht=cellTxt(hdrTcs[ci]).toUpperCase().replace(/\s/g,''),val='';
       if(ht.includes('K-1')||ht.includes('K1')||ht.includes('REMEMBER'))val=String(bloomFilled.K1);
       else if(ht.includes('K-2')||ht.includes('K2')||ht.includes('UNDERSTAND'))val=String(bloomFilled.K2);
       else if(ht.includes('K-3')||ht.includes('K3')||ht.includes('APPLY'))val=String(bloomFilled.K3);
       else if(ht.includes('K-4')||ht.includes('K4')||ht.includes('ANALYZ'))val=String(bloomFilled.K4);
       else if(ht==='TOTAL'||ht.includes('TOTAL'))val=String(tot);
-      if(val){setCellContent(valTcs[ci],xmlDoc,[mkPara(xmlDoc,val,{bold:true,sz:22,center:true})]);dbgOk(`  Bloom[${ci}] "${ht}"→${val}`);}
+      if(val){setCellContent(valTcs[ci],xmlDoc,[mkPara(xmlDoc,val,{bold:true,sz:22,center:true})]);dbgOk('  Bloom['+ci+']='+val);}
     }
     break;
   }
 
-  const finalXml=new XMLSerializer().serializeToString(xmlDoc);
+  var finalXml=new XMLSerializer().serializeToString(xmlDoc);
   zip.file('word/document.xml',finalXml);
   return await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',compression:'DEFLATE'});
 }
 
-/* ── XML helpers ── */
-function getTblTxt(tbl){let t='';for(const n of tbl.getElementsByTagNameNS(WNS,'t'))t+=n.textContent+' ';return t;}
-function getRowTxt(row){let t='';for(const n of row.getElementsByTagNameNS(WNS,'t'))t+=n.textContent+' ';return t;}
+function cloneTcContent(targetTc,targetDoc,srcTcNode,rIdRemap){
+  var tcPr=targetTc.getElementsByTagNameNS(WNS,'tcPr')[0];
+  while(targetTc.firstChild)targetTc.removeChild(targetTc.firstChild);
+  if(tcPr)targetTc.appendChild(tcPr);
+  var children=[];for(var i=0;i<srcTcNode.childNodes.length;i++){if(srcTcNode.childNodes[i].nodeType===1)children.push(srcTcNode.childNodes[i]);}
+  for(var ci=0;ci<children.length;ci++){
+    var ln=children[ci].localName||children[ci].tagName||'';if(ln==='tcPr')continue;
+    try{var imp=safeImport(targetDoc,children[ci]);remapRIds(imp,rIdRemap);targetTc.appendChild(imp);}catch(e){dbgErr('clone: '+e.message);}
+  }
+}
+function safeImport(targetDoc,srcNode){
+  try{return targetDoc.importNode(srcNode,true);}catch(e){}
+  var s=new XMLSerializer().serializeToString(srcNode);
+  var ns='xmlns:w="'+WNS+'" xmlns:m="'+MNS+'" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+  var parsed=new DOMParser().parseFromString('<root '+ns+'>'+s+'</root>','application/xml');
+  var inner=parsed.documentElement.firstElementChild;
+  if(!inner)throw new Error('import failed');
+  try{return targetDoc.importNode(inner,true);}catch(e){return inner;}
+}
+function remapRIds(node,rIdRemap){
+  if(!node||node.nodeType!==1)return;
+  var ln=node.localName||node.tagName||'';
+  if(ln==='blip'){for(var i=0;i<node.attributes.length;i++){var attr=node.attributes[i];if(attr.localName==='embed'&&rIdRemap[attr.value])attr.value=rIdRemap[attr.value];}}
+  for(var i=0;i<node.childNodes.length;i++){if(node.childNodes[i].nodeType===1)remapRIds(node.childNodes[i],rIdRemap);}
+}
+
+function wEl(xmlDoc,tag){return xmlDoc.createElementNS(WNS,'w:'+tag);}
 function setCellContent(tc,xmlDoc,paraEls){
-  const tcPr=tc.getElementsByTagNameNS(WNS,'tcPr')[0];
+  var tcPr=tc.getElementsByTagNameNS(WNS,'tcPr')[0];
   while(tc.firstChild)tc.removeChild(tc.firstChild);
   if(tcPr)tc.appendChild(tcPr);
-  for(const p of paraEls)tc.appendChild(p);
+  for(var i=0;i<paraEls.length;i++)tc.appendChild(paraEls[i]);
 }
-function mkPara(xmlDoc,text,opts={}){
-  const w=n=>xmlDoc.createElementNS(WNS,'w:'+n);
-  const p=w('p'),pPr=w('pPr'),jc=w('jc');
+function mkPara(xmlDoc,text,opts){
+  opts=opts||{};
+  var p=wEl(xmlDoc,'p'),pPr=wEl(xmlDoc,'pPr'),jc=wEl(xmlDoc,'jc');
   jc.setAttributeNS(WNS,'w:val',opts.center?'center':'both');pPr.appendChild(jc);p.appendChild(pPr);
   if(!text||!text.trim())return p;
-  const run=w('r'),rPr=w('rPr');
-  if(opts.bold)rPr.appendChild(w('b'));
-  if(opts.italic){rPr.appendChild(w('i'));rPr.appendChild(w('iCs'));}
-  const sz=w('sz');sz.setAttributeNS(WNS,'w:val',String(opts.sz||24));rPr.appendChild(sz);
-  const szCs=w('szCs');szCs.setAttributeNS(WNS,'w:val',String(opts.sz||24));rPr.appendChild(szCs);
-  const rf=w('rFonts');rf.setAttributeNS(WNS,'w:ascii','Times New Roman');rf.setAttributeNS(WNS,'w:hAnsi','Times New Roman');rf.setAttributeNS(WNS,'w:cs','Times New Roman');rPr.appendChild(rf);
-  run.appendChild(rPr);const t=w('t');t.textContent=text;t.setAttribute('xml:space','preserve');run.appendChild(t);p.appendChild(run);return p;
+  var run=wEl(xmlDoc,'r'),rPr=wEl(xmlDoc,'rPr');
+  if(opts.bold)rPr.appendChild(wEl(xmlDoc,'b'));
+  if(opts.italic){rPr.appendChild(wEl(xmlDoc,'i'));rPr.appendChild(wEl(xmlDoc,'iCs'));}
+  var sz=wEl(xmlDoc,'sz');sz.setAttributeNS(WNS,'w:val',String(opts.sz||24));rPr.appendChild(sz);
+  var szCs=wEl(xmlDoc,'szCs');szCs.setAttributeNS(WNS,'w:val',String(opts.sz||24));rPr.appendChild(szCs);
+  var rf=wEl(xmlDoc,'rFonts');rf.setAttributeNS(WNS,'w:ascii','Times New Roman');rf.setAttributeNS(WNS,'w:hAnsi','Times New Roman');rf.setAttributeNS(WNS,'w:cs','Times New Roman');rPr.appendChild(rf);
+  run.appendChild(rPr);var t=wEl(xmlDoc,'t');t.textContent=text;t.setAttribute('xml:space','preserve');run.appendChild(t);p.appendChild(run);return p;
 }
+
 function buildQXml(xmlDoc,slot,rIdRemap){
-  const w=n=>xmlDoc.createElementNS(WNS,'w:'+n);
-  const paras=[];
-  const lines=(slot.paras&&slot.paras.length)?slot.paras:[{text:slot.text||'',images:slot.images||[]}];
-  const isMCQ=slot.is_mcq;
-  for(let pi=0;pi<lines.length;pi++){
-    const{text,images}=lines[pi];const isOpt=isMCQ&&pi>0;
-    for(const img of(images||[])){
-      const newRId=rIdRemap[img.origRId||img.rId];
-      if(!newRId){dbgWarn(`  img rId missing: ${img.origRId||img.rId}`);continue;}
-      const dxml=[
-        `<w:drawing xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"`,
-        ` xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"`,
-        ` xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"`,
-        ` xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"`,
-        ` xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">`,
-        `<wp:inline distT="0" distB="0" distL="0" distR="0">`,
-        `<wp:extent cx="3429000" cy="2286000"/><wp:docPr id="${pi+200}" name="Fig_${pi}"/>`,
-        `<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">`,
-        `<pic:pic><pic:nvPicPr><pic:cNvPr id="0" name=""/><pic:cNvPicPr/></pic:nvPicPr>`,
-        `<pic:blipFill><a:blip r:embed="${newRId}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>`,
-        `<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="3429000" cy="2286000"/></a:xfrm>`,
-        `<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic>`,
-        `</a:graphicData></a:graphic></wp:inline></w:drawing>`
-      ].join('');
-      try{const imgP=w('p');const iPPr=w('pPr');const ijc=w('jc');ijc.setAttributeNS(WNS,'w:val','center');iPPr.appendChild(ijc);imgP.appendChild(iPPr);const iR=w('r');const dEl=new DOMParser().parseFromString(dxml,'application/xml').documentElement;iR.appendChild(dEl);imgP.appendChild(iR);paras.push(imgP);}
-      catch(e){dbgErr('Img XML:'+e.message);}
+  var paras2=[];
+  var lines=(slot.paras&&slot.paras.length)?slot.paras:[{text:slot.text||'',images:slot.images||[],equations:[],tables:[]}];
+  var isMCQ=slot.is_mcq;
+  for(var pi=0;pi<lines.length;pi++){
+    var ln2=lines[pi],isOpt=isMCQ&&pi>0;
+    /* images */
+    var imgs=ln2.images||[];
+    for(var ii=0;ii<imgs.length;ii++){
+      var img=imgs[ii],newRId=rIdRemap[img.origRId||img.rId];if(!newRId)continue;
+      var dxml='<w:drawing xmlns:w="'+WNS+'" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+        '<wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="3429000" cy="2286000"/><wp:docPr id="'+(pi+200)+'" name="Fig_'+pi+'"/>'+
+        '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">'+
+        '<pic:pic><pic:nvPicPr><pic:cNvPr id="0" name=""/><pic:cNvPicPr/></pic:nvPicPr>'+
+        '<pic:blipFill><a:blip r:embed="'+newRId+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>'+
+        '<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="3429000" cy="2286000"/></a:xfrm>'+
+        '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing>';
+      try{var imgP=wEl(xmlDoc,'p'),iPPr=wEl(xmlDoc,'pPr'),ijc=wEl(xmlDoc,'jc');ijc.setAttributeNS(WNS,'w:val','center');iPPr.appendChild(ijc);imgP.appendChild(iPPr);var iR=wEl(xmlDoc,'r');var dEl=new DOMParser().parseFromString(dxml,'application/xml').documentElement;iR.appendChild(xmlDoc.importNode?xmlDoc.importNode(dEl,true):dEl);imgP.appendChild(iR);paras2.push(imgP);}catch(e){dbgErr('Img:'+e.message);}
     }
-    if(text&&text.trim()){
-      const p=w('p'),pPr=w('pPr'),jc=w('jc');jc.setAttributeNS(WNS,'w:val','both');pPr.appendChild(jc);
-      if(isOpt){const ind=w('ind');ind.setAttributeNS(WNS,'w:left','360');pPr.appendChild(ind);}
-      p.appendChild(pPr);const run=w('r'),rPr=w('rPr');
-      const sz=w('sz');sz.setAttributeNS(WNS,'w:val','24');rPr.appendChild(sz);
-      const szCs=w('szCs');szCs.setAttributeNS(WNS,'w:val','24');rPr.appendChild(szCs);
-      const rf=w('rFonts');rf.setAttributeNS(WNS,'w:ascii','Times New Roman');rf.setAttributeNS(WNS,'w:hAnsi','Times New Roman');rf.setAttributeNS(WNS,'w:cs','Times New Roman');rPr.appendChild(rf);
-      run.appendChild(rPr);const disp=isOpt?`${String.fromCharCode(96+pi)}) ${text}`:text;
-      const t=w('t');t.textContent=disp;t.setAttribute('xml:space','preserve');run.appendChild(t);p.appendChild(run);paras.push(p);
+    /* equations */
+    var eqs=ln2.equations||[];
+    for(var ei=0;ei<eqs.length;ei++){
+      var eq=eqs[ei];
+      if(eq.node){
+        try{var eqP=wEl(xmlDoc,'p'),ePPr=wEl(xmlDoc,'pPr'),ejc=wEl(xmlDoc,'jc');ejc.setAttributeNS(WNS,'w:val','both');ePPr.appendChild(ejc);eqP.appendChild(ePPr);var mEl=safeImport(xmlDoc,eq.node);eqP.appendChild(mEl);paras2.push(eqP);dbgOk('    eq: "'+(eq.text||'').substring(0,25)+'"');continue;}catch(e){dbgErr('Eq:'+e.message);}
+      }
+      paras2.push(mkPara(xmlDoc,eq.text||'',{sz:24}));
+    }
+    /* nested tables */
+    var tbls=ln2.tables||[];
+    for(var tbi=0;tbi<tbls.length;tbi++){
+      var tblData=tbls[tbi];
+      if(tblData.node){
+        try{var tblN=safeImport(xmlDoc,tblData.node);paras2.push(tblN);dbgOk('    tbl: '+tblData.rows.length+' rows');}
+        catch(e){dbgErr('Tbl:'+e.message);tblData.rows.forEach(function(r){paras2.push(mkPara(xmlDoc,r.map(function(c){return c.text;}).join(' | '),{sz:22}));});}
+      }
+    }
+    /* text */
+    if(ln2.text&&ln2.text.trim()){
+      var p=wEl(xmlDoc,'p'),pPr=wEl(xmlDoc,'pPr'),jc=wEl(xmlDoc,'jc');jc.setAttributeNS(WNS,'w:val','both');pPr.appendChild(jc);
+      if(isOpt){var ind=wEl(xmlDoc,'ind');ind.setAttributeNS(WNS,'w:left','360');pPr.appendChild(ind);}
+      p.appendChild(pPr);var run=wEl(xmlDoc,'r'),rPr=wEl(xmlDoc,'rPr');
+      var sz=wEl(xmlDoc,'sz');sz.setAttributeNS(WNS,'w:val','24');rPr.appendChild(sz);
+      var szCs=wEl(xmlDoc,'szCs');szCs.setAttributeNS(WNS,'w:val','24');rPr.appendChild(szCs);
+      var rf=wEl(xmlDoc,'rFonts');rf.setAttributeNS(WNS,'w:ascii','Times New Roman');rf.setAttributeNS(WNS,'w:hAnsi','Times New Roman');rf.setAttributeNS(WNS,'w:cs','Times New Roman');rPr.appendChild(rf);
+      run.appendChild(rPr);var disp=isOpt?String.fromCharCode(96+pi)+') '+ln2.text:ln2.text;
+      var t=wEl(xmlDoc,'t');t.textContent=disp;t.setAttribute('xml:space','preserve');run.appendChild(t);p.appendChild(run);paras2.push(p);
     }
   }
-  return paras.length?paras:[mkPara(xmlDoc,slot.text||'[No text]',{sz:24})];
+  return paras2.length?paras2:[mkPara(xmlDoc,slot.text||'[No text]',{sz:24})];
 }
 
-/* ═══════════ PREVIEW ═══════════ */
+function getTblTxt(tbl){var t='';var ns=tbl.getElementsByTagNameNS(WNS,'t');for(var i=0;i<ns.length;i++)t+=ns[i].textContent+' ';return t;}
+function getRowTxt(row){var t='';var ns=row.getElementsByTagNameNS(WNS,'t');for(var i=0;i<ns.length;i++)t+=ns[i].textContent+' ';return t;}
+
+/* ── Preview ── */
 function renderPreview(slots,bloom,config){
-  document.getElementById('qpHdr').innerHTML=`
-    <div style="font-size:15px;font-weight:800;color:var(--ink);font-family:'Times New Roman',serif">B.E./B.Tech. DEGREE EXAMINATIONS, ${esc(config.monthDuration)}</div>
-    <div style="font-size:12.5px;color:var(--g600);margin:4px 0">${esc(config.semester)} Semester · ${esc(G.aqaMeta.department||'')} · Reg. No. ___________</div>
-    <div style="font-size:14px;font-weight:700;color:var(--ink2);margin:4px 0">${esc(G.aqaMeta.course_code)} – ${esc(G.aqaMeta.course_name)}</div>
-    <div style="font-size:12px;color:var(--g500)">(KCET R2021 CBCS) · QP Code: ${esc(config.qpCode)} · Time: 3 Hrs · Max: 100</div>
-  `;
-  const tbl=document.getElementById('qpTbl');tbl.innerHTML='';
-  const thead=tbl.createTHead(),hr=thead.insertRow();
-  [['CO, BTL','88px'],['Q. No.','80px'],['Question',''],['Marks','52px']].forEach(([h,w])=>{
-    const th=document.createElement('th');th.textContent=h;if(w)th.style.width=w;hr.appendChild(th);
-  });
-  const tbody=tbl.createTBody();let ri=0;
-  const addPH=t=>{const tr=tbody.insertRow();tr.className='row-partheader';const td=tr.insertCell();td.colSpan=4;td.textContent=t;};
-  const addOR=()=>{const tr=tbody.insertRow();tr.className='row-or';const td=tr.insertCell();td.colSpan=4;td.textContent='— OR —';};
-  const addSep=()=>{const tr=tbody.insertRow();tr.className='row-sep';const td=tr.insertCell();td.colSpan=4;};
-  const addQ=(lbl,q)=>{
+  document.getElementById('qpHdr').innerHTML=
+    '<div style="font-size:15px;font-weight:800;color:var(--ink);font-family:\'Times New Roman\',serif">B.E./B.Tech. DEGREE EXAMINATIONS, '+xesc(config.monthDuration)+'</div>'+
+    '<div style="font-size:12.5px;color:var(--g600);margin:4px 0">'+xesc(config.semester)+' Semester · '+xesc(G.aqaMeta.department||'')+' · Reg. No. ___________</div>'+
+    '<div style="font-size:14px;font-weight:700;color:var(--ink2);margin:4px 0">'+xesc(G.aqaMeta.course_code)+' – '+xesc(G.aqaMeta.course_name)+'</div>'+
+    '<div style="font-size:12px;color:var(--g500)">(KCET R2021 CBCS) · QP Code: '+xesc(config.qpCode)+' · Time: 3 Hrs · Max: 100</div>';
+  var tbl=document.getElementById('qpTbl');tbl.innerHTML='';
+  var thead=tbl.createTHead(),hr=thead.insertRow();
+  [['CO, BTL','88px'],['Q. No.','80px'],['Question',''],['Marks','52px']].forEach(function(h){var th=document.createElement('th');th.textContent=h[0];if(h[1])th.style.width=h[1];hr.appendChild(th);});
+  var tbody=tbl.createTBody(),rowidx=0;
+  function addPH(t){var tr=tbody.insertRow();tr.className='row-partheader';var td=tr.insertCell();td.colSpan=4;td.textContent=t;}
+  function addOR(){var tr=tbody.insertRow();tr.className='row-or';var td=tr.insertCell();td.colSpan=4;td.textContent='— OR —';}
+  function addSep(){var tr=tbody.insertRow();tr.className='row-sep';var td=tr.insertCell();td.colSpan=4;}
+  function addQ(lbl,q){
     if(!q)return;
-    const tr=tbody.insertRow();tr.className=ri++%2===0?'row-odd':'row-even';
-    const tdC=tr.insertCell();tdC.className='col-cobtl';tdC.textContent=`${q.co||'?'}, ${q.k||'?'}`;
-    const tdN=tr.insertCell();tdN.className='col-qno';tdN.textContent=lbl;
-    const tdQ=tr.insertCell();tdQ.className='col-q';tdQ.appendChild(renderQContent(q));
-    const tdM=tr.insertCell();tdM.className='col-marks';
-    tdM.innerHTML=`<span style="font-weight:700;color:${q.marks>=16?'var(--ink)':q.marks>=8?'var(--ink2)':'var(--sky)'}">${q.marks}</span>`;
-  };
-
+    var tr=tbody.insertRow();tr.className=rowidx++%2===0?'row-odd':'row-even';
+    var tdC=tr.insertCell();tdC.className='col-cobtl';tdC.textContent=(q.co||'?')+', '+(q.k||'?');
+    var tdN=tr.insertCell();tdN.className='col-qno';tdN.textContent=lbl;
+    var tdQ=tr.insertCell();tdQ.className='col-q';tdQ.appendChild(renderQContent(q));
+    var tdM=tr.insertCell();tdM.className='col-marks';
+    tdM.innerHTML='<span style="font-weight:700;color:'+(q.marks>=16?'var(--ink)':q.marks>=8?'var(--ink2)':'var(--sky)')+'">'+q.marks+'</span>';
+  }
   addPH('Part A – (10 × 2 = 20 Marks)');
-  for(let i=1;i<=10;i++)addQ(String(i),slots[String(i)]);
-
+  for(var i=1;i<=10;i++)addQ(String(i),slots[String(i)]);
   addPH('Part B – (5 × 16 = 80 Marks)');
-  for(let qno=11;qno<=15;qno++){
-    const mode=G.partBModes[qno]||'split';
-    if(mode==='split'){
-      addQ(`${qno}(a)(i)`,  slots[`${qno} (a) (i)`]);
-      addQ(`${qno}(a)(ii)`, slots[`${qno} (a) (ii)`]);
-      addOR();
-      addQ(`${qno}(b)(i)`,  slots[`${qno} (b) (i)`]);
-      addQ(`${qno}(b)(ii)`, slots[`${qno} (b) (ii)`]);
-    }else{
-      addQ(`${qno}(a)`, slots[`${qno} (a)`]);
-      addOR();
-      addQ(`${qno}(b)`, slots[`${qno} (b)`]);
-    }
+  for(var qno=11;qno<=15;qno++){
+    var mode=G.partBModes[qno]||'split';
+    if(mode==='split'){addQ(qno+'(a)(i)',slots[qno+' (a) (i)']);addQ(qno+'(a)(ii)',slots[qno+' (a) (ii)']);addOR();addQ(qno+'(b)(i)',slots[qno+' (b) (i)']);addQ(qno+'(b)(ii)',slots[qno+' (b) (ii)']);}
+    else{addQ(qno+'(a)',slots[qno+' (a)']);addOR();addQ(qno+'(b)',slots[qno+' (b)']);}
     addSep();
   }
-
-  const bc=document.getElementById('bloomCards');
-  const nm={K1:'Remember',K2:'Understand',K3:'Apply',K4:'Analyze'};
-  const tot=Object.values(bloom).reduce((a,b)=>a+b,0);
-  bc.innerHTML=['K1','K2','K3','K4'].map(k=>`<div class="bloom-card"><div class="bk">${k}</div><div class="bn">${nm[k]}</div><div class="bv">${bloom[k]}</div></div>`).join('')
-    +`<div class="bloom-card btotal"><div class="bk">Total</div><div class="bn">All</div><div class="bv">${tot}</div></div>`;
+  var bc=document.getElementById('bloomCards');
+  var nm={K1:'Remember',K2:'Understand',K3:'Apply',K4:'Analyze'};
+  var tot=Object.values(bloom).reduce(function(a,b){return a+b;},0);
+  bc.innerHTML=['K1','K2','K3','K4'].map(function(k){return'<div class="bloom-card"><div class="bk">'+k+'</div><div class="bn">'+nm[k]+'</div><div class="bv">'+bloom[k]+'</div></div>';}).join('')+
+    '<div class="bloom-card btotal"><div class="bk">Total</div><div class="bn">All</div><div class="bv">'+tot+'</div></div>';
 }
+
 function renderQContent(q){
-  const div=document.createElement('div');div.className='q-text';
+  var div=document.createElement('div');div.className='q-text';
   if(!q.paras||!q.paras.length){div.textContent=q.text||'[Not Available]';return div;}
-  for(let pi=0;pi<q.paras.length;pi++){
-    const p=q.paras[pi],isOpt=q.is_mcq&&pi>0;
-    for(const img of(p.images||[])){const ie=document.createElement('img');ie.src=`data:${img.ct};base64,${img.b64}`;div.appendChild(ie);}
-    if(p.text?.trim()){const l=document.createElement('div');if(isOpt){l.style.cssText='padding-left:16px;font-size:12.5px;color:var(--g600)';l.textContent=`${String.fromCharCode(96+pi)}) ${p.text}`;}else l.textContent=p.text;div.appendChild(l);}
+  for(var pi=0;pi<q.paras.length;pi++){
+    var p=q.paras[pi],isOpt=q.is_mcq&&pi>0;
+    (p.images||[]).forEach(function(img){var ie=document.createElement('img');ie.src='data:'+img.ct+';base64,'+img.b64;div.appendChild(ie);});
+    (p.equations||[]).forEach(function(eq){if(eq.text){var sp=document.createElement('span');sp.className='q-eq';sp.textContent=eq.text;div.appendChild(sp);}});
+    (p.tables||[]).forEach(function(tblData){
+      var table=document.createElement('table');table.className='q-nested-tbl';
+      tblData.rows.forEach(function(row,ri){
+        var tr=document.createElement('tr');
+        row.forEach(function(cell){var td=ri===0?document.createElement('th'):document.createElement('td');td.textContent=cell.text;if(cell.bold)td.style.fontWeight='bold';if(cell.italic)td.style.fontStyle='italic';tr.appendChild(td);});
+        table.appendChild(tr);
+      });
+      div.appendChild(table);
+    });
+    if(p.text&&p.text.trim()){var l=document.createElement('div');if(isOpt){l.style.cssText='padding-left:16px;font-size:12.5px;color:var(--g600)';l.textContent=String.fromCharCode(96+pi)+') '+p.text;}else l.textContent=p.text;div.appendChild(l);}
   }
-  if(q.has_equation){const b=document.createElement('span');b.style.cssText='font-size:10px;font-family:var(--mono);background:#f0fdf4;color:#166534;border:1px solid #86efac;padding:1px 5px;border-radius:3px;margin-left:6px';b.textContent='∑ Eq';div.appendChild(b);}
+  if(q.has_equation){var b1=document.createElement('span');b1.style.cssText='font-size:10px;font-family:var(--mono);background:#fff7e6;color:#b45309;border:1px solid #fcd34d;padding:1px 5px;border-radius:3px;margin-left:6px';b1.textContent='∑ Eq';div.appendChild(b1);}
+  if(q.has_nested_table){var b2=document.createElement('span');b2.style.cssText='font-size:10px;font-family:var(--mono);background:#f0fdf4;color:#166534;border:1px solid #86efac;padding:1px 5px;border-radius:3px;margin-left:4px';b2.textContent='⊞ Tbl';div.appendChild(b2);}
   return div;
 }
 
-/* ═══════════ DOWNLOAD ═══════════ */
+/* ── Download ── */
 function downloadDocx(){
   if(!G.docxBlob)return;
-  const url=URL.createObjectURL(G.docxBlob),a=document.createElement('a');a.href=url;
-  a.download=`KCET_${(document.getElementById('qpCode').value||'QP').replace(/[^a-zA-Z0-9]/g,'_')}_${(document.getElementById('monthDuration').value||'').replace(/[^a-zA-Z0-9]/g,'_')}.docx`;
+  var url=URL.createObjectURL(G.docxBlob),a=document.createElement('a');
+  a.href=url;a.download='KCET_'+(document.getElementById('qpCode').value||'QP').replace(/[^a-zA-Z0-9]/g,'_')+'_'+(document.getElementById('monthDuration').value||'').replace(/[^a-zA-Z0-9]/g,'_')+'.docx';
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 
-/* ═══════════ UI UTILS ═══════════ */
-function setStep(n){
-  for(let i=1;i<=5;i++){
-    const el=document.getElementById(`step${i}`),sn=el.querySelector('.step-num');
-    if(i<n){el.className='step-item done';sn.textContent='✓';}
-    else if(i===n){el.className='step-item active';sn.textContent=i;}
-    else{el.className='step-item';sn.textContent=i;}
-  }
-}
+/* ── UI Utils ── */
+function setStep(n){for(var i=1;i<=5;i++){var el=document.getElementById('step'+i),sn=el.querySelector('.step-num');if(i<n){el.className='step-item done';sn.textContent='✓';}else if(i===n){el.className='step-item active';sn.textContent=i;}else{el.className='step-item';sn.textContent=i;}}}
 function showSpin(t,s,p){document.getElementById('spinnerText').textContent=t;document.getElementById('spinnerSub').textContent=s;document.getElementById('spinProgress').style.width=p+'%';document.getElementById('spinnerOverlay').classList.add('show');}
 function setSpinProg(p){document.getElementById('spinProgress').style.width=p+'%';}
 function hideSpinner(){document.getElementById('spinnerOverlay').classList.remove('show');}
-function showPA(type,msg){const el=document.getElementById('parseAlert');const ic={loading:'⏳',success:'✅',error:'❌',warn:'⚠️'};const cl={loading:'a-info',success:'a-success',error:'a-error',warn:'a-warn'};el.style.display='flex';el.className=`alert ${cl[type]||'a-info'}`;el.innerHTML=`<span class="ai">${ic[type]||'ℹ️'}</span><span>${msg}</span>`;}
-function showGA(type,msg){const el=document.getElementById('genAlert');const ic={loading:'⏳',success:'✅',error:'❌',warn:'⚠️'};const cl={loading:'a-info',success:'a-success',error:'a-error',warn:'a-warn'};el.style.display='flex';el.className=`alert ${cl[type]||'a-info'}`;el.innerHTML=`<span class="ai">${ic[type]||'ℹ️'}</span><span>${msg}</span>`;}
-function togglePreview(){const s=document.getElementById('previewSection');s.style.display=s.style.display==='none'?'block':'none';}
-function toggleDebug(){const p=document.getElementById('debugPanel');p.classList.toggle('show');document.getElementById('debugBtn').textContent=p.classList.contains('show')?'🔍 Hide':'🔍 Debug';}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function showPA(type,msg){var el=document.getElementById('parseAlert');var ic={loading:'⏳',success:'✅',error:'❌',warn:'⚠️'};var cl={loading:'a-info',success:'a-success',error:'a-error',warn:'a-warn'};el.style.display='flex';el.className='alert '+(cl[type]||'a-info');el.innerHTML='<span class="ai">'+(ic[type]||'ℹ️')+'</span><span>'+msg+'</span>';}
+function showGA(type,msg){var el=document.getElementById('genAlert');var ic={loading:'⏳',success:'✅',error:'❌',warn:'⚠️'};var cl={loading:'a-info',success:'a-success',error:'a-error',warn:'a-warn'};el.style.display='flex';el.className='alert '+(cl[type]||'a-info');el.innerHTML='<span class="ai">'+(ic[type]||'ℹ️')+'</span><span>'+msg+'</span>';}
+function togglePreview(){var s=document.getElementById('previewSection');s.style.display=s.style.display==='none'?'block':'none';}
+function toggleDebug(){var p=document.getElementById('debugPanel');p.classList.toggle('show');document.getElementById('debugBtn').textContent=p.classList.contains('show')?'🔍 Hide Debug':'🔍 Debug';}
+function xesc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function escRx(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
 function fmtB(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
-function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+function delay(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function toArr(nl){var a=[];for(var i=0;i<nl.length;i++)a.push(nl[i]);return a;}
 </script>
 </body>
 </html>
