@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -85,7 +85,6 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .parta-tbl td{padding:9px 13px;vertical-align:middle;}
 .parta-tbl td:first-child{font-weight:700;color:var(--sky);font-family:var(--mono);width:55px;}
 
-/* Availability display */
 .avail-wrap{display:flex;flex-direction:column;gap:3px;}
 .avail-row{display:flex;align-items:center;gap:6px;}
 .avail-lbl{font-size:9.5px;font-weight:700;color:var(--g500);text-transform:uppercase;font-family:var(--mono);width:60px;flex-shrink:0;}
@@ -95,7 +94,6 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .ab-m{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
 .ab-0{background:var(--g100);color:var(--g400);border:1px solid var(--g200);}
 
-/* Part B */
 .pb-grid{display:flex;flex-direction:column;gap:10px;}
 .pb-row{display:grid;grid-template-columns:120px 1fr 1fr 1fr 1fr 1fr;gap:10px;align-items:start;background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:12px 14px;transition:border-color var(--t);}
 .pb-row:hover{border-color:var(--skyl);}
@@ -104,12 +102,10 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .pb-un{font-size:9.5px;color:var(--g400);font-family:var(--mono);text-transform:uppercase;margin-top:2px;}
 .pb-pool-lbl{font-size:9px;font-weight:700;color:var(--g500);text-transform:uppercase;font-family:var(--mono);margin-top:6px;margin-bottom:2px;}
 
-/* Mode badge */
 .mode-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;font-family:var(--mono);}
 .mb-split{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
 .mb-single{background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;}
 
-/* Question Analysis Card */
 .qa-card{display:none;background:var(--white);border:1px solid var(--g200);border-radius:var(--rlg);box-shadow:0 1px 2px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden;}
 .qa-card.show{display:block;}
 .qa-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid var(--g100);}
@@ -176,6 +172,10 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .row-even td{background:var(--g50);}
 .q-text{line-height:1.75;}
 .q-text img{max-width:100%;max-height:180px;margin-top:6px;border-radius:4px;border:1px solid var(--g200);display:block;}
+.q-eq{font-family:'Times New Roman',serif;font-style:italic;background:#fff7e6;border:1px solid #fcd34d;border-radius:3px;padding:1px 6px;font-size:13px;color:#92400e;display:inline-block;vertical-align:middle;margin:2px;}
+.q-nested-tbl{border-collapse:collapse;margin:6px 0;font-size:12px;font-family:'Times New Roman',serif;}
+.q-nested-tbl td,.q-nested-tbl th{border:1px solid var(--g300);padding:3px 8px;text-align:center;}
+.q-nested-tbl th{background:var(--ink2);color:#fff;font-weight:700;}
 
 .bloom-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:4px;}
 .bloom-card{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px 10px;text-align:center;}
@@ -196,7 +196,7 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
 .co-tbl td{padding:7px 11px;border-bottom:1px solid var(--g100);}
 .co-tbl td:first-child{font-family:var(--mono);font-weight:700;color:var(--sky);width:60px;}
 
-.debug-panel{background:#1a1a2e;border:1px solid #2d2d5e;border-radius:var(--r);padding:14px;margin-top:10px;font-family:var(--mono);font-size:11px;color:#88c0d0;max-height:240px;overflow-y:auto;display:none;}
+.debug-panel{background:#1a1a2e;border:1px solid #2d2d5e;border-radius:var(--r);padding:14px;margin-top:10px;font-family:var(--mono);font-size:11px;color:#88c0d0;max-height:280px;overflow-y:auto;display:none;}
 .debug-panel.show{display:block;}
 .dl .ok{color:#a3e635;}.dl .warn{color:#fbbf24;}.dl .err{color:#f87171;}
 
@@ -267,7 +267,7 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
     </div>
   </div>
 
-  <!-- Question Analysis Card (shown after AQA loaded) -->
+  <!-- Question Analysis Card -->
   <div class="qa-card" id="qaCard">
     <div class="card-header">
       <span style="font-size:16px">📊</span>
@@ -311,7 +311,7 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
     <div class="card-body">
       <div class="alert a-info" style="margin-top:0;margin-bottom:14px">
         <span class="ai">💡</span>
-        <span><strong>Q(a) Type</strong> and <strong>Q(b) Type</strong> are now set <em>independently</em> for each question.
+        <span><strong>Q(a) Type</strong> and <strong>Q(b) Type</strong> are set <em>independently</em> for each question.
         Q(a) can be Single (16) while Q(b) is Split (8+8), or any combination.
         Split = 2 sub-rows (i)+(ii) using 8-mark questions &nbsp;·&nbsp; Single = 1 row using a 16-mark question.</span>
       </div>
@@ -325,8 +325,8 @@ body{font-family:var(--font);font-size:14px;line-height:1.6;color:var(--g800);ba
       <div class="alert a-info">
         <span class="ai">ℹ️</span>
         <span>
-          Placeholders <code>&lt;qp_code&gt;</code>, <code>&lt;sem&gt;</code>, <code>&lt;month duration&gt;</code> are replaced even if split across XML runs in the template.
-          Split mode removes 16-mark parent rows; Single mode removes 8-mark sub-rows — per question independently.
+          Placeholders <code>&lt;qp_code&gt;</code>, <code>&lt;sem&gt;</code>, <code>&lt;month duration&gt;</code> are replaced in the template.
+          Equations (OMML) and nested tables are fully preserved. Split mode removes 16-mark parent rows; Single mode removes 8-mark sub-rows — per question side independently.
         </span>
       </div>
       <div class="btn-row">
@@ -371,15 +371,34 @@ let G = {
   aqaBank:[], aqaMeta:{}, coOutcomes:{},
   tplArrayBuffer:null, lastSlots:null, lastBloom:null,
   docxBlob:null, units:[], debugLog:[],
-  // Per-question per-side mode: key=qno(11-15), value={a:'split'|'single', b:'split'|'single'}
-  partBModes:{}
+  partBModes:{} // key=qno(11-15), value={a:'split'|'single', b:'split'|'single'}
 };
 const WNS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+const MNS = 'http://schemas.openxmlformats.org/officeDocument/2006/math';
 
-function dbg(m,c=''){G.debugLog.push({m,c});const p=document.getElementById('debugPanel');p.innerHTML=G.debugLog.slice(-100).map(d=>`<div class="dl ${d.c}">${esc(d.m)}</div>`).join('');p.scrollTop=p.scrollHeight;}
+function dbg(m,c=''){G.debugLog.push({m,c});const p=document.getElementById('debugPanel');p.innerHTML=G.debugLog.slice(-150).map(d=>`<div class="dl ${d.c}">${esc(d.m)}</div>`).join('');p.scrollTop=p.scrollHeight;}
 const dbgOk=m=>dbg(m,'ok');
 const dbgWarn=m=>dbg(m,'warn');
 const dbgErr=m=>dbg(m,'err');
+const toArr=nl=>{const a=[];for(let i=0;i<nl.length;i++)a.push(nl[i]);return a;};
+
+/* ═══════════ OMML → TEXT (from v2) ═══════════ */
+function ommlToText(node){
+  if(!node)return'';
+  const ln=node.localName||'';
+  if(ln==='oMathPara'){const inn=node.getElementsByTagNameNS(MNS,'oMath');return inn.length?ommlToText(inn[0]):ommlChildren(node);}
+  if(ln==='f'){const num=node.getElementsByTagNameNS(MNS,'num'),den=node.getElementsByTagNameNS(MNS,'den');return'('+(num.length?ommlChildren(num[0]):'?')+')/('+( den.length?ommlChildren(den[0]):'?')+')';}
+  if(ln==='sSup'){const e=node.getElementsByTagNameNS(MNS,'e'),s=node.getElementsByTagNameNS(MNS,'sup');return(e.length?ommlChildren(e[0]):'?')+'^{'+(s.length?ommlChildren(s[0]):'?')+'}';}
+  if(ln==='sSub'){const e=node.getElementsByTagNameNS(MNS,'e'),s=node.getElementsByTagNameNS(MNS,'sub');return(e.length?ommlChildren(e[0]):'?')+'_{'+(s.length?ommlChildren(s[0]):'?')+'}';}
+  if(ln==='sSubSup'){const e=node.getElementsByTagNameNS(MNS,'e'),sb=node.getElementsByTagNameNS(MNS,'sub'),sp=node.getElementsByTagNameNS(MNS,'sup');return(e.length?ommlChildren(e[0]):'?')+'_{'+(sb.length?ommlChildren(sb[0]):'')+'}^{'+(sp.length?ommlChildren(sp[0]):'')+'}';}
+  if(ln==='rad'){const e=node.getElementsByTagNameNS(MNS,'e'),deg=node.getElementsByTagNameNS(MNS,'deg');const degT=(deg.length&&deg[0].textContent.trim())?ommlChildren(deg[0])+'√':'√';return degT+'('+(e.length?ommlChildren(e[0]):'?')+')';}
+  if(ln==='nary'){const chrEl=node.getElementsByTagNameNS(MNS,'chr'),chr=chrEl.length?(chrEl[0].getAttributeNS(MNS,'val')||'∑'):'∑';const nsub=node.getElementsByTagNameNS(MNS,'sub'),nsup=node.getElementsByTagNameNS(MNS,'sup'),ne=node.getElementsByTagNameNS(MNS,'e');return chr+(nsub.length?'_{'+ommlChildren(nsub[0])+'}':'')+(nsup.length?'^{'+ommlChildren(nsup[0])+'}':'')+'('+(ne.length?ommlChildren(ne[0]):'')+')'; }
+  if(ln==='func'){const fn=node.getElementsByTagNameNS(MNS,'fName'),fe=node.getElementsByTagNameNS(MNS,'e');return(fn.length?ommlChildren(fn[0]):'')+' ('+(fe.length?ommlChildren(fe[0]):'')+')'; }
+  if(ln==='d'){let beg='(',end=')';const dPr=node.getElementsByTagNameNS(MNS,'dPr');if(dPr.length){const bc=dPr[0].getElementsByTagNameNS(MNS,'begChr'),ec=dPr[0].getElementsByTagNameNS(MNS,'endChr');if(bc.length)beg=bc[0].getAttributeNS(MNS,'val')||'(';if(ec.length)end=ec[0].getAttributeNS(MNS,'val')||')';}const parts=[],des=node.getElementsByTagNameNS(MNS,'e');for(let i=0;i<des.length;i++)parts.push(ommlChildren(des[i]));return beg+parts.join(',')+end;}
+  if(ln==='r'){let txt='';const mts=node.getElementsByTagNameNS(MNS,'t');for(let i=0;i<mts.length;i++)txt+=mts[i].textContent;const wts=node.getElementsByTagNameNS(WNS,'t');for(let i=0;i<wts.length;i++)txt+=wts[i].textContent;return txt;}
+  return ommlChildren(node);
+}
+function ommlChildren(node){let r='';for(let i=0;i<node.childNodes.length;i++){if(node.childNodes[i].nodeType===1)r+=ommlToText(node.childNodes[i]);}return r;}
 
 /* ═══════════ UPLOAD ═══════════ */
 document.getElementById('aqaFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)handleAQA(f);});
@@ -391,7 +410,7 @@ function setupDrop(id,cb){
   const z=document.getElementById(id);
   z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('dragover');});
   z.addEventListener('dragleave',()=>z.classList.remove('dragover'));
-  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.name.endsWith('.docx'))cb(f);});
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.name.toLowerCase().endsWith('.docx'))cb(f);});
 }
 
 async function handleAQA(file){
@@ -402,7 +421,9 @@ async function handleAQA(file){
     document.getElementById('aqaDone').style.display='block';
     document.getElementById('aqaDone').textContent='✓ '+file.name;
     document.getElementById('aqaSize').textContent=fmtB(file.size);
-    showPA('success',`Loaded ${G.aqaBank.length} questions from ${G.units.length} units`);
+    const eqC=G.aqaBank.filter(q=>q.has_equation).length;
+    const tblC=G.aqaBank.filter(q=>q.has_nested_table).length;
+    showPA('success',`Loaded ${G.aqaBank.length} questions from ${G.units.length} units · ${eqC} equations · ${tblC} tables`);
     renderMeta();renderCO();renderQA();buildPartA();buildPartB();
     checkReady();setStep(2);
   }catch(e){showPA('error','Parse failed: '+e.message);console.error(e);}
@@ -414,7 +435,6 @@ async function handleTpl(file){
   document.getElementById('tplDone').style.display='block';
   document.getElementById('tplDone').textContent='✓ '+file.name;
   document.getElementById('tplSize').textContent=fmtB(file.size);
-  // Debug: scan template rows
   try{
     const zip=await JSZip.loadAsync(G.tplArrayBuffer);
     const xs=await zip.file('word/document.xml').async('string');
@@ -425,10 +445,7 @@ async function handleTpl(file){
       const rows=tbls[ti].getElementsByTagNameNS(WNS,'tr');
       for(let ri=0;ri<rows.length;ri++){
         const tcs=rows[ri].getElementsByTagNameNS(WNS,'tc');
-        if(tcs.length>=2){
-          const c0=cellTxt(tcs[0]).trim(),c1=cellTxt(tcs[1]).trim();
-          if(c1&&/\d/.test(c1)) dbg(`  T${ti}R${ri}: [${c0}][${c1}]`);
-        }
+        if(tcs.length>=2){const c0=cellTxt(tcs[0]).trim(),c1=cellTxt(tcs[1]).trim();if(c1&&/\d/.test(c1))dbg(`  T${ti}R${ri}: [${c0}][${c1}]`);}
       }
     }
   }catch(e){dbgErr('Tpl scan: '+e.message);}
@@ -441,97 +458,215 @@ function checkReady(){
   if(ok)setStep(3);
 }
 
-/* ═══════════ AQA PARSER ═══════════ */
+/* ═══════════ AQA PARSER — 3-strategy robust (from v2) ═══════════ */
 async function parseAQA(ab){
   const zip=await JSZip.loadAsync(ab);
   const relsXml=await zip.file('word/_rels/document.xml.rels').async('string');
   const relsDoc=new DOMParser().parseFromString(relsXml,'application/xml');
   const imgMap={};
   for(const rel of relsDoc.querySelectorAll('Relationship')){
-    if((rel.getAttribute('Type')||'').includes('/image')){
-      const rId=rel.getAttribute('Id'),target=rel.getAttribute('Target');
-      const path=target.startsWith('/')?target.slice(1):'word/'+target.replace('../','');
-      try{
-        const f=zip.file(path)||zip.file('word/media/'+target.split('/').pop());
-        if(f){const b64=await f.async('base64');const ext=target.split('.').pop().toLowerCase();imgMap[rId]={b64,ct:ext==='png'?'image/png':ext==='gif'?'image/gif':'image/jpeg',origRId:rId};}
-      }catch(e){}
-    }
+    if(!(rel.getAttribute('Type')||'').includes('/image'))continue;
+    const rId=rel.getAttribute('Id'),target=rel.getAttribute('Target');
+    const path=target.startsWith('/')?target.slice(1):'word/'+target.replace('../','');
+    try{const f=zip.file(path)||zip.file('word/media/'+target.split('/').pop());if(f){const b64=await f.async('base64');const ext=target.split('.').pop().toLowerCase();imgMap[rId]={b64,ct:ext==='png'?'image/png':ext==='gif'?'image/gif':'image/jpeg',origRId:rId};}}catch(e){}
   }
   const xs=await zip.file('word/document.xml').async('string');
   const xd=new DOMParser().parseFromString(xs,'application/xml');
   G.aqaBank=[];G.aqaMeta={};G.coOutcomes={};
   const tbls=xd.getElementsByTagNameNS(WNS,'tbl');
-  let curUnit=null;const seen=new Set();
+  let curUnit=null;const seen={};
+  dbg(`AQA: ${tbls.length} tables`);
 
+  /* meta from first table */
   if(tbls.length>0){
-    const rows=tbls[0].getElementsByTagNameNS(WNS,'tr');
-    for(let r=0;r<rows.length;r++){
-      const cells=xmlCells(rows[r]);
-      for(let i=0;i<cells.length-1;i++){
-        const k=cells[i].t.toLowerCase(),v=cells[i+1].t;
-        if(k.includes('course code')&&!G.aqaMeta.course_code)G.aqaMeta.course_code=v;
-        if(k.includes('department')&&!G.aqaMeta.department)G.aqaMeta.department=v;
-        if(k.includes('course name')&&!G.aqaMeta.course_name)G.aqaMeta.course_name=v;
+    const mrows=tbls[0].getElementsByTagNameNS(WNS,'tr');
+    for(let r=0;r<mrows.length;r++){
+      const cells=xmlCells(mrows[r]);
+      for(let ci=0;ci<cells.length-1;ci++){
+        const kk=cells[ci].t.toLowerCase(),vv=cells[ci+1].t;
+        if(kk.includes('course code')&&!G.aqaMeta.course_code)G.aqaMeta.course_code=vv;
+        if(kk.includes('department')&&!G.aqaMeta.department)G.aqaMeta.department=vv;
+        if(kk.includes('course name')&&!G.aqaMeta.course_name)G.aqaMeta.course_name=vv;
       }
     }
   }
+  /* CO outcomes */
   for(let ti=0;ti<tbls.length;ti++){
     const rows=tbls[ti].getElementsByTagNameNS(WNS,'tr');
     for(let r=0;r<rows.length;r++){
-      const cells=xmlCells(rows[r]);
-      if(cells.length>=2&&/^CO\d+$/i.test(cells[0].t.trim()))
-        G.coOutcomes[cells[0].t.trim().toUpperCase()]=cells[1].t.trim();
+      const c=xmlCells(rows[r]);
+      if(c.length>=2&&/^CO\d+$/i.test(c[0].t.trim()))G.coOutcomes[c[0].t.trim().toUpperCase()]=c[1].t.trim();
     }
   }
+  /* questions — 3-strategy */
   for(let ti=0;ti<tbls.length;ti++){
     const rows=tbls[ti].getElementsByTagNameNS(WNS,'tr');
+    const hdrRow=detectHeaderRow(rows);
+    const colMap=hdrRow>=0?mapColumns(rows[hdrRow]):null;
+    dbg(`Tbl ${ti}: ${rows.length} rows hdr@${hdrRow}`);
     for(let ri=0;ri<rows.length;ri++){
-      const row=rows[ri];const cells=xmlCells(row);const rowTxt=cells.map(c=>c.t).join(' ');
+      const row=rows[ri];const cells=xmlCells(row);
+      const rowTxt=cells.map(c=>c.t).join(' ');
       const um=rowTxt.match(/UNIT\s*[-–]?\s*(\d+)/i);
-      if(um&&cells.length<=3){curUnit=`UNIT-${um[1]}`;continue;}
-      if(cells.length>0){const um2=cells[0].t.match(/^UNIT\s*[-–]?\s*(\d+)/i);if(um2){curUnit=`UNIT-${um2[1]}`;continue;}}
-      if(!curUnit||cells.length<6)continue;
-      const co=/^CO\d+$/i.test(cells[1].t.trim())?cells[1].t.trim().toUpperCase():null;
-      const k=/^K\d+$/i.test(cells[2].t.trim())?cells[2].t.trim().toUpperCase():null;
-      if(!co||!k)continue;
-      const mm=cells[4].t.match(/\b(2|4|8|16)\b/);if(!mm)continue;
-      const marks=parseInt(mm[1]),portion=cells[5].t.trim();
-      const qTc=row.getElementsByTagNameNS(WNS,'tc')[3];if(!qTc)continue;
-      const paras=parseQParas(qTc,imgMap);
-      const plainText=paras.map(p=>p.text).filter(Boolean).join('\n');
-      const images=paras.flatMap(p=>p.images||[]);
-      const is_mcq=marks===2&&detectMCQ(paras);
-      const dkey=`${curUnit}_${marks}_${plainText.substring(0,80)}`;
-      if(seen.has(dkey))continue;seen.add(dkey);
-      G.aqaBank.push({uid:`${curUnit}_${marks}_${G.aqaBank.length}`,unit:curUnit,co,k,marks,portion,text:plainText,paras,images,is_mcq,has_image:images.length>0,has_equation:hasEq(qTc)});
+      if(um&&cells.length<=4){curUnit=`UNIT-${um[1]}`;dbgOk('  Unit→'+curUnit);continue;}
+      if(cells.length>0){const um2=cells[0].t.match(/^UNIT\s*[-–]?\s*(\d+)/i);if(um2){curUnit=`UNIT-${um2[1]}`;dbgOk('  Unit→'+curUnit);continue;}}
+      if(!curUnit)continue;
+      const q=tryParseFixed(row,cells,curUnit,imgMap)||
+               (colMap?tryParseMapped(row,cells,curUnit,imgMap,colMap):null)||
+               tryParseSearch(row,cells,curUnit,imgMap);
+      if(q){
+        const dk=`${q.unit}_${q.marks}_${q.text.substring(0,80)}`;
+        if(!seen[dk]){seen[dk]=true;G.aqaBank.push(q);dbgOk(`  +Q u=${q.unit} m=${q.marks} co=${q.co} k=${q.k}${q.has_equation?' [EQ]':''}${q.has_nested_table?' [TBL]':''}`);}
+      }
     }
   }
   G.units=[...new Set(G.aqaBank.map(q=>q.unit))].sort((a,b)=>parseInt(a.split('-')[1])-parseInt(b.split('-')[1]));
+  dbgOk(`Total: ${G.aqaBank.length} Qs · units: ${G.units.join(', ')}`);
 }
-function xmlCells(row){return Array.from(row.getElementsByTagNameNS(WNS,'tc')).map(tc=>({t:cellTxt(tc),el:tc}));}
-function cellTxt(cell){
-  const lines=[];
-  for(const p of cell.getElementsByTagNameNS(WNS,'p')){
-    let l='';for(const r of p.getElementsByTagNameNS(WNS,'r'))for(const t of r.getElementsByTagNameNS(WNS,'t'))l+=t.textContent;
-    if(l.trim())lines.push(l.trim());
+
+function detectHeaderRow(rows){
+  for(let i=0;i<Math.min(rows.length,5);i++){
+    let txt='';const tcs=rows[i].getElementsByTagNameNS(WNS,'tc');
+    for(let j=0;j<tcs.length;j++)txt+=cellTxt(tcs[j]).toLowerCase()+' ';
+    if((txt.includes('question')||txt.includes('q.no')||txt.includes('s.no'))&&(txt.includes('co')||txt.includes('bloom')||txt.includes('marks')))return i;
   }
-  return lines.join('\n');
+  return -1;
 }
+function mapColumns(headerRow){
+  const tcs=headerRow.getElementsByTagNameNS(WNS,'tc');
+  const map={sno:-1,co:-1,k:-1,question:-1,marks:-1,portion:-1};
+  for(let i=0;i<tcs.length;i++){
+    const t=cellTxt(tcs[i]).toLowerCase().replace(/\s+/g,'');
+    if(/s\.?no|sl\.?no/.test(t))map.sno=i;
+    else if(/^co$|course\s*outcome/.test(t))map.co=i;
+    else if(/^k\.?level$|bloom|btl/.test(t))map.k=i;
+    else if(/question/.test(t))map.question=i;
+    else if(/mark/.test(t))map.marks=i;
+    else if(/portion|half|part/.test(t))map.portion=i;
+  }
+  return map;
+}
+function normPortion(txt){
+  txt=(txt||'').trim().toUpperCase();
+  if(txt==='2'||txt.includes('II')||txt.includes('2ND')||txt.includes('SECOND'))return'II';
+  return'I';
+}
+/* Strategy A: fixed cols 0=SNo 1=CO 2=K 3=Question 4=Marks 5=Portion */
+function tryParseFixed(row,cells,unit,imgMap){
+  if(cells.length<6)return null;
+  const co=cells[1].t.trim().toUpperCase(),k=cells[2].t.trim().toUpperCase();
+  if(!/^CO\d+$/i.test(co)||!/^K\d+$/i.test(k))return null;
+  const mm=cells[4].t.match(/\b(2|4|8|16)\b/);if(!mm)return null;
+  const marks=parseInt(mm[1]),portion=normPortion(cells[5].t);
+  const tcs=row.getElementsByTagNameNS(WNS,'tc');const qTc=tcs[3];if(!qTc)return null;
+  return buildQObj(qTc,unit,co,k,marks,portion,imgMap);
+}
+/* Strategy B: header-mapped */
+function tryParseMapped(row,cells,unit,imgMap,cm){
+  if(cm.co<0||cm.k<0||cm.question<0||cm.marks<0)return null;
+  if(cm.co>=cells.length||cm.k>=cells.length||cm.question>=cells.length||cm.marks>=cells.length)return null;
+  const co=cells[cm.co].t.trim().toUpperCase(),k=cells[cm.k].t.trim().toUpperCase();
+  if(!/^CO\d+$/i.test(co)||!/^K\d+$/i.test(k))return null;
+  const mm=cells[cm.marks].t.match(/\b(2|4|8|16)\b/);if(!mm)return null;
+  const marks=parseInt(mm[1]);
+  let portion='I';if(cm.portion>=0&&cm.portion<cells.length)portion=normPortion(cells[cm.portion].t);
+  const tcs=row.getElementsByTagNameNS(WNS,'tc');const qTc=tcs[cm.question];if(!qTc)return null;
+  return buildQObj(qTc,unit,co,k,marks,portion,imgMap);
+}
+/* Strategy C: scan row for CO/K patterns */
+function tryParseSearch(row,cells,unit,imgMap){
+  const rowTxt=cells.map(c=>c.t).join(' ');
+  const coM=rowTxt.match(/\b(CO\d+)\b/i);if(!coM)return null;
+  const co=coM[1].toUpperCase();
+  const kM=rowTxt.match(/\b(K\d+)\b/i);if(!kM)return null;
+  const k=kM[1].toUpperCase();
+  const mM=rowTxt.match(/\b(2|4|8|16)\b/);if(!mM)return null;
+  const marks=parseInt(mM[1]);
+  const portion=/\bII\b|2nd\s*half|portion\s*ii|portion\s*2/i.test(rowTxt)?'II':'I';
+  let maxLen=0,qTcIdx=-1;
+  for(let i=0;i<cells.length;i++){
+    if(cells[i].t.length>maxLen&&!/^CO\d+$/i.test(cells[i].t.trim())&&!/^K\d+$/i.test(cells[i].t.trim())&&!/^\d+$/.test(cells[i].t.trim())){maxLen=cells[i].t.length;qTcIdx=i;}
+  }
+  if(qTcIdx<0||maxLen<5)return null;
+  const tcs=row.getElementsByTagNameNS(WNS,'tc');const qTc=tcs[qTcIdx];if(!qTc)return null;
+  return buildQObj(qTc,unit,co,k,marks,portion,imgMap);
+}
+
+/* Build question object — enhanced with equations & nested tables (from v2) */
+function buildQObj(qTc,unit,co,k,marks,portion,imgMap){
+  const paras=parseQParas(qTc,imgMap);
+  const plainText=paras.map(p=>p.text).filter(Boolean).join('\n');
+  const images=[],equations=[],nestedTables=[];
+  paras.forEach(p=>{
+    (p.images||[]).forEach(i=>images.push(i));
+    (p.equations||[]).forEach(e=>equations.push(e));
+    (p.tables||[]).forEach(t=>nestedTables.push(t));
+  });
+  const hasMath=equations.length>0||qTc.getElementsByTagNameNS(MNS,'oMath').length>0;
+  const hasTbl=nestedTables.length>0;
+  return{
+    uid:`${unit}_${marks}_${G.aqaBank.length}`,
+    unit,co,k,marks,portion,
+    text:plainText,paras,images,equations,nestedTables,
+    is_mcq:marks===2&&detectMCQ(paras),
+    has_image:images.length>0,has_equation:hasMath,has_nested_table:hasTbl,
+    _qTcNode:qTc
+  };
+}
+
+/* Enhanced parseQParas — captures equations and nested tables (from v2) */
 function parseQParas(tc,imgMap){
-  return Array.from(tc.getElementsByTagNameNS(WNS,'p')).map(p=>{
-    let text='';const images=[];
-    for(const r of p.getElementsByTagNameNS(WNS,'r')){
-      for(const t of r.getElementsByTagNameNS(WNS,'t'))text+=t.textContent;
-      for(const el of r.getElementsByTagName('*')){
-        if((el.localName||el.tagName)==='blip'){
-          let rId=null;for(let i=0;i<el.attributes.length;i++)if(el.attributes[i].localName==='embed'){rId=el.attributes[i].value;break;}
-          if(rId&&imgMap[rId])images.push({...imgMap[rId]});
+  const result=[];
+  const children=[];
+  for(let i=0;i<tc.childNodes.length;i++){if(tc.childNodes[i].nodeType===1)children.push(tc.childNodes[i]);}
+  for(const child of children){
+    const ln=child.localName||child.tagName||'';
+    if(ln==='p'){
+      let text='';const images=[],equations=[];
+      const pch=[];for(let i=0;i<child.childNodes.length;i++){if(child.childNodes[i].nodeType===1)pch.push(child.childNodes[i]);}
+      for(const pc of pch){
+        const pln=pc.localName||pc.tagName||'';
+        if(pln==='r'){
+          const wts=pc.getElementsByTagNameNS(WNS,'t');for(let ti=0;ti<wts.length;ti++)text+=wts[ti].textContent;
+          const allEls=pc.getElementsByTagName('*');
+          for(let ai=0;ai<allEls.length;ai++){
+            const eln=allEls[ai].localName||allEls[ai].tagName||'';
+            if(eln==='blip'){let rId=null;for(let bi=0;bi<allEls[ai].attributes.length;bi++){if(allEls[ai].attributes[bi].localName==='embed'){rId=allEls[ai].attributes[bi].value;break;}}if(rId&&imgMap[rId])images.push({...imgMap[rId]});}
+          }
+        }else if(pln==='oMath'||pln==='oMathPara'){
+          const mathNode=(pln==='oMathPara')?(pc.getElementsByTagNameNS(MNS,'oMath')[0]||pc):pc;
+          const eqTxt=ommlToText(mathNode);
+          equations.push({text:eqTxt,node:mathNode});
+          text+=' '+eqTxt+' ';
         }
       }
+      result.push({text:text.trim(),images,equations,tables:[]});
+    }else if(ln==='tbl'){
+      /* Nested table — capture as grid + preserve node */
+      const tblRows=child.getElementsByTagNameNS(WNS,'tr');
+      const gridRows=[];
+      for(let ri=0;ri<tblRows.length;ri++){
+        const tblCells=tblRows[ri].getElementsByTagNameNS(WNS,'tc');
+        const gridRow=[];
+        for(let gci=0;gci<tblCells.length;gci++){
+          let cTxt=cellTxt(tblCells[gci]);
+          const cMaths=tblCells[gci].getElementsByTagNameNS(MNS,'oMath');
+          const eqParts=[];for(let mi=0;mi<cMaths.length;mi++)eqParts.push(ommlToText(cMaths[mi]));
+          if(eqParts.length)cTxt=(cTxt+' '+eqParts.join(' ')).trim();
+          gridRow.push({text:cTxt});
+        }
+        if(gridRow.length)gridRows.push(gridRow);
+      }
+      result.push({text:'',images:[],equations:[],tables:[{rows:gridRows,node:child}]});
+    }else if(ln==='oMathPara'){
+      const mn=child.getElementsByTagNameNS(MNS,'oMath')[0]||child;
+      const et=ommlToText(mn);
+      result.push({text:et,images:[],equations:[{text:et,node:mn}],tables:[]});
     }
-    return{text:text.trim(),images};
-  });
+  }
+  return result;
 }
+
 function detectMCQ(paras){
   const t=paras.map(p=>p.text).filter(Boolean);
   if(t.length<4)return false;
@@ -539,11 +674,24 @@ function detectMCQ(paras){
   if(t.slice(1).filter(x=>x.length<120).length>=3)return true;
   return false;
 }
-function hasEq(tc){for(const el of tc.getElementsByTagName('*'))if(['oMath','oMathPara'].includes(el.localName||el.tagName))return true;return false;}
+function xmlCells(row){return toArr(row.getElementsByTagNameNS(WNS,'tc')).map(tc=>({t:cellTxt(tc),el:tc}));}
+function cellTxt(cell){
+  const lines=[];
+  for(const p of cell.getElementsByTagNameNS(WNS,'p')){
+    let l='';
+    for(const r of p.getElementsByTagNameNS(WNS,'r'))for(const t of r.getElementsByTagNameNS(WNS,'t'))l+=t.textContent;
+    const maths=p.getElementsByTagNameNS(MNS,'oMath');
+    for(let mi=0;mi<maths.length;mi++)l+=' '+ommlToText(maths[mi]);
+    if(l.trim())lines.push(l.trim());
+  }
+  return lines.join('\n');
+}
 
 /* ═══════════ UI BUILDERS ═══════════ */
 function renderMeta(){
   const s=document.getElementById('metaStrip');s.style.display='flex';
+  const eqC=G.aqaBank.filter(q=>q.has_equation).length;
+  const tblC=G.aqaBank.filter(q=>q.has_nested_table).length;
   s.innerHTML=`
     <div class="mi"><div class="mk">Department</div><div class="mv">${esc(G.aqaMeta.department||'—')}</div></div>
     <div class="mi"><div class="mk">Course Code</div><div class="mv">${esc(G.aqaMeta.course_code||'—')}</div></div>
@@ -551,6 +699,8 @@ function renderMeta(){
     <div class="mi"><div class="mk">Total Qs</div><div class="mv">${G.aqaBank.length}</div></div>
     <div class="mi"><div class="mk">Images</div><div class="mv">${G.aqaBank.filter(q=>q.has_image).length}</div></div>
     <div class="mi"><div class="mk">MCQ</div><div class="mv">${G.aqaBank.filter(q=>q.is_mcq).length}</div></div>
+    <div class="mi"><div class="mk">Equations</div><div class="mv" style="color:var(--amber)">${eqC}</div></div>
+    <div class="mi"><div class="mk">Tables</div><div class="mv" style="color:var(--green)">${tblC}</div></div>
   `;
   document.getElementById('bankCount').textContent=`${G.aqaBank.length} Questions · ${G.units.length} Units`;
 }
@@ -561,31 +711,27 @@ function renderCO(){
 }
 
 function renderQA(){
-  const card=document.getElementById('qaCard');
-  card.classList.add('show');
-
-  // Summary bar
+  const card=document.getElementById('qaCard');card.classList.add('show');
   const total=G.aqaBank.length;
   const withImg=G.aqaBank.filter(q=>q.has_image).length;
   const mcqCount=G.aqaBank.filter(q=>q.is_mcq).length;
   const m2=G.aqaBank.filter(q=>q.marks===2).length;
   const m8=G.aqaBank.filter(q=>q.marks===8).length;
   const m16=G.aqaBank.filter(q=>q.marks===16).length;
-
-  document.getElementById('qaCourseLbl').textContent=
-    `${G.aqaMeta.course_code||''} · ${G.aqaMeta.department||''}`;
-
+  const eqC=G.aqaBank.filter(q=>q.has_equation).length;
+  const tblC=G.aqaBank.filter(q=>q.has_nested_table).length;
+  document.getElementById('qaCourseLbl').textContent=`${G.aqaMeta.course_code||''} · ${G.aqaMeta.department||''}`;
   document.getElementById('qaSummary').innerHTML=`
     <div class="qa-s-item"><div class="qa-s-lbl">Total Qs</div><div class="qa-s-val">${total}</div></div>
     <div class="qa-s-item"><div class="qa-s-lbl">2-Mark</div><div class="qa-s-val">${m2}</div></div>
     <div class="qa-s-item"><div class="qa-s-lbl">8-Mark</div><div class="qa-s-val">${m8}</div></div>
     <div class="qa-s-item"><div class="qa-s-lbl">16-Mark</div><div class="qa-s-val">${m16}</div></div>
     <div class="qa-s-item"><div class="qa-s-lbl">MCQ</div><div class="qa-s-val">${mcqCount}</div></div>
-    <div class="qa-s-item"><div class="qa-s-lbl">With Images</div><div class="qa-s-val">${withImg}</div></div>
+    <div class="qa-s-item"><div class="qa-s-lbl">Images</div><div class="qa-s-val">${withImg}</div></div>
+    <div class="qa-s-item"><div class="qa-s-lbl">Equations</div><div class="qa-s-val" style="color:var(--amber)">${eqC}</div></div>
+    <div class="qa-s-item"><div class="qa-s-lbl">Tables</div><div class="qa-s-val" style="color:var(--green)">${tblC}</div></div>
     <div class="qa-s-item"><div class="qa-s-lbl">Units</div><div class="qa-s-val">${G.units.length}</div></div>
   `;
-
-  // Per-unit breakdown
   const kCls={K1:'qa-k1',K2:'qa-k2',K3:'qa-k3',K4:'qa-k4'};
   const grid=document.getElementById('qaGrid');grid.innerHTML='';
   for(const unit of G.units){
@@ -594,9 +740,7 @@ function renderQA(){
     const u2i=u2.filter(q=>q.portion==='I').length, u2ii=u2.filter(q=>q.portion==='II').length;
     const u8i=u8.filter(q=>q.portion==='I').length, u8ii=u8.filter(q=>q.portion==='II').length;
     const u16i=u16.filter(q=>q.portion==='I').length, u16ii=u16.filter(q=>q.portion==='II').length;
-    // K-level counts across all marks
-    const kMap={};
-    for(const q of uqs){if(q.k)kMap[q.k]=(kMap[q.k]||0)+1;}
+    const kMap={};for(const q of uqs){if(q.k)kMap[q.k]=(kMap[q.k]||0)+1;}
     const kBadges=Object.entries(kMap).sort((a,b)=>a[0].localeCompare(b[0]))
       .map(([k,n])=>`<span class="qa-kb ${kCls[k]||''}">${k}:${n}</span>`).join('');
     const col=document.createElement('div');col.className='qa-unit';
@@ -735,16 +879,10 @@ function updateModeBadge(qno){
 /* ═══════════ SELECTION ENGINE ═══════════ */
 const shuf=arr=>{const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 function pick(pool,used){for(const q of shuf(pool)){if(!used.has(q.uid)){used.add(q.uid);return q;}}return null;}
-function pickPair(pA,pB,used,strict){
-  const sA=shuf(pA),sB=shuf(pB);
-  if(strict){for(const a of sA){if(used.has(a.uid))continue;for(const b of sB){if(!used.has(b.uid)&&a.k===b.k){used.add(a.uid);used.add(b.uid);return[a,b];}}}}
-  for(const a of sA){if(used.has(a.uid))continue;for(const b of sB){if(!used.has(b.uid)){used.add(a.uid);used.add(b.uid);return[a,b];}}}
-  return[null,null];
-}
 function getPool(unit,marks,port){return G.aqaBank.filter(q=>q.unit===unit&&q.marks===marks&&(port==='any'||q.portion===port));}
-function fallQ(qno,ab,sub,marks){const lbl=sub?`Q${qno}(${ab})(${sub})`:`Q${qno}(${ab})`;return{uid:`na${qno}${ab}${sub}`,text:`[Not available — ${lbl}]`,marks,co:'?',k:'?',paras:[],images:[],has_image:false,is_mcq:false};}
+function fallQ(qno,ab,sub,marks){const lbl=sub?`Q${qno}(${ab})(${sub})`:`Q${qno}(${ab})`;return{uid:`na${qno}${ab}${sub}`,text:`[Not available — ${lbl}]`,marks,co:'?',k:'?',paras:[],images:[],equations:[],nestedTables:[],has_image:false,is_mcq:false,has_equation:false,has_nested_table:false};}
 
-/* ═══════════ MAIN GENERATE ═══════════ */
+/* ═══════════ GENERATE ═══════════ */
 async function doGenerate(){
   const monthDur=document.getElementById('monthDuration').value.trim();
   const semester=document.getElementById('semester').value;
@@ -771,8 +909,7 @@ async function doGenerate(){
     setSpinProg(qno*4);
   }
 
-  // ── PART B ──
-  // partBModes[qno] = { a:'split'|'single', b:'split'|'single' }
+  // ── PART B — independent per-side modes ──
   G.partBModes={};
   showSpin('Selecting Questions…','Part B — K-level matching',40);await delay(30);
 
@@ -784,63 +921,49 @@ async function doGenerate(){
     const portB=document.getElementById(`pb_portb_${qno}`)?.value||'II';
     const kMode=document.getElementById(`pb_kmatch_${qno}`)?.value||'same';
 
-    // Store per-side modes for DOCX builder row logic
-    G.partBModes[qno]={a:typeA, b:typeB};
+    G.partBModes[qno]={a:typeA,b:typeB};
 
-    // ── Side A ──
+    // Side A
     if(typeA==='split'){
       const pA=getPool(unit,8,portA);
-      const q1=pick(pA,usedSet);
-      const q2=pick(pA,usedSet);
+      const q1=pick(pA,usedSet),q2=pick(pA,usedSet);
       slots[`${qno} (a) (i)`] =q1||fallQ(qno,'a','i',8);
       slots[`${qno} (a) (ii)`]=q2||fallQ(qno,'a','ii',8);
+      if(!q1||!q2)warns.push(`Q${qno}(a): 8-mark not found in ${unit} Portion ${portA}`);
       dbgOk(`Q${qno}(a) SPLIT: (i)="${(q1?.text||'').substring(0,35)}" [${q1?.k||'?'}]`);
-      dbgOk(`Q${qno}(a) SPLIT: (ii)="${(q2?.text||'').substring(0,35)}"`);
-      if(!q1||!q2)warns.push(`Q${qno}(a): 8-mark questions not found in ${unit} Portion ${portA}`);
     }else{
       const pA=getPool(unit,16,portA);
       const qa=pick(pA,usedSet);
       slots[`${qno} (a)`]=qa||fallQ(qno,'a','',16);
+      if(!qa)warns.push(`Q${qno}(a): 16-mark not found in ${unit} Portion ${portA}`);
       dbgOk(`Q${qno}(a) SINGLE: "${(qa?.text||'').substring(0,40)}" [${qa?.k||'?'}]`);
-      if(!qa)warns.push(`Q${qno}(a): 16-mark question not found in ${unit} Portion ${portA}`);
     }
 
-    // ── Side B ──
+    // Side B
     if(typeB==='split'){
-      // K-match with side A if requested
       const pB=getPool(unit,8,portB);
       let q1=null,q2=null;
       if(kMode==='same'){
-        // Try to match K-level of side A slot
-        const refK = typeA==='split'
-          ? (slots[`${qno} (a) (i)`]?.k||null)
-          : (slots[`${qno} (a)`]?.k||null);
-        if(refK){
-          const kPool=pB.filter(q=>q.k===refK);
-          q1=pick(kPool,usedSet)||pick(pB,usedSet);
-          q2=pick(kPool.filter(q=>q.uid!==q1?.uid),usedSet)||pick(pB,usedSet);
-        }
+        const refK=typeA==='split'?(slots[`${qno} (a) (i)`]?.k||null):(slots[`${qno} (a)`]?.k||null);
+        if(refK){const kPool=pB.filter(q=>q.k===refK);q1=pick(kPool,usedSet)||pick(pB,usedSet);q2=pick(kPool,usedSet)||pick(pB,usedSet);}
       }
       if(!q1)q1=pick(pB,usedSet);
       if(!q2)q2=pick(pB,usedSet);
       slots[`${qno} (b) (i)`] =q1||fallQ(qno,'b','i',8);
       slots[`${qno} (b) (ii)`]=q2||fallQ(qno,'b','ii',8);
+      if(!q1||!q2)warns.push(`Q${qno}(b): 8-mark not found in ${unit} Portion ${portB}`);
       dbgOk(`Q${qno}(b) SPLIT: (i)="${(q1?.text||'').substring(0,35)}" [${q1?.k||'?'}]`);
-      dbgOk(`Q${qno}(b) SPLIT: (ii)="${(q2?.text||'').substring(0,35)}"`);
-      if(!q1||!q2)warns.push(`Q${qno}(b): 8-mark questions not found in ${unit} Portion ${portB}`);
     }else{
       const pB=getPool(unit,16,portB);
       let qb=null;
       if(kMode==='same'){
-        const refK = typeA==='split'
-          ? (slots[`${qno} (a) (i)`]?.k||null)
-          : (slots[`${qno} (a)`]?.k||null);
+        const refK=typeA==='split'?(slots[`${qno} (a) (i)`]?.k||null):(slots[`${qno} (a)`]?.k||null);
         if(refK)qb=pick(pB.filter(q=>q.k===refK),usedSet);
       }
       if(!qb)qb=pick(pB,usedSet);
       slots[`${qno} (b)`]=qb||fallQ(qno,'b','',16);
+      if(!qb)warns.push(`Q${qno}(b): 16-mark not found in ${unit} Portion ${portB}`);
       dbgOk(`Q${qno}(b) SINGLE: "${(qb?.text||'').substring(0,40)}" [${qb?.k||'?'}]`);
-      if(!qb)warns.push(`Q${qno}(b): 16-mark question not found in ${unit} Portion ${portB}`);
     }
     setSpinProg(40+i*8);
   }
@@ -850,7 +973,7 @@ async function doGenerate(){
   Object.values(slots).forEach(q=>{if(q?.k){const kk=q.k.toUpperCase();if(kk in bloom)bloom[kk]+=q.marks||0;}});
   G.lastBloom=bloom;
 
-  showSpin('Building DOCX…','Embedding questions & images',70);await delay(30);
+  showSpin('Building DOCX…','Embedding questions, equations & tables',70);await delay(30);
 
   try{
     G.docxBlob=await buildDocx(slots,bloom,{semester,monthDuration:monthDur,qpCode});
@@ -866,8 +989,7 @@ async function doGenerate(){
     setStep(5);
     document.getElementById('downloadPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
   }catch(err){
-    hideSpinner();
-    showGA('error','DOCX build failed: '+err.message);
+    hideSpinner();showGA('error','DOCX build failed: '+err.message);
     dbgErr(err.stack||err.message);
     document.getElementById('debugPanel').classList.add('show');
     console.error(err);
@@ -875,95 +997,79 @@ async function doGenerate(){
 }
 async function doShuffle(){await doGenerate();}
 
-/* ═══════════════════════════════════════════════════════════════
-   DOCX BUILDER — v4 CORE FIXES
+/* ═══════════════════════════════════════════════════════════
+   DOCX BUILDER
    
-   KEY FIX: Per-question mode-aware row handling
+   Per-question per-side mode: G.partBModes[qno] = {a:'split'|'single', b:'split'|'single'}
+   - SPLIT side  → fill (x)(i),(x)(ii) sub-rows; DELETE (x) parent row
+   - SINGLE side → fill (x) parent row; DELETE (x)(i),(x)(ii) sub-rows
    
-   Template contains BOTH kinds of rows for each Part B question:
-     "11 (a) (i)", "11 (a) (ii)"  ← used by SPLIT mode
-     "11 (a)"                      ← used by SINGLE mode
-     "11 (b) (i)", "11 (b) (ii)"  ← used by SPLIT mode
-     "11 (b)"                      ← used by SINGLE mode
-   
-   For each Q11-Q15:
-     - If SPLIT  → fill (a)(i),(a)(ii),(b)(i),(b)(ii) rows; DELETE (a),(b) parent rows
-     - If SINGLE → fill (a),(b) rows; DELETE (a)(i),(a)(ii),(b)(i),(b)(ii) sub-rows
-══════════════════════════════════════════════════════════════ */
+   Equations & nested tables cloned from original XML node (from v2).
+═══════════════════════════════════════════════════════════ */
 
 function normQ(s){
-  return String(s||'')
-    .replace(/\s+/g,' ')
-    .replace(/\(\s*/g,'(').replace(/\s*\)/g,')')
-    .replace(/[\u2013\u2014]/g,'-')
-    .trim().toLowerCase();
+  return String(s||'').replace(/\s+/g,' ').replace(/\(\s*/g,'(').replace(/\s*\)/g,')')
+    .replace(/[\u2013\u2014]/g,'-').trim().toLowerCase();
 }
-function buildSlotMap(slots){
-  const m={};
-  for(const k of Object.keys(slots))m[normQ(k)]=k;
-  return m;
-}
+function buildSlotMap(slots){const m={};for(const k of Object.keys(slots))m[normQ(k)]=k;return m;}
 function findSlot(slots,slotMap,raw){
   if(!raw||!raw.trim())return null;
   const t=raw.trim();
   if(t in slots)return slots[t];
-  const n=normQ(t);
-  if(n in slotMap)return slots[slotMap[n]];
-  const noQ=t.replace(/^Q\s*/i,'');
-  if(noQ in slots)return slots[noQ];
-  const noQn=normQ(noQ);
-  if(noQn in slotMap)return slots[slotMap[noQn]];
+  const n=normQ(t);if(n in slotMap)return slots[slotMap[n]];
+  const noQ=t.replace(/^Q\s*/i,'');if(noQ in slots)return slots[noQ];
+  const noQn=normQ(noQ);if(noQn in slotMap)return slots[slotMap[noQn]];
   if(/^\d+$/.test(t)&&t in slots)return slots[t];
-  // Bracket variant builder for (i)/(ii) patterns
   const bm=t.match(/^(\d+)\s*\(([ab])\)\s*\(([iv]+)\)$/i);
-  if(bm){
-    for(const c of[`${bm[1]} (${bm[2]}) (${bm[3]})`,`${bm[1]} (${bm[2]})(${bm[3]})`,`${bm[1]}(${bm[2]})(${bm[3]})`]){
-      if(c in slots)return slots[c];const cn=normQ(c);if(cn in slotMap)return slots[slotMap[cn]];
-    }
-  }
-  // Bracket variant for plain (a)/(b) patterns
+  if(bm){for(const c of[`${bm[1]} (${bm[2]}) (${bm[3]})`,`${bm[1]} (${bm[2]})(${bm[3]})`,`${bm[1]}(${bm[2]})(${bm[3]})`]){if(c in slots)return slots[c];const cn=normQ(c);if(cn in slotMap)return slots[slotMap[cn]];}}
   const bm2=t.match(/^(\d+)\s*\(([ab])\)$/i);
-  if(bm2){
-    for(const c of[`${bm2[1]} (${bm2[2]})`,`${bm2[1]}(${bm2[2]})`]){
-      if(c in slots)return slots[c];const cn=normQ(c);if(cn in slotMap)return slots[slotMap[cn]];
-    }
-  }
-  dbgWarn(`  no slot: "${t}"`);
-  return null;
+  if(bm2){for(const c of[`${bm2[1]} (${bm2[2]})`,`${bm2[1]}(${bm2[2]})`]){if(c in slots)return slots[c];const cn=normQ(c);if(cn in slotMap)return slots[slotMap[cn]];}}
+  dbgWarn(`  no slot: "${t}"`);return null;
 }
+function getRowQno(label){const m=label.match(/^(\d+)/);return m?parseInt(m[1]):null;}
+function isSubRow(label){return /\([iv]+\)/i.test(label);}
+function isParentRow(label){return /\([ab]\)/i.test(label)&&!/\([iv]+\)/i.test(label);}
 
-/* ── Determine if a row label belongs to a particular Q and mode ── */
-function getRowQno(label){
-  const m=label.match(/^(\d+)/);
-  return m?parseInt(m[1]):null;
-}
-function isSubRow(label){
-  // Sub-row: has (i) or (ii)  e.g. "11 (a) (i)"
-  return /\([iv]+\)/i.test(label);
-}
-function isParentRow(label){
-  // Parent row: has (a) or (b) but NOT (i)/(ii)  e.g. "11 (a)"
-  return /\([ab]\)/i.test(label)&&!/\([iv]+\)/i.test(label);
-}
-
-/* ── Fix split-run placeholders ── */
 function fixPlaceholders(xmlDoc,replacements){
   const paras=xmlDoc.getElementsByTagNameNS(WNS,'p');
   for(let pi=0;pi<paras.length;pi++){
-    const para=paras[pi];
-    const runs=Array.from(para.getElementsByTagNameNS(WNS,'r'));
-    if(!runs.length)continue;
+    const runs=toArr(paras[pi].getElementsByTagNameNS(WNS,'r'));if(!runs.length)continue;
     let full='';const tNodes=[];
     for(const run of runs)for(const t of run.getElementsByTagNameNS(WNS,'t')){full+=t.textContent;tNodes.push(t);}
     for(const[ph,val]of replacements){
       const re=new RegExp(escRx(ph),'gi');
-      if(re.test(full)){
-        const nxt=full.replace(re,val);
-        dbgOk(`  PH: "${ph}" → "${val}"`);
-        if(tNodes.length>0){tNodes[0].textContent=nxt;tNodes[0].setAttribute('xml:space','preserve');for(let i=1;i<tNodes.length;i++)tNodes[i].textContent='';}
-        full=nxt;
-      }
+      if(re.test(full)){const nxt=full.replace(re,val);dbgOk(`  PH: "${ph}"→"${val}"`);if(tNodes.length>0){tNodes[0].textContent=nxt;tNodes[0].setAttribute('xml:space','preserve');for(let i=1;i<tNodes.length;i++)tNodes[i].textContent='';}full=nxt;}
     }
+  }
+}
+
+/* ── Safe XML import with namespace fallback (from v2) ── */
+function safeImport(targetDoc,srcNode){
+  try{return targetDoc.importNode(srcNode,true);}catch(e){}
+  const s=new XMLSerializer().serializeToString(srcNode);
+  const ns=`xmlns:w="${WNS}" xmlns:m="${MNS}" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"`;
+  const parsed=new DOMParser().parseFromString(`<root ${ns}>${s}</root>`,'application/xml');
+  const inner=parsed.documentElement.firstElementChild;
+  if(!inner)throw new Error('import failed');
+  try{return targetDoc.importNode(inner,true);}catch(e){return inner;}
+}
+function remapRIds(node,rIdRemap){
+  if(!node||node.nodeType!==1)return;
+  const ln=node.localName||node.tagName||'';
+  if(ln==='blip'){for(let i=0;i<node.attributes.length;i++){const attr=node.attributes[i];if(attr.localName==='embed'&&rIdRemap[attr.value])attr.value=rIdRemap[attr.value];}}
+  for(let i=0;i<node.childNodes.length;i++){if(node.childNodes[i].nodeType===1)remapRIds(node.childNodes[i],rIdRemap);}
+}
+
+/* ── Clone entire tc content preserving OMML + nested tables (from v2) ── */
+function cloneTcContent(targetTc,targetDoc,srcTcNode,rIdRemap){
+  const tcPr=targetTc.getElementsByTagNameNS(WNS,'tcPr')[0];
+  while(targetTc.firstChild)targetTc.removeChild(targetTc.firstChild);
+  if(tcPr)targetTc.appendChild(tcPr);
+  const children=[];for(let i=0;i<srcTcNode.childNodes.length;i++){if(srcTcNode.childNodes[i].nodeType===1)children.push(srcTcNode.childNodes[i]);}
+  for(const child of children){
+    const ln=child.localName||child.tagName||'';if(ln==='tcPr')continue;
+    try{const imp=safeImport(targetDoc,child);remapRIds(imp,rIdRemap);targetTc.appendChild(imp);}
+    catch(e){dbgErr('clone: '+e.message);}
   }
 }
 
@@ -975,7 +1081,7 @@ async function buildDocx(slots,bloom,config){
   const xmlStr=await zip.file('word/document.xml').async('string');
   const xmlDoc=new DOMParser().parseFromString(xmlStr,'application/xml');
 
-  // ── Replace placeholders ──
+  // Placeholders
   const repls=[
     ['<month duration>',config.monthDuration],['<sem>',config.semester],
     ['<department>',G.aqaMeta.department||''],['<course code>',G.aqaMeta.course_code||''],
@@ -986,13 +1092,12 @@ async function buildDocx(slots,bloom,config){
   ];
   fixPlaceholders(xmlDoc,repls);
 
-  // ── Image remap ──
+  // Image remap
   const relsXml=await zip.file('word/_rels/document.xml.rels').async('string');
   let maxRId=0;
   for(const m of relsXml.matchAll(/Id="rId(\d+)"/g)){const n=parseInt(m[1]);if(n>maxRId)maxRId=n;}
-  const neededImgs={};
+  const neededImgs={},rIdRemap={},newRelLines=[];
   for(const q of Object.values(slots))if(q?.images)for(const img of q.images)neededImgs[img.origRId||img.rId]=img;
-  const rIdRemap={};const newRelLines=[];
   for(const[origRId,img]of Object.entries(neededImgs)){
     maxRId++;const newRId=`rId${maxRId}`;rIdRemap[origRId]=newRId;
     const ext=(img.ct||'image/jpeg').split('/')[1].replace('jpeg','jpg');
@@ -1000,40 +1105,32 @@ async function buildDocx(slots,bloom,config){
     zip.file(mp,img.b64,{base64:true});
     newRelLines.push(`<Relationship Id="${newRId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/kcetimg_${maxRId}.${ext}"/>`);
   }
-  zip.file('word/_rels/document.xml.rels',relsXml.replace('</Relationships>',newRelLines.join('\n')+'\n</Relationships>'));
+  if(newRelLines.length)zip.file('word/_rels/document.xml.rels',relsXml.replace('</Relationships>',newRelLines.join('\n')+'\n</Relationships>'));
 
-  // ── Find question table ──
+  // Find question table
   const allTbls=xmlDoc.getElementsByTagNameNS(WNS,'tbl');
   let qtable=null;
   for(let ti=0;ti<allTbls.length;ti++){
     const txt=getTblTxt(allTbls[ti]).toUpperCase();
-    if((txt.includes('PART A')||txt.includes('Q. NO')||txt.includes('Q.NO'))&&txt.includes('MARK')){qtable=allTbls[ti];dbgOk(`QTable at T${ti}`);break;}
+    if((txt.includes('PART A')||txt.includes('Q. NO')||txt.includes('Q.NO'))&&txt.includes('MARK')){qtable=allTbls[ti];dbgOk(`QTable@T${ti}`);break;}
   }
-  if(!qtable){let mx=0;for(let ti=0;ti<allTbls.length;ti++){const rc=allTbls[ti].getElementsByTagNameNS(WNS,'tr').length;if(rc>mx){mx=rc;qtable=allTbls[ti];}}dbgWarn(`Fallback table (${qtable?.getElementsByTagNameNS(WNS,'tr').length} rows)`);}
+  if(!qtable){let mx=0;for(let ti=0;ti<allTbls.length;ti++){const rc=allTbls[ti].getElementsByTagNameNS(WNS,'tr').length;if(rc>mx){mx=rc;qtable=allTbls[ti];}}dbgWarn(`Fallback table (${mx} rows)`);}
 
   const bloomFilled={K1:0,K2:0,K3:0,K4:0};
 
   if(qtable){
-    const rows=Array.from(qtable.getElementsByTagNameNS(WNS,'tr'));
+    const rows=toArr(qtable.getElementsByTagNameNS(WNS,'tr'));
     const rowsToRemove=[];
-
     dbg('--- Row processing ---');
-    for(let ri=0;ri<rows.length;ri++){
-      const row=rows[ri];
-      const tcs=Array.from(row.getElementsByTagNameNS(WNS,'tc'));
-      if(tcs.length<2)continue;
 
-      // Detect Q-number column
-      const c0t=cellTxt(tcs[0]).trim();
-      const c1t=(tcs.length>1?cellTxt(tcs[1]):'').trim();
+    for(let ri=0;ri<rows.length;ri++){
+      const row=rows[ri];const tcs=toArr(row.getElementsByTagNameNS(WNS,'tc'));if(tcs.length<2)continue;
+      const c0t=cellTxt(tcs[0]).trim(),c1t=tcs.length>1?cellTxt(tcs[1]).trim():'';
       let qnoText='',qnoCol=1;
       if(c1t&&/\d/.test(c1t)){qnoText=c1t;qnoCol=1;}
       else if(c0t&&/\d/.test(c0t)){qnoText=c0t;qnoCol=0;}
       else{qnoText=c1t;qnoCol=1;}
-
       if(!qnoText)continue;
-
-      // Skip known header rows
       const qU=qnoText.toUpperCase();
       if(['Q. NO','Q.NO','Q NO','CO, BTL','CO,BTL','(OR)','OR','PART A','PART B',
           'ANSWER ALL','S.NO','S. NO','QUESTION','MARKS'].some(h=>qU.includes(h)))continue;
@@ -1044,46 +1141,37 @@ async function buildDocx(slots,bloom,config){
 
       if(isPartB){
         const modes=G.partBModes[qno]||{a:'split',b:'split'};
-        const sub=isSubRow(qnoText);     // has (i) or (ii)
-        const parent=isParentRow(qnoText); // has (a)/(b) only, no (i)/(ii)
-
+        const sub=isSubRow(qnoText);
+        const parent=isParentRow(qnoText);
         if(parent){
-          // Determine which side this row belongs to
           const sideMatch=qnoText.match(/\(([ab])\)/i);
           const side=sideMatch?sideMatch[1].toLowerCase():'a';
           const sideMode=modes[side]||'split';
-          if(sideMode==='split'){
-            // This side is split: delete the 16-mark parent row
-            dbgWarn(`  DELETE R${ri}: "${qnoText}" — Q(${side}) is split, parent unneeded`);
-            rowsToRemove.push(row);continue;
-          }
+          if(sideMode==='split'){dbgWarn(`  DELETE R${ri}: "${qnoText}" — Q(${side}) is split`);rowsToRemove.push(row);continue;}
         }
         if(sub){
-          // Determine which side: look for (a) or (b) before (i)/(ii)
           const sideMatch=qnoText.match(/\(([ab])\)/i);
           const side=sideMatch?sideMatch[1].toLowerCase():'a';
           const sideMode=modes[side]||'split';
-          if(sideMode==='single'){
-            // This side is single: delete the 8-mark sub-rows
-            dbgWarn(`  DELETE R${ri}: "${qnoText}" — Q(${side}) is single, sub-row unneeded`);
-            rowsToRemove.push(row);continue;
-          }
+          if(sideMode==='single'){dbgWarn(`  DELETE R${ri}: "${qnoText}" — Q(${side}) is single`);rowsToRemove.push(row);continue;}
         }
       }
 
-      // Try to fill this row
       const slot=findSlot(slots,slotMap,qnoText);
-
       if(slot){
-        dbgOk(`  ✓ R${ri}: "${qnoText}" → ${slot.co},${slot.k},${slot.marks}m`);
-        // CO,BTL cell
+        dbgOk(`  ✓ R${ri}: "${qnoText}" → ${slot.co},${slot.k},${slot.marks}m${slot.has_equation?' [EQ]':''}${slot.has_nested_table?' [TBL]':''}`);
         if(qnoCol===1&&tcs[0])setCellContent(tcs[0],xmlDoc,[mkPara(xmlDoc,`${slot.co||'?'}, ${slot.k||'?'}`,{italic:true,sz:16,center:true})]);
-        // Question cell
         const qci=tcs.length>=4?2:(tcs.length===3?1:tcs.length-2);
-        if(tcs[qci])setCellContent(tcs[qci],xmlDoc,buildQXml(xmlDoc,slot,rIdRemap));
-        // Marks cell
+        if(tcs[qci]){
+          /* ← KEY: use clone for eq/table questions, buildQXml for others */
+          if((slot.has_equation||slot.has_nested_table)&&slot._qTcNode){
+            cloneTcContent(tcs[qci],xmlDoc,slot._qTcNode,rIdRemap);
+            dbgOk('    →cloned raw tc');
+          }else{
+            setCellContent(tcs[qci],xmlDoc,buildQXml(xmlDoc,slot,rIdRemap));
+          }
+        }
         setCellContent(tcs[tcs.length-1],xmlDoc,[mkPara(xmlDoc,String(slot.marks||''),{bold:true,sz:20,center:true})]);
-        // Bloom
         const kk=(slot.k||'').toUpperCase();if(kk in bloomFilled)bloomFilled[kk]+=slot.marks||0;
       }else{
         dbgWarn(`  ? R${ri}: no slot match for "${qnoText}"`);
@@ -1093,28 +1181,24 @@ async function buildDocx(slots,bloom,config){
     dbgOk(`Removed ${rowsToRemove.length} unused rows`);
   }
 
-  // ── Bloom taxonomy table ──
+  // Bloom taxonomy table
   for(let ti=0;ti<allTbls.length;ti++){
     const txt=getTblTxt(allTbls[ti]).toUpperCase();
     if(!(txt.includes('REMEMBER')||txt.includes('K-1')))continue;
-    const tblRows=Array.from(allTbls[ti].getElementsByTagNameNS(WNS,'tr'));
-    let hdrIdx=-1;
-    for(let ri=0;ri<tblRows.length;ri++){
-      if(getRowTxt(tblRows[ri]).toUpperCase().match(/K-1|REMEMBER/)){hdrIdx=ri;break;}
-    }
-    if(hdrIdx<0||hdrIdx+1>=tblRows.length)continue;
-    const hdrTcs=Array.from(tblRows[hdrIdx].getElementsByTagNameNS(WNS,'tc'));
-    const valTcs=Array.from(tblRows[hdrIdx+1].getElementsByTagNameNS(WNS,'tc'));
+    const brows=toArr(allTbls[ti].getElementsByTagNameNS(WNS,'tr'));
+    let hdrIdx=-1;for(let ri=0;ri<brows.length;ri++){if(getRowTxt(brows[ri]).toUpperCase().match(/K-1|REMEMBER/)){hdrIdx=ri;break;}}
+    if(hdrIdx<0||hdrIdx+1>=brows.length)continue;
+    const hdrTcs=toArr(brows[hdrIdx].getElementsByTagNameNS(WNS,'tc'));
+    const valTcs=toArr(brows[hdrIdx+1].getElementsByTagNameNS(WNS,'tc'));
     const tot=Object.values(bloomFilled).reduce((a,b)=>a+b,0);
     for(let ci=0;ci<hdrTcs.length&&ci<valTcs.length;ci++){
-      const ht=cellTxt(hdrTcs[ci]).toUpperCase().replace(/\s/g,'');
-      let val='';
+      const ht=cellTxt(hdrTcs[ci]).toUpperCase().replace(/\s/g,'');let val='';
       if(ht.includes('K-1')||ht.includes('K1')||ht.includes('REMEMBER'))val=String(bloomFilled.K1);
       else if(ht.includes('K-2')||ht.includes('K2')||ht.includes('UNDERSTAND'))val=String(bloomFilled.K2);
       else if(ht.includes('K-3')||ht.includes('K3')||ht.includes('APPLY'))val=String(bloomFilled.K3);
       else if(ht.includes('K-4')||ht.includes('K4')||ht.includes('ANALYZ'))val=String(bloomFilled.K4);
       else if(ht==='TOTAL'||ht.includes('TOTAL'))val=String(tot);
-      if(val){setCellContent(valTcs[ci],xmlDoc,[mkPara(xmlDoc,val,{bold:true,sz:22,center:true})]);dbgOk(`  Bloom[${ci}] "${ht}"→${val}`);}
+      if(val){setCellContent(valTcs[ci],xmlDoc,[mkPara(xmlDoc,val,{bold:true,sz:22,center:true})]);dbgOk(`  Bloom[${ci}]="${ht}"→${val}`);}
     }
     break;
   }
@@ -1146,18 +1230,19 @@ function mkPara(xmlDoc,text,opts={}){
   const rf=w('rFonts');rf.setAttributeNS(WNS,'w:ascii','Times New Roman');rf.setAttributeNS(WNS,'w:hAnsi','Times New Roman');rf.setAttributeNS(WNS,'w:cs','Times New Roman');rPr.appendChild(rf);
   run.appendChild(rPr);const t=w('t');t.textContent=text;t.setAttribute('xml:space','preserve');run.appendChild(t);p.appendChild(run);return p;
 }
+
+/* buildQXml — for plain text + images (no eq/table, those use cloneTcContent) */
 function buildQXml(xmlDoc,slot,rIdRemap){
   const w=n=>xmlDoc.createElementNS(WNS,'w:'+n);
   const paras=[];
-  const lines=(slot.paras&&slot.paras.length)?slot.paras:[{text:slot.text||'',images:slot.images||[]}];
+  const lines=(slot.paras&&slot.paras.length)?slot.paras:[{text:slot.text||'',images:slot.images||[],equations:[],tables:[]}];
   const isMCQ=slot.is_mcq;
   for(let pi=0;pi<lines.length;pi++){
     const{text,images}=lines[pi];const isOpt=isMCQ&&pi>0;
     for(const img of(images||[])){
-      const newRId=rIdRemap[img.origRId||img.rId];
-      if(!newRId){dbgWarn(`  img rId missing: ${img.origRId||img.rId}`);continue;}
+      const newRId=rIdRemap[img.origRId||img.rId];if(!newRId)continue;
       const dxml=[
-        `<w:drawing xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"`,
+        `<w:drawing xmlns:w="${WNS}"`,
         ` xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"`,
         ` xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"`,
         ` xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"`,
@@ -1171,7 +1256,7 @@ function buildQXml(xmlDoc,slot,rIdRemap){
         `<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic>`,
         `</a:graphicData></a:graphic></wp:inline></w:drawing>`
       ].join('');
-      try{const imgP=w('p');const iPPr=w('pPr');const ijc=w('jc');ijc.setAttributeNS(WNS,'w:val','center');iPPr.appendChild(ijc);imgP.appendChild(iPPr);const iR=w('r');const dEl=new DOMParser().parseFromString(dxml,'application/xml').documentElement;iR.appendChild(dEl);imgP.appendChild(iR);paras.push(imgP);}
+      try{const imgP=w('p');const iPPr=w('pPr');const ijc=w('jc');ijc.setAttributeNS(WNS,'w:val','center');iPPr.appendChild(ijc);imgP.appendChild(iPPr);const iR=w('r');const dEl=new DOMParser().parseFromString(dxml,'application/xml').documentElement;iR.appendChild(xmlDoc.importNode?xmlDoc.importNode(dEl,true):dEl);imgP.appendChild(iR);paras.push(imgP);}
       catch(e){dbgErr('Img XML:'+e.message);}
     }
     if(text&&text.trim()){
@@ -1221,20 +1306,18 @@ function renderPreview(slots,bloom,config){
   addPH('Part B – (5 × 16 = 80 Marks)');
   for(let qno=11;qno<=15;qno++){
     const modes=G.partBModes[qno]||{a:'split',b:'split'};
-    // Side A
     if(modes.a==='split'){
-      addQ(`${qno}(a)(i)`,  slots[`${qno} (a) (i)`]);
-      addQ(`${qno}(a)(ii)`, slots[`${qno} (a) (ii)`]);
+      addQ(`${qno}(a)(i)`,slots[`${qno} (a) (i)`]);
+      addQ(`${qno}(a)(ii)`,slots[`${qno} (a) (ii)`]);
     }else{
-      addQ(`${qno}(a)`, slots[`${qno} (a)`]);
+      addQ(`${qno}(a)`,slots[`${qno} (a)`]);
     }
     addOR();
-    // Side B
     if(modes.b==='split'){
-      addQ(`${qno}(b)(i)`,  slots[`${qno} (b) (i)`]);
-      addQ(`${qno}(b)(ii)`, slots[`${qno} (b) (ii)`]);
+      addQ(`${qno}(b)(i)`,slots[`${qno} (b) (i)`]);
+      addQ(`${qno}(b)(ii)`,slots[`${qno} (b) (ii)`]);
     }else{
-      addQ(`${qno}(b)`, slots[`${qno} (b)`]);
+      addQ(`${qno}(b)`,slots[`${qno} (b)`]);
     }
     addSep();
   }
@@ -1245,15 +1328,38 @@ function renderPreview(slots,bloom,config){
   bc.innerHTML=['K1','K2','K3','K4'].map(k=>`<div class="bloom-card"><div class="bk">${k}</div><div class="bn">${nm[k]}</div><div class="bv">${bloom[k]}</div></div>`).join('')
     +`<div class="bloom-card btotal"><div class="bk">Total</div><div class="bn">All</div><div class="bv">${tot}</div></div>`;
 }
+
+/* Enhanced renderQContent — shows equations and nested tables (from v2) */
 function renderQContent(q){
   const div=document.createElement('div');div.className='q-text';
   if(!q.paras||!q.paras.length){div.textContent=q.text||'[Not Available]';return div;}
   for(let pi=0;pi<q.paras.length;pi++){
     const p=q.paras[pi],isOpt=q.is_mcq&&pi>0;
     for(const img of(p.images||[])){const ie=document.createElement('img');ie.src=`data:${img.ct};base64,${img.b64}`;div.appendChild(ie);}
-    if(p.text?.trim()){const l=document.createElement('div');if(isOpt){l.style.cssText='padding-left:16px;font-size:12.5px;color:var(--g600)';l.textContent=`${String.fromCharCode(96+pi)}) ${p.text}`;}else l.textContent=p.text;div.appendChild(l);}
+    for(const eq of(p.equations||[])){
+      if(eq.text){const sp=document.createElement('span');sp.className='q-eq';sp.textContent=eq.text;div.appendChild(sp);}
+    }
+    for(const tblData of(p.tables||[])){
+      const table=document.createElement('table');table.className='q-nested-tbl';
+      tblData.rows.forEach((row,rIdx)=>{
+        const tr=document.createElement('tr');
+        row.forEach(cell=>{
+          const td=rIdx===0?document.createElement('th'):document.createElement('td');
+          td.textContent=cell.text;tr.appendChild(td);
+        });
+        table.appendChild(tr);
+      });
+      div.appendChild(table);
+    }
+    if(p.text?.trim()){
+      const l=document.createElement('div');
+      if(isOpt){l.style.cssText='padding-left:16px;font-size:12.5px;color:var(--g600)';l.textContent=`${String.fromCharCode(96+pi)}) ${p.text}`;}
+      else l.textContent=p.text;
+      div.appendChild(l);
+    }
   }
-  if(q.has_equation){const b=document.createElement('span');b.style.cssText='font-size:10px;font-family:var(--mono);background:#f0fdf4;color:#166534;border:1px solid #86efac;padding:1px 5px;border-radius:3px;margin-left:6px';b.textContent='∑ Eq';div.appendChild(b);}
+  if(q.has_equation){const b=document.createElement('span');b.style.cssText='font-size:10px;font-family:var(--mono);background:#fff7e6;color:#b45309;border:1px solid #fcd34d;padding:1px 5px;border-radius:3px;margin-left:6px';b.textContent='∑ Eq';div.appendChild(b);}
+  if(q.has_nested_table){const b=document.createElement('span');b.style.cssText='font-size:10px;font-family:var(--mono);background:#f0fdf4;color:#166534;border:1px solid #86efac;padding:1px 5px;border-radius:3px;margin-left:4px';b.textContent='⊞ Tbl';div.appendChild(b);}
   return div;
 }
 
@@ -1280,7 +1386,7 @@ function hideSpinner(){document.getElementById('spinnerOverlay').classList.remov
 function showPA(type,msg){const el=document.getElementById('parseAlert');const ic={loading:'⏳',success:'✅',error:'❌',warn:'⚠️'};const cl={loading:'a-info',success:'a-success',error:'a-error',warn:'a-warn'};el.style.display='flex';el.className=`alert ${cl[type]||'a-info'}`;el.innerHTML=`<span class="ai">${ic[type]||'ℹ️'}</span><span>${msg}</span>`;}
 function showGA(type,msg){const el=document.getElementById('genAlert');const ic={loading:'⏳',success:'✅',error:'❌',warn:'⚠️'};const cl={loading:'a-info',success:'a-success',error:'a-error',warn:'a-warn'};el.style.display='flex';el.className=`alert ${cl[type]||'a-info'}`;el.innerHTML=`<span class="ai">${ic[type]||'ℹ️'}</span><span>${msg}</span>`;}
 function togglePreview(){const s=document.getElementById('previewSection');s.style.display=s.style.display==='none'?'block':'none';}
-function toggleDebug(){const p=document.getElementById('debugPanel');p.classList.toggle('show');document.getElementById('debugBtn').textContent=p.classList.contains('show')?'🔍 Hide':'🔍 Debug';}
+function toggleDebug(){const p=document.getElementById('debugPanel');p.classList.toggle('show');document.getElementById('debugBtn').textContent=p.classList.contains('show')?'🔍 Hide Debug':'🔍 Debug';}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function escRx(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
 function fmtB(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
