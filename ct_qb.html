@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>KCET · Question Paper Generator v9</title>
+<title>KCET · Question Paper Generator v10</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -246,6 +246,39 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .pulse{animation:pulse 2s infinite}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--grey2)}::-webkit-scrollbar-thumb{background:var(--sky4);border-radius:3px}
 @media(max-width:900px){.up-grid{grid-template-columns:1fr}.unit-cols{grid-template-columns:repeat(2,1fr)}.bloom-grid{grid-template-columns:repeat(3,1fr)}.fr3,.fr4{grid-template-columns:1fr 1fr}.sub-slots{grid-template-columns:1fr}.pa-row{grid-template-columns:1fr}.lpool,.qpool{grid-template-columns:1fr}}
+
+/* ── REPHRASE MODAL ── */
+.rph-modal{display:none;position:fixed;inset:0;background:rgba(5,8,31,.85);backdrop-filter:blur(10px);z-index:8000;align-items:center;justify-content:center;padding:20px}
+.rph-modal.show{display:flex;animation:fadeIn .2s ease}
+.rph-box{background:var(--white);border-radius:var(--r20);max-width:780px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:var(--s3);overflow:hidden}
+.rph-hdr{padding:16px 20px;border-bottom:1px solid var(--grey3);display:flex;align-items:center;gap:10px;background:linear-gradient(to right,var(--sky6),var(--white))}
+.rph-hdr h3{font-size:14px;font-weight:700;color:var(--ink2);flex:1}
+.rph-close{width:28px;height:28px;border-radius:50%;background:var(--grey2);border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all var(--t)}.rph-close:hover{background:var(--coral);color:#fff}
+.rph-body{padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.rph-panel{border:1.5px solid var(--grey3);border-radius:var(--r10);overflow:hidden}
+.rph-panel-hdr{padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;font-family:var(--fm);display:flex;align-items:center;gap:6px}
+.rph-orig-hdr{background:var(--grey2);color:var(--grey6)}
+.rph-new-hdr{background:linear-gradient(to right,var(--sky6),var(--white));color:var(--sky)}
+.rph-panel-body{padding:12px;font-size:12.5px;color:var(--ink2);line-height:1.8;font-family:'Times New Roman',serif;min-height:60px}
+.rph-options{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 14px}
+.rph-opt{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--grey3);background:var(--grey1);color:var(--grey6);transition:all var(--t)}.rph-opt:hover{border-color:var(--sky3);color:var(--sky);background:var(--sky5)}.rph-opt.act{background:var(--sky);color:#fff;border-color:var(--sky)}
+.rph-loading{display:flex;align-items:center;gap:8px;padding:20px;color:var(--grey5);font-size:12px;font-family:var(--fm)}
+.rph-spin{width:18px;height:18px;border:2px solid var(--grey3);border-top-color:var(--sky);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.rph-footer{padding:14px 20px;border-top:1px solid var(--grey2);display:flex;gap:8px;align-items:center;background:var(--grey1)}
+.rph-btn-use{flex:1}
+
+/* ── QUICK FILL STRIP ── */
+.qf-strip{background:linear-gradient(to right,var(--sky6),var(--white));border:1px solid var(--sky4);border-radius:var(--r10);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.qf-lbl{font-size:10px;font-weight:700;color:var(--sky);text-transform:uppercase;letter-spacing:.5px;font-family:var(--fm)}
+.qf-btn{padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--sky4);background:var(--white);color:var(--sky);transition:all var(--t)}.qf-btn:hover{background:var(--sky);color:#fff;border-color:var(--sky)}
+
+/* ── REPHRASE BTN on sel box ── */
+.rph-trigger{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid var(--sky4);background:var(--sky5);color:var(--sky);margin-top:8px;transition:all var(--t)}.rph-trigger:hover{background:var(--sky);color:#fff;border-color:var(--sky)}
+.rph-trigger.rephrased{background:linear-gradient(135deg,var(--teal),#00a896);color:#fff;border-color:var(--teal)}
+
+/* ── UNIT GRID FOR PART B/C ── */
+.unit-selector-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px}
+.us-unit{flex:1;min-width:160px}
 </style>
 </head>
 <body>
@@ -262,7 +295,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 <div class="tb">
   <div class="tb-logo">📋</div>
   <div><div class="tb-t">KCET Question Paper Generator</div><div class="tb-s">R2021 CBCS · AQA Question Bank → Exam Template</div></div>
-  <span class="tb-ver">v9.0</span>
+  <span class="tb-ver">v10.0</span>
   <div class="tb-pill" id="bankPill">No AQA loaded</div>
 </div>
 
@@ -394,11 +427,50 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 </div>
 </div>
 
+<!-- REPHRASE MODAL -->
+<div class="rph-modal" id="rphModal">
+  <div class="rph-box">
+    <div class="rph-hdr">
+      <span style="font-size:18px">✨</span>
+      <h3>AI Rephrase Question</h3>
+      <button class="rph-close" onclick="closeRph()">✕</button>
+    </div>
+    <div style="padding:10px 20px 6px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--grey2)">
+      <span style="font-size:10px;font-weight:700;color:var(--grey6);text-transform:uppercase;letter-spacing:.5px;font-family:var(--fm)">Style:</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="rphStyles">
+        <span class="rph-opt act" onclick="setRphStyle(this,'rephrase')">Rephrase</span>
+        <span class="rph-opt" onclick="setRphStyle(this,'simplify')">Simplify</span>
+        <span class="rph-opt" onclick="setRphStyle(this,'formal')">More Formal</span>
+        <span class="rph-opt" onclick="setRphStyle(this,'elaborate')">Elaborate</span>
+        <span class="rph-opt" onclick="setRphStyle(this,'concise')">Concise</span>
+      </div>
+      <button class="btn btn-prim" style="margin-left:auto;padding:5px 14px;font-size:11px" onclick="runRephrase()">⚡ Generate</button>
+    </div>
+    <div class="rph-body">
+      <div class="rph-panel">
+        <div class="rph-panel-hdr rph-orig-hdr">📋 Original Question</div>
+        <div class="rph-panel-body" id="rphOrig"></div>
+      </div>
+      <div class="rph-panel">
+        <div class="rph-panel-hdr rph-new-hdr">✨ Rephrased Version</div>
+        <div id="rphNewWrap">
+          <div class="rph-panel-body" style="color:var(--grey5);font-style:italic;font-family:var(--ff)">Click "Generate" to rephrase with AI…</div>
+        </div>
+      </div>
+    </div>
+    <div class="rph-footer">
+      <button class="btn btn-teal rph-btn-use" id="rphUseBtn" onclick="useRephrased()" disabled>✅ Use Rephrased Version</button>
+      <button class="btn btn-sec" onclick="closeRph()">Cancel</button>
+      <span id="rphStatusBadge" style="font-size:10px;font-family:var(--fm);color:var(--grey5)"></span>
+    </div>
+  </div>
+</div>
+
 <script>
 'use strict';
 const WN='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const MN='http://schemas.openxmlformats.org/officeDocument/2006/math';
-let G={bank:[],meta:{},coOut:{},tplBuf:null,units:[],dbgLog:[],docxBlob:null,manualSlots:{}};
+let G={bank:[],meta:{},coOut:{},tplBuf:null,units:[],dbgLog:[],docxBlob:null,manualSlots:{},rph:{slotKey:null,origQ:null,rephrasedText:null,style:'rephrase'}};
 
 /* ── UTILS ── */
 const toA=nl=>{const a=[];for(let i=0;i<nl.length;i++)a.push(nl[i]);return a;};
@@ -625,6 +697,13 @@ function mkQCard(q,onSelect,isSelected=false){
 /* ── PART A BUILDER ── */
 function buildPartA(){
   const body=document.getElementById('partABody');body.innerHTML='';
+  // Quick-fill strip
+  const strip=document.createElement('div');strip.className='qf-strip';
+  strip.innerHTML=`<span class="qf-lbl">⚡ Quick Fill</span>
+    <span class="qf-btn" onclick="autoFillPartA()">Auto-assign all units</span>
+    <span class="qf-btn" onclick="clearPartA()">Clear all</span>
+    <span style="margin-left:auto;font-size:10px;color:var(--grey5);font-family:var(--fm)" id="paFillStatus"></span>`;
+  body.appendChild(strip);
   const qDefs=[{qno:1,type:'theory'},{qno:2,type:'mcq'},{qno:3,type:'theory'},{qno:4,type:'mcq'},{qno:5,type:'theory'}];
   const uOpts=G.units.map(u=>`<option value="${u}">${u}</option>`).join('');
   qDefs.forEach(({qno,type})=>{
@@ -638,31 +717,55 @@ function buildPartA(){
       <div class="av-panel" id="pa_avp_${qno}"></div>
     </div>
     <div class="pa-controls">
-      <div class="fr2">
-        <div class="fg"><label>Unit</label><select class="fsel" id="pa_unit_${qno}" onchange="onPAChange(${qno})"><option value="">— Select —</option>${uOpts}</select></div>
-        <div class="fg"><label>Portion</label><select class="fsel" id="pa_port_${qno}" onchange="onPAChange(${qno})"><option value="I">Portion I</option><option value="II">Portion II</option><option value="any">Any</option></select></div>
+      <div class="fg" style="max-width:320px">
+        <label>Unit</label>
+        <select class="fsel" id="pa_unit_${qno}" onchange="onPAChange(${qno})"><option value="">— Select Unit —</option>${uOpts}</select>
       </div>
-      <div id="pa_chooser_${qno}"></div>
+      <div id="pa_chooser_${qno}" style="margin-top:8px"></div>
       <div id="pa_selbox_${qno}"></div>
     </div>`;
     body.appendChild(row);
   });
 }
+
+function autoFillPartA(){
+  // Distribute 5 questions across available units, cycling through them
+  const units=G.units;if(!units.length)return;
+  const qDefs=[{qno:1,type:'theory'},{qno:2,type:'mcq'},{qno:3,type:'theory'},{qno:4,type:'mcq'},{qno:5,type:'theory'}];
+  // For each Q, pick unit that has most available questions of that type
+  qDefs.forEach(({qno,type})=>{
+    const isMCQ=type==='mcq';
+    let bestUnit='',bestCount=0;
+    units.forEach(u=>{
+      const cnt=G.bank.filter(q=>q.unit===u&&q.marks===2&&(isMCQ?q.is_mcq:!q.is_mcq)).length;
+      if(cnt>bestCount){bestCount=cnt;bestUnit=u;}
+    });
+    const sel=document.getElementById(`pa_unit_${qno}`);
+    if(sel&&bestUnit){sel.value=bestUnit;onPAChange(qno);}
+  });
+  document.getElementById('paFillStatus').textContent=`✓ Units assigned`;
+}
+
+function clearPartA(){
+  [1,2,3,4,5].forEach(qno=>{
+    const sel=document.getElementById(`pa_unit_${qno}`);if(sel)sel.value='';
+    const avp=document.getElementById(`pa_avp_${qno}`);if(avp)avp.innerHTML='';
+    const ch=document.getElementById(`pa_chooser_${qno}`);if(ch)ch.innerHTML='';
+    const sb=document.getElementById(`pa_selbox_${qno}`);if(sb)sb.innerHTML='';
+    delete G.manualSlots[String(qno)];
+  });
+  document.getElementById('paFillStatus').textContent='';
+}
+
 function onPAChange(qno){
   const unit=document.getElementById(`pa_unit_${qno}`)?.value||'';
-  const portion=document.getElementById(`pa_port_${qno}`)?.value||'any';
   const isMCQ=qno===2||qno===4;
   const avPanel=document.getElementById(`pa_avp_${qno}`);
   if(!unit){avPanel.innerHTML='';return;}
-  const poolAll=G.bank.filter(q=>q.unit===unit&&q.marks===2&&(isMCQ?q.is_mcq:!q.is_mcq));
-  const poolPort=poolAll.filter(q=>portion==='any'||q.portion===portion);
-  const p1=poolAll.filter(q=>q.portion==='I').length,p2=poolAll.filter(q=>q.portion==='II').length;
+  const pool=G.bank.filter(q=>q.unit===unit&&q.marks===2&&(isMCQ?q.is_mcq:!q.is_mcq));
   avPanel.innerHTML=`
-    <div class="av-row"><span class="av-lbl">Total</span><span class="av ${poolAll.length>0?'av-good':'av-none'}"><span class="av-count">${poolAll.length}</span></span></div>
-    <div class="av-row"><span class="av-lbl">Port I</span><span class="av ${p1>0?'av-blue':'av-none'}"><span class="av-count">${p1}</span></span></div>
-    <div class="av-row"><span class="av-lbl">Port II</span><span class="av ${p2>0?'av-blue':'av-none'}"><span class="av-count">${p2}</span></span></div>
-    <div class="av-row"><span class="av-lbl">Match</span><span class="av ${poolPort.length>0?'av-good':'av-warn'}"><span class="av-count">${poolPort.length}</span></span></div>`;
-  buildGenericChooser(document.getElementById(`pa_chooser_${qno}`),document.getElementById(`pa_selbox_${qno}`),String(qno),`Q${qno}`,poolPort);
+    <div class="av-row"><span class="av-lbl">Available</span><span class="av ${pool.length>0?'av-good':'av-none'}"><span class="av-count">${pool.length}</span></span></div>`;
+  buildGenericChooser(document.getElementById(`pa_chooser_${qno}`),document.getElementById(`pa_selbox_${qno}`),String(qno),`Q${qno} — 2M`,pool);
 }
 
 /* ── PART B BUILDER (FULL REDESIGN) ── */
@@ -684,19 +787,13 @@ function buildPartB(){
 
 function buildSideCard(prefix,side,label,sectionType,marksStr){
   const div=document.createElement('div');div.className=`pbc-section pbc-${sectionType}`;div.id=`${prefix}_side_${side}`;
-  const uOpts=G.units.map(u=>`<option value="${u}">${u}</option>`).join('');
   div.innerHTML=`
     <div class="side-card-hdr">
       <span class="sc-badge ${sectionType}">${label}</span>
       <span class="sc-title">${label} — Choose type</span>
       <span class="av" id="${prefix}_av_${side}" style="margin-left:auto">—</span>
     </div>
-    <div class="fr3">
-      <div class="fg"><label>Portion</label>
-        <select class="fsel" id="${prefix}_port_${side}" onchange="onSideChange('${prefix}','${side}')">
-          <option value="I">Portion I</option><option value="II">Portion II</option><option value="any">Any</option>
-        </select>
-      </div>
+    <div class="fr2" style="max-width:480px">
       <div class="fg"><label>Type</label>
         <div class="type-toggle" id="${prefix}_ttog_${side}">
           <div class="tt-opt act" data-val="single" onclick="setType('${prefix}','${side}','single')">Single (${marksStr}M)</div>
@@ -726,30 +823,24 @@ function onPBChange(){
 function onSideChange(prefix,side){
   const unitEl=document.getElementById(`${prefix}_unit`)||document.getElementById('pb_unit');
   const unit=unitEl?.value||'';
-  const port=document.getElementById(`${prefix}_port_${side}`)?.value||'any';
   const type=document.getElementById(`${prefix}_type_${side}`)?.value||'single';
   const marksMap={pb:8,pc:16};
   const totalMarks=marksMap[prefix]||8;
   const slotMarks=type==='single'?totalMarks:totalMarks/2;
-  const pool=G.bank.filter(q=>q.unit===unit&&q.marks===slotMarks&&(port==='any'||q.portion===port));
-  // Update availability badge
+  const pool=G.bank.filter(q=>q.unit===unit&&q.marks===slotMarks);
   const avEl=document.getElementById(`${prefix}_av_${side}`);
   if(avEl){avEl.className=`av ${pool.length>2?'av-good':pool.length>0?'av-warn':'av-none'}`;avEl.innerHTML=`<span class="av-count">${pool.length}</span> avail (${slotMarks}M)`;}
   const slotsEl=document.getElementById(`${prefix}_slots_${side}`);
   slotsEl.innerHTML='';
   if(!unit){slotsEl.innerHTML='<div class="nosel-box">Select a unit above</div>';return;}
   if(type==='single'){
-    // One slot
     buildGenericChooser(slotsEl,null,`${prefix}_${side}`,`${prefix==='pb'?'Q6':'Q'+getQnoFromPrefix(prefix)}(${side}) — ${slotMarks}M`,pool);
   }else{
-    // Two sub-slots
     const sub=document.createElement('div');sub.className='sub-slots';
     const w1=document.createElement('div');const w2=document.createElement('div');
     const subKey1=`${prefix}_${side}_i`,subKey2=`${prefix}_${side}_ii`;
-    const lbl1=`${prefix==='pb'?'Q6':'Q'+getQnoFromPrefix(prefix)}(${side})(i) — ${slotMarks}M`;
-    const lbl2=`${prefix==='pb'?'Q6':'Q'+getQnoFromPrefix(prefix)}(${side})(ii) — ${slotMarks}M`;
-    buildGenericChooser(w1,null,subKey1,lbl1,pool);
-    buildGenericChooser(w2,null,subKey2,lbl2,pool);
+    buildGenericChooser(w1,null,subKey1,`${prefix==='pb'?'Q6':'Q'+getQnoFromPrefix(prefix)}(${side})(i) — ${slotMarks}M`,pool);
+    buildGenericChooser(w2,null,subKey2,`${prefix==='pb'?'Q6':'Q'+getQnoFromPrefix(prefix)}(${side})(ii) — ${slotMarks}M`,pool);
     sub.appendChild(w1);sub.appendChild(w2);slotsEl.appendChild(sub);
   }
 }
@@ -779,18 +870,9 @@ function onPCUnitChange(qno){
   const unit=document.getElementById(`pc${qno}_unit`)?.value||'';
   const sidesEl=document.getElementById(`pc${qno}_sides`);sidesEl.innerHTML='';
   if(!unit){sidesEl.innerHTML='<div class="nosel-box">Select a unit above to configure sides</div>';return;}
-  // Build side a
   const sa=buildSideCard(`pc${qno}`,'a',`Q${qno} (a)`,'c','16');
   const sb=buildSideCard(`pc${qno}`,'b',`Q${qno} (b)`,'c','16');
   sidesEl.appendChild(sa);sidesEl.appendChild(sb);
-  // Init defaults
-  onSideChangePC(qno,'a',unit);
-  onSideChangePC(qno,'b',unit);
-  // Override change handlers
-  document.getElementById(`pc${qno}_port_a`).onchange=()=>onSideChangePC(qno,'a',unit);
-  document.getElementById(`pc${qno}_port_b`).onchange=()=>onSideChangePC(qno,'b',unit);
-  // Set default portions
-  if(document.getElementById(`pc${qno}_port_b`))document.getElementById(`pc${qno}_port_b`).value='II';
   onSideChangePC(qno,'a',unit);
   onSideChangePC(qno,'b',unit);
 }
@@ -798,10 +880,9 @@ function onPCUnitChange(qno){
 function onSideChangePC(qno,side,unitOverride){
   const prefix=`pc${qno}`;
   const unit=unitOverride||document.getElementById(`${prefix}_unit`)?.value||'';
-  const port=document.getElementById(`${prefix}_port_${side}`)?.value||'any';
   const type=document.getElementById(`${prefix}_type_${side}`)?.value||'single';
   const slotMarks=type==='single'?16:8;
-  const pool=G.bank.filter(q=>q.unit===unit&&q.marks===slotMarks&&(port==='any'||q.portion===port));
+  const pool=G.bank.filter(q=>q.unit===unit&&q.marks===slotMarks);
   const avEl=document.getElementById(`${prefix}_av_${side}`);
   if(avEl){avEl.className=`av ${pool.length>2?'av-good':pool.length>0?'av-warn':'av-none'}`;avEl.innerHTML=`<span class="av-count">${pool.length}</span> avail (${slotMarks}M)`;}
   const slotsEl=document.getElementById(`${prefix}_slots_${side}`);
@@ -899,11 +980,9 @@ async function doGenerate(){
   for(const{qno,type}of paDefs){
     if(G.manualSlots[String(qno)]){slots[String(qno)]=G.manualSlots[String(qno)];used.add(slots[String(qno)].uid);dbgOk(`Q${qno} MANUAL`);continue;}
     const unit=document.getElementById(`pa_unit_${qno}`)?.value||'';
-    const portion=document.getElementById(`pa_port_${qno}`)?.value||'any';
     if(!unit){warns.push(`Q${qno}: No unit selected`);slots[String(qno)]={uid:`na${qno}`,text:`[Q${qno} — not configured]`,marks:2,co:'?',k:'?',paras:[],images:[],is_mcq:type==='mcq',has_equation:false,has_nested_table:false};continue;}
-    const pool=G.bank.filter(q=>q.unit===unit&&q.marks===2&&(type==='mcq'?q.is_mcq:!q.is_mcq)&&(portion==='any'||q.portion===portion));
-    let q=pick(pool,used);
-    if(!q){const fb=G.bank.filter(q2=>q2.unit===unit&&q2.marks===2&&(type==='mcq'?q2.is_mcq:!q2.is_mcq));q=pick(fb,used);if(q)warns.push(`Q${qno}: fallback (portion mismatch)`);}
+    const pool=G.bank.filter(q=>q.unit===unit&&q.marks===2&&(type==='mcq'?q.is_mcq:!q.is_mcq));
+    const q=pick(pool,used);
     slots[String(qno)]=q||{uid:`na${qno}`,text:`[Not available — Q${qno}]`,marks:2,co:'?',k:'?',paras:[],images:[],is_mcq:type==='mcq',has_equation:false,has_nested_table:false};
     dbgOk(`Q${qno}: ${(slots[String(qno)]?.text||'').substring(0,60)}`);
   }
@@ -916,13 +995,12 @@ async function doGenerate(){
   else{
     for(const side of['a','b']){
       const type=document.getElementById(`pb_type_${side}`)?.value||'single';
-      const port=document.getElementById(`pb_port_${side}`)?.value||'any';
       const slotMarks=type==='single'?8:4;
       if(type==='single'){
         const slotKey=`pb_${side}`;
         if(G.manualSlots[slotKey])slots[`6 (${side})`]=G.manualSlots[slotKey];
         else{
-          const pool=G.bank.filter(q=>q.unit===pbUnit&&q.marks===8&&(port==='any'||q.portion===port));
+          const pool=G.bank.filter(q=>q.unit===pbUnit&&q.marks===8);
           slots[`6 (${side})`]=pick(pool,used)||{uid:'na6'+side,text:`[Not available]`,marks:8,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};
         }
         if(slots[`6 (${side})`]?.uid)used.add(slots[`6 (${side})`].uid);
@@ -931,7 +1009,7 @@ async function doGenerate(){
           const slotKey=`pb_${side}_${sub}`;
           if(G.manualSlots[slotKey])slots[`6 (${side}) (${sub})`]=G.manualSlots[slotKey];
           else{
-            const pool=G.bank.filter(q=>q.unit===pbUnit&&q.marks===4&&(port==='any'||q.portion===port));
+            const pool=G.bank.filter(q=>q.unit===pbUnit&&q.marks===4);
             slots[`6 (${side}) (${sub})`]=pick(pool,used)||{uid:'na6'+side+sub,text:`[Not available]`,marks:4,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};
           }
           if(slots[`6 (${side}) (${sub})`]?.uid)used.add(slots[`6 (${side}) (${sub})`].uid);
@@ -949,13 +1027,12 @@ async function doGenerate(){
     if(!unit){warns.push(`Q${qno}: No unit selected`);continue;}
     for(const side of['a','b']){
       const type=document.getElementById(`pc${qno}_type_${side}`)?.value||'single';
-      const port=document.getElementById(`pc${qno}_port_${side}`)?.value||'any';
       pcModes[qno][side]=type;
       if(type==='single'){
         const slotKey=`pc${qno}_${side}`;
         if(G.manualSlots[slotKey])slots[`${qno} (${side})`]=G.manualSlots[slotKey];
         else{
-          const pool=G.bank.filter(q=>q.unit===unit&&q.marks===16&&(port==='any'||q.portion===port));
+          const pool=G.bank.filter(q=>q.unit===unit&&q.marks===16);
           slots[`${qno} (${side})`]=pick(pool,used)||{uid:'na'+qno+side,text:`[Not available]`,marks:16,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};
         }
         if(slots[`${qno} (${side})`]?.uid)used.add(slots[`${qno} (${side})`].uid);
@@ -964,7 +1041,7 @@ async function doGenerate(){
           const slotKey=`pc${qno}_${side}_${sub}`;
           if(G.manualSlots[slotKey])slots[`${qno} (${side}) (${sub})`]=G.manualSlots[slotKey];
           else{
-            const pool=G.bank.filter(q=>q.unit===unit&&q.marks===8&&(port==='any'||q.portion===port));
+            const pool=G.bank.filter(q=>q.unit===unit&&q.marks===8);
             slots[`${qno} (${side}) (${sub})`]=pick(pool,used)||{uid:'na'+qno+side+sub,text:`[Not available]`,marks:8,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};
           }
           if(slots[`${qno} (${side}) (${sub})`]?.uid)used.add(slots[`${qno} (${side}) (${sub})`].uid);
@@ -1209,6 +1286,160 @@ function hideSpin(){document.getElementById('spinOv').classList.remove('show');}
 function showAlert(id,type,msg){const el=document.getElementById(id);const ic={info:'ℹ️',ok:'✅',err:'❌',warn:'⚠️'};const cl={info:'a-info',ok:'a-ok',err:'a-err',warn:'a-warn'};el.style.display='flex';el.className='alert '+cl[type];el.innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;}
 function togPrv(){const s=document.getElementById('prvSec');s.style.display=s.style.display==='none'?'block':'none';}
 function togDbg(){const p=document.getElementById('dbgPanel');p.classList.toggle('show');}
+
+/* ══════════════════════════════════════════
+   ✨  AI REPHRASE  –  Anthropic API
+   ══════════════════════════════════════════ */
+function openRph(slotKey,q){
+  G.rph={slotKey,origQ:q,rephrasedText:null,style:'rephrase'};
+  // Show original
+  document.getElementById('rphOrig').textContent=q.text||'(no text)';
+  document.getElementById('rphNewWrap').innerHTML=`<div class="rph-panel-body" style="color:var(--grey5);font-style:italic;font-family:var(--ff)">Click ⚡ Generate to rephrase with AI…</div>`;
+  document.getElementById('rphUseBtn').disabled=true;
+  document.getElementById('rphStatusBadge').textContent='';
+  // Reset style buttons
+  document.querySelectorAll('#rphStyles .rph-opt').forEach(o=>o.classList.toggle('act',o.textContent==='Rephrase'));
+  document.getElementById('rphModal').classList.add('show');
+}
+function closeRph(){document.getElementById('rphModal').classList.remove('show');}
+function setRphStyle(el,style){
+  G.rph.style=style;
+  document.querySelectorAll('#rphStyles .rph-opt').forEach(o=>o.classList.remove('act'));
+  el.classList.add('act');
+}
+
+async function runRephrase(){
+  const q=G.rph.origQ;if(!q)return;
+  const style=G.rph.style||'rephrase';
+  const wrap=document.getElementById('rphNewWrap');
+  const statusBadge=document.getElementById('rphStatusBadge');
+  wrap.innerHTML=`<div class="rph-loading"><div class="rph-spin"></div><span>Rephrasing with Claude AI…</span></div>`;
+  document.getElementById('rphUseBtn').disabled=true;
+  statusBadge.textContent='';
+
+  const styleInstructions={
+    rephrase:'Rephrase the question differently while preserving the exact same meaning, topic, and difficulty level.',
+    simplify:'Simplify the language of the question so it is easier to understand, while keeping the same core question.',
+    formal:'Make the question more formal and academically rigorous in language.',
+    elaborate:'Add more context or detail to make the question clearer and more specific.',
+    concise:'Make the question more concise and direct without losing essential meaning.'
+  };
+
+  const prompt=`You are an academic question rephraser for engineering exams. ${styleInstructions[style]||styleInstructions.rephrase}
+
+IMPORTANT RULES:
+- Keep the same subject matter: ${q.unit||'Engineering'}
+- Keep the same Bloom level / cognitive demand
+- Keep the same marks context (${q.marks||2} marks)
+- Output ONLY the rephrased question text, nothing else
+- No preamble, no explanation, no quotes around the output
+- Preserve any technical terms, formulas, or specific names exactly
+
+Original question:
+${q.text}
+
+Rephrased question:`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:400,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(!res.ok){const err=await res.json();throw new Error(err?.error?.message||`API error ${res.status}`);}
+    const data=await res.json();
+    const text=(data.content||[]).map(c=>c.text||'').join('').trim();
+    if(!text)throw new Error('Empty response from AI');
+    G.rph.rephrasedText=text;
+    wrap.innerHTML=`<div class="rph-panel-body" style="font-family:'Times New Roman',serif">${esc(text)}</div>`;
+    document.getElementById('rphUseBtn').disabled=false;
+    statusBadge.textContent='✅ Ready';
+  }catch(e){
+    wrap.innerHTML=`<div class="rph-panel-body" style="color:var(--coral)">⚠️ ${esc(e.message)}</div>`;
+    statusBadge.textContent='❌ Error';
+  }
+}
+
+function useRephrased(){
+  const{slotKey,origQ,rephrasedText}=G.rph;
+  if(!rephrasedText||!origQ)return;
+  // Clone the question object and override text
+  const newQ={...origQ,text:rephrasedText,paras:[{text:rephrasedText,images:[],equations:[],tables:[]}],_rephrased:true};
+  G.manualSlots[slotKey]=newQ;
+  // Update the selbox display
+  const sbId='sb_'+slotKey.replace(/[^a-zA-Z0-9]/g,'_');
+  const sbEl=document.getElementById(sbId);
+  if(sbEl){
+    renderSelBox(sbEl,newQ);
+    // Add rephrased badge
+    const badge=document.createElement('div');
+    badge.style.cssText='font-size:9px;font-family:var(--fm);color:var(--teal);margin-top:4px;padding:2px 8px;background:rgba(0,194,168,.1);border-radius:10px;display:inline-block';
+    badge.textContent='✨ AI Rephrased';
+    sbEl.appendChild(badge);
+    // Update rephrase trigger button
+    const trigId='rph_'+slotKey.replace(/[^a-zA-Z0-9]/g,'_');
+    const trig=document.getElementById(trigId);
+    if(trig){trig.textContent='✨ Rephrased';trig.classList.add('rephrased');}
+  }
+  closeRph();
+}
+
+/* ── Patch renderSelBox to add rephrase button ── */
+const _origRenderSelBox=renderSelBox;
+window.renderSelBox=function(container,q,slotKey){
+  _origRenderSelBox(container,q);
+  if(slotKey&&q.text){
+    const btn=document.createElement('button');
+    btn.className='rph-trigger';
+    btn.id='rph_'+slotKey.replace(/[^a-zA-Z0-9]/g,'_');
+    btn.innerHTML='✨ Rephrase with AI';
+    if(q._rephrased)btn.classList.add('rephrased');
+    btn.onclick=()=>openRph(slotKey,q);
+    container.appendChild(btn);
+  }
+};
+
+/* ── Patch buildGenericChooser to pass slotKey to renderSelBox ── */
+const _origBuildGC=buildGenericChooser;
+window.buildGenericChooser=function(wrapperOrParent,selBoxEl,slotKey,label,pool){
+  delete G.manualSlots[slotKey];
+  const chId='ch_'+slotKey.replace(/[^a-zA-Z0-9]/g,'_');
+  const sbId='sb_'+slotKey.replace(/[^a-zA-Z0-9]/g,'_');
+  const avCls=pool.length>3?'av-good':pool.length>0?'av-warn':'av-none';
+  const ch=document.createElement('div');ch.className='qchooser';ch.id=chId;
+  ch.innerHTML=`<div class="qch-hdr" onclick="togCh('${chId}')">
+    <span class="av ${avCls}" style="font-size:10px"><span class="av-count">${pool.length}</span> avail</span>
+    <span class="qch-title" style="margin-left:8px">📌 ${esc(label)}</span>
+    <span class="qch-toggle">▾</span>
+  </div>
+  <div class="qch-body"><div class="qpool" id="pool_${chId}"></div></div>`;
+  wrapperOrParent.appendChild(ch);
+  const selBox=selBoxEl||document.createElement('div');
+  if(!selBoxEl){selBox.id=sbId;wrapperOrParent.appendChild(selBox);}
+  selBox.innerHTML=`<div class="nosel-box">🎲 Auto-select — or expand above to pick manually</div>`;
+  if(!pool.length){ch.querySelector('.qpool').innerHTML='<div class="qpool-empty">No matching questions found</div>';return;}
+  const poolEl=ch.querySelector('.qpool');
+  pool.forEach(q=>{
+    const card=mkQCard(q,(selQ,cardEl)=>{
+      poolEl.querySelectorAll('.qcard').forEach(c=>c.classList.remove('selected'));
+      cardEl.classList.add('selected');
+      G.manualSlots[slotKey]=selQ;
+      selBox.innerHTML='';
+      window.renderSelBox(selBox,selQ,slotKey);
+      ch.classList.remove('open');
+    });
+    poolEl.appendChild(card);
+  });
+};
+
+// Close modal on backdrop click
+document.getElementById('rphModal').addEventListener('click',function(e){if(e.target===this)closeRph();});
+// ESC key to close
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeRph();});
 </script>
 </body>
 </html>
