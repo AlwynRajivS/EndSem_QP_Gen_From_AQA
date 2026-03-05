@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Question Bank Manager v8 – Template Edition</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f1ec;--bg2:#edeae3;--surface:#fff;--surface2:#faf8f5;--border:rgba(0,0,0,.09);--border2:rgba(0,0,0,.05);--ink:#1a1714;--ink2:#4a4540;--ink3:#8a857e;--accent:#c84b2f;--accent2:#e8956a;--blue:#2d5a8e;--green:#2e7d4f;--gold:#b8860b;--purple:#6b4fa8;--shadow-sm:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.06);--shadow:0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05);--shadow-lg:0 12px 40px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.06);--r:12px;--r-sm:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:13.5px;line-height:1.6;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(200,75,47,.06) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 85% 80%,rgba(45,90,142,.06) 0%,transparent 60%)}
+body::after{content:'';position:fixed;inset:0;z-index:-1;background-image:radial-gradient(circle at 1px 1px,rgba(0,0,0,.04) 1px,transparent 0);background-size:28px 28px;pointer-events:none}
+header{background:rgba(255,255,255,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200;box-shadow:var(--shadow-sm)}
+.logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:.95rem;font-weight:700;color:#fff;box-shadow:0 3px 10px rgba(200,75,47,.35);flex-shrink:0}
+header h1{font-family:'Fraunces',serif;font-size:1.05rem;color:var(--ink);flex:1;font-weight:600}
+header h1 em{color:var(--accent);font-style:normal}
+.hbadge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;background:var(--surface2);border:1px solid var(--border);color:var(--ink2);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbadge.live{background:rgba(200,75,47,.08);border-color:rgba(200,75,47,.25);color:var(--accent)}
+.hbadge.v{background:rgba(46,125,79,.1);border-color:rgba(46,125,79,.3);color:var(--green)}
+.app{display:grid;grid-template-columns:224px 1fr;min-height:calc(100vh - 60px)}
+aside{background:rgba(255,255,255,.7);backdrop-filter:blur(12px);border-right:1px solid var(--border);padding:14px 0;display:flex;flex-direction:column;gap:1px;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+.ng{padding:9px 14px 3px}.ngl{font-size:10px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink3)}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 14px;cursor:pointer;color:var(--ink2);font-size:13px;border-left:2.5px solid transparent;transition:all .15s;user-select:none}
+.ni:hover{background:rgba(0,0,0,.03);color:var(--ink)}
+.ni.active{background:linear-gradient(90deg,rgba(200,75,47,.08),transparent);color:var(--accent);border-left-color:var(--accent);font-weight:500}
+.nic{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.nct{margin-left:auto;background:var(--bg2);color:var(--ink2);font-size:10px;padding:1px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace}
+.ni.active .nct{background:rgba(200,75,47,.12);color:var(--accent)}
+.nd{height:1px;background:var(--border);margin:5px 14px}
+main{padding:26px 30px;overflow-y:auto;min-width:0}
+.page{display:none}.page.active{display:block;animation:pageIn .3s cubic-bezier(.22,1,.36,1) both}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap}
+.ph-title{font-family:'Fraunces',serif;font-size:1.9rem;color:var(--ink);line-height:1.15;font-weight:600}
+.ph-title em{color:var(--accent);font-style:italic}
+.ph-sub{color:var(--ink3);font-size:12px;margin-top:4px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:18px;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
+.card:hover{box-shadow:var(--shadow)}
+.card-hdr{display:flex;align-items:center;gap:9px;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--border2)}
+.card-title{font-size:.85rem;font-weight:600;color:var(--ink)}
+.card-icon{width:28px;height:28px;border-radius:7px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:13px}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:11px;margin-bottom:20px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;text-align:center;box-shadow:var(--shadow-sm);transition:all .2s;cursor:default}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.sc .sn{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;line-height:1;color:var(--ink)}
+.sc .sl{font-size:10px;color:var(--ink3);margin-top:4px;font-weight:500}
+.upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.uz{border:2px dashed var(--border);border-radius:var(--r);padding:20px 14px;text-align:center;position:relative;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.uz:hover,.uz.drag{border-color:var(--accent);background:rgba(200,75,47,.04)}
+.uz.filled{border-style:solid;border-color:var(--green);background:rgba(46,125,79,.04)}
+.uz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2}
+.uz .zi{font-size:2rem;margin-bottom:8px;display:block}
+.uz h3{font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:3px}
+.uz p{font-size:11px;color:var(--ink3)}
+.fchips{margin-top:8px;display:flex;flex-direction:column;gap:3px;max-height:100px;overflow-y:auto}
+.fc{display:flex;align-items:center;gap:5px;background:var(--bg2);border-radius:5px;padding:3px 7px;font-size:11px;color:var(--ink2)}
+.fc .fr{margin-left:auto;cursor:pointer;color:var(--accent);border:none;background:none;font-size:12px}
+.pbar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin:7px 0}
+.pfill{height:100%;background:linear-gradient(90deg,var(--accent) 0%,var(--accent2) 50%,var(--accent) 100%);background-size:200% 100%;animation:shimmer 1.5s linear infinite;transition:width .3s}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r-sm);font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.bp{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(200,75,47,.3)}.bp:hover{background:#b53d22}
+.bs{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(45,90,142,.25)}.bs:hover{background:#244a78}
+.bg2btn{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(46,125,79,.25)}.bg2btn:hover{background:#236b3e}
+.bd{background:transparent;border:1px solid rgba(200,75,47,.3);color:var(--accent)}.bd:hover{background:rgba(200,75,47,.06)}
+.bg{background:var(--surface);border:1px solid var(--border);color:var(--ink2)}.bg:hover{background:var(--bg2)}
+.bsm{padding:5px 11px;font-size:12px;border-radius:6px}
+.bg2{display:flex;gap:8px;flex-wrap:wrap}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fi{display:flex;flex-direction:column;gap:4px}
+.fi.full{grid-column:1/-1}
+.fi label{font-size:10px;font-weight:600;letter-spacing:.6px;color:var(--ink3);text-transform:uppercase}
+.fi input,.fi select,.fi textarea{background:var(--surface2);border:1.5px solid var(--border);color:var(--ink);padding:8px 11px;border-radius:var(--r-sm);font-family:inherit;font-size:13px;outline:none;transition:all .15s}
+.fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px rgba(200,75,47,.08)}
+.fi textarea{min-height:75px;resize:vertical}
+.mcq-rows{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.mcq-row{display:flex;gap:7px;align-items:center}
+.ol{width:22px;height:22px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--ink3);flex-shrink:0}
+.mcq-row input[type=text]{flex:1}
+.mcq-row input[type=radio]{accent-color:var(--green);cursor:pointer;width:14px;height:14px}
+.tw{overflow-x:auto;border-radius:var(--r-sm);border:1px solid var(--border)}
+table.qb{width:100%;border-collapse:collapse;font-size:12.5px}
+table.qb thead tr{background:var(--bg2)}
+table.qb th{padding:9px 10px;text-align:left;font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3);font-weight:600;white-space:nowrap;border-bottom:1.5px solid var(--border)}
+table.qb td{padding:9px 10px;border-bottom:1px solid var(--border2);vertical-align:top;color:var(--ink2)}
+table.qb tbody tr:hover{background:rgba(200,75,47,.02)}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .15s}
+.q-card:hover{box-shadow:var(--shadow);transform:translateY(-1px)}
+.q-card-header{display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--surface2);border-bottom:1px solid var(--border2)}
+.q-card-body{padding:11px 15px}
+.q-card-footer{display:flex;align-items:center;gap:7px;padding:7px 13px;background:var(--bg2);border-top:1px solid var(--border2);flex-wrap:wrap}
+.q-num-badge{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.q-co-tag{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;background:rgba(200,75,47,.1);color:var(--accent)}
+.q-btl-tag{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px}
+.q-marks-tag{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;background:rgba(45,90,142,.1);color:var(--blue)}
+.q-text{font-size:13px;color:var(--ink);line-height:1.7;font-family:'Times New Roman',serif}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:9px}
+.opt-item{display:flex;align-items:flex-start;gap:7px;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;background:var(--surface2);font-size:12px;color:var(--ink2)}
+.opt-label{width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+.sa-answer-line{margin-top:7px;padding:5px 9px;border-left:3px solid var(--green);background:rgba(46,125,79,.06);border-radius:0 5px 5px 0;font-size:11px;color:var(--green);font-style:italic}
+.unit-section{margin-bottom:26px}
+.unit-header{display:flex;align-items:center;gap:11px;padding:9px 15px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;cursor:pointer;user-select:none;transition:all .15s;box-shadow:var(--shadow-sm);margin-bottom:11px}
+.unit-header:hover{background:var(--surface2);border-color:rgba(200,75,47,.2)}
+.unit-num{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:.9rem;font-weight:700;color:#fff;box-shadow:0 2px 8px rgba(200,75,47,.3)}
+.unit-title{flex:1;font-weight:600;color:var(--ink);font-size:.85rem}
+.unit-meta{font-size:11px;color:var(--ink3)}
+.unit-caret{color:var(--ink3);transition:transform .2s;font-size:11px}
+.unit-header.closed .unit-caret{transform:rotate(-90deg)}
+.unit-body{display:block}
+.pb-card{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--purple);border-radius:11px;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
+.pb-card:hover{box-shadow:var(--shadow)}
+.pb-header{display:flex;align-items:center;gap:9px;padding:9px 13px;background:linear-gradient(90deg,rgba(107,79,168,.07),transparent);border-bottom:1px solid var(--border2)}
+.pb-body{padding:13px 15px}
+.pb-footer{display:flex;align-items:center;gap:7px;padding:7px 13px;background:var(--bg2);border-top:1px solid var(--border2);flex-wrap:wrap}
+.marks-big{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:3px 9px;border-radius:5px;background:rgba(107,79,168,.12);color:var(--purple)}
+.eq-inline{font-family:'Times New Roman',serif;font-style:italic;background:#fff7e6;border:1px solid #fcd34d;border-radius:3px;padding:1px 5px;font-size:12px;color:#92400e;display:inline-block;vertical-align:middle;margin:1px 2px}
+.nested-tbl-wrap{margin:5px 0;overflow-x:auto}
+.nested-tbl{border-collapse:collapse;font-size:11.5px;font-family:'Times New Roman',serif}
+.nested-tbl td,.nested-tbl th{border:1px solid var(--border);padding:3px 7px;text-align:center}
+.nested-tbl th{background:var(--bg2);font-weight:700;color:var(--ink2)}
+.q-has-eq-badge{display:inline-flex;align-items:center;gap:2px;font-size:9px;font-family:'JetBrains Mono',monospace;background:#fff7e6;color:#b45309;border:1px solid #fcd34d;border-radius:9px;padding:1px 5px;margin-left:4px;vertical-align:middle}
+.q-has-tbl-badge{display:inline-flex;align-items:center;gap:2px;font-size:9px;font-family:'JetBrains Mono',monospace;background:#f0fdf4;color:#166534;border:1px solid #86efac;border-radius:9px;padding:1px 5px;margin-left:4px;vertical-align:middle}
+.pill{display:inline-block;padding:2px 7px;border-radius:18px;font-size:10px;font-weight:600}
+.p-ct{background:rgba(200,75,47,.1);color:var(--accent)}.p-es{background:rgba(46,125,79,.1);color:var(--green)}.p-aqa{background:rgba(107,79,168,.1);color:var(--purple)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.overlay.open{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:680px;width:92%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:modalPop .22s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes modalPop{from{transform:scale(.9) translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.mtitle{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--ink);font-weight:600}
+.mc{background:var(--bg2);border:none;color:var(--ink3);font-size:1rem;cursor:pointer;padding:5px 8px;border-radius:7px;transition:all .15s}
+.mc:hover{background:rgba(200,75,47,.1);color:var(--accent)}
+.log{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:11px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink3);max-height:180px;overflow-y:auto;margin-top:9px}
+.lok{color:var(--green)}.lerr{color:var(--accent)}.lwarn{color:var(--gold)}.linfo{color:var(--blue)}
+.empty{text-align:center;padding:48px 20px;color:var(--ink3)}
+.empty .ei{font-size:2.8rem;margin-bottom:12px;display:block}
+.empty h3{color:var(--ink2);font-size:.95rem;margin-bottom:5px;font-family:'Fraunces',serif}
+.empty p{font-size:12px;max-width:300px;margin:0 auto}
+.filter-row{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.filter-row select,.filter-row input{background:var(--surface);border:1.5px solid var(--border);color:var(--ink);padding:7px 10px;border-radius:7px;font-family:inherit;font-size:12px;outline:none;transition:border-color .15s}
+.filter-row select:focus,.filter-row input:focus{border-color:var(--accent)}
+.filter-row input[type=text]{min-width:170px}
+.exp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px;margin-top:11px}
+.exc{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:16px 13px;cursor:pointer;transition:all .2s;text-align:center}
+.exc:hover{border-color:var(--accent);background:rgba(200,75,47,.04);transform:translateY(-2px);box-shadow:var(--shadow)}
+.exc .ei{font-size:1.8rem;margin-bottom:7px;display:block}
+.exc h4{font-size:.8rem;color:var(--ink);margin-bottom:3px;font-weight:600}
+.exc p{font-size:10px;color:var(--ink3)}
+.exc.primary-exp{border-color:rgba(200,75,47,.35);background:rgba(200,75,47,.04)}
+.exc.primary-exp:hover{border-color:var(--accent);background:rgba(200,75,47,.08)}
+.img-area{border:1.5px dashed var(--border);border-radius:7px;padding:10px;text-align:center;cursor:pointer;font-size:11px;color:var(--ink3);transition:all .15s;display:block}
+.img-area:hover{border-color:var(--accent);color:var(--ink)}
+.imgp{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
+.ithumb{position:relative;display:inline-block}
+.ithumb img{max-width:100px;max-height:65px;border-radius:5px;display:block;border:1.5px solid var(--border)}
+.ithumb .ri{position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fix-note{background:rgba(46,125,79,.07);border:1px solid rgba(46,125,79,.2);border-radius:8px;padding:9px 13px;font-size:11.5px;color:var(--green);margin-bottom:13px}
+.warn-note{background:rgba(184,134,11,.07);border:1px solid rgba(184,134,11,.25);border-radius:8px;padding:9px 13px;font-size:11.5px;color:var(--gold);margin-bottom:13px}
+#toasts{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 15px;font-size:12px;color:var(--ink2);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;min-width:240px;animation:toastSlide .22s cubic-bezier(.34,1.56,.64,1);border-left:3px solid var(--blue)}
+.toast.ok{border-left-color:var(--green)}.toast.err{border-left-color:var(--accent)}.toast.warn{border-left-color:var(--gold)}
+@keyframes toastSlide{from{transform:translateX(36px);opacity:0}to{transform:none;opacity:1}}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:768px){.app{grid-template-columns:1fr}aside{display:none}.upload-grid,.fg{grid-template-columns:1fr}}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+mark{background:rgba(200,75,47,.15);color:var(--accent);border-radius:2px}
+#progress-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+#progress-overlay.show{display:flex}
+.progress-box{background:var(--surface);border-radius:16px;padding:30px 36px;min-width:360px;text-align:center;box-shadow:var(--shadow-lg);border:1px solid var(--border)}
+.progress-box h3{font-family:'Fraunces',serif;font-size:1.2rem;margin-bottom:18px;color:var(--ink)}
+.progress-box .big-pbar{height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:10px}
+.progress-box .big-pfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:5px;transition:width .3s}
+.progress-box .prog-msg{font-size:12px;color:var(--ink3);font-family:'JetBrains Mono',monospace}
+.exp-preview{background:var(--bg2);border-radius:8px;padding:12px;font-size:11.5px;font-family:'JetBrains Mono',monospace;color:var(--ink2);margin-top:12px;line-height:1.7;max-height:160px;overflow-y:auto}
+.tmpl-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,rgba(107,79,168,.12),rgba(45,90,142,.08));border:1px solid rgba(107,79,168,.3);border-radius:8px;padding:5px 12px;font-size:11px;color:var(--purple);font-weight:600;margin-bottom:12px}
+.analysis-tbl{width:100%;border-collapse:collapse;font-size:12px;font-family:'JetBrains Mono',monospace}
+.analysis-tbl th{background:var(--bg2);padding:7px 10px;font-size:10px;text-align:center;border:1px solid var(--border);font-weight:700;color:var(--ink2)}
+.analysis-tbl td{padding:6px 10px;border:1px solid var(--border2);text-align:center;color:var(--ink2)}
+.analysis-tbl td:first-child{text-align:left;font-weight:600;padding-left:12px}
+.analysis-tbl tr:hover td{background:rgba(200,75,47,.02)}
+.analysis-tbl .section-row td{background:rgba(200,75,47,.04);font-weight:700;color:var(--accent);font-size:10px;letter-spacing:.5px;text-transform:uppercase}
+.analysis-tbl .val-cell{font-weight:700}
+.analysis-tbl .val-cell.nz{color:var(--accent)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">QB</div>
+  <h1>Question Bank <em>Manager</em> <span style="font-size:10px;background:rgba(200,75,47,.1);color:var(--accent);padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace">v8.2</span></h1>
+  <span class="hbadge v">✦ v8.2 Dedup Fix</span>
+  <span class="hbadge" id="hbadge-sub">No Subject Loaded</span>
+  <span class="hbadge live" id="hbadge-cnt">0 Questions</span>
+</header>
+
+<div class="app">
+<aside>
+  <div class="ng"><div class="ngl">Overview</div></div>
+  <div class="ni active" onclick="nav('dash',this)"><span class="nic">📊</span>Dashboard</div>
+  <div class="ni" onclick="nav('upload',this)"><span class="nic">📤</span>Upload Files</div>
+  <div class="nd"></div>
+  <div class="ng"><div class="ngl">Question Bank</div></div>
+  <div class="ni" onclick="nav('sa',this)"><span class="nic">📝</span>Short Answer<span class="nct" id="nc-sa">0</span></div>
+  <div class="ni" onclick="nav('mcq',this)"><span class="nic">🔘</span>MCQ<span class="nct" id="nc-mcq">0</span></div>
+  <div class="ni" onclick="nav('pb',this)"><span class="nic">📋</span>Part B<span class="nct" id="nc-pb">0</span></div>
+  <div class="nd"></div>
+  <div class="ng"><div class="ngl">Tools</div></div>
+  <div class="ni" onclick="nav('add',this)"><span class="nic">➕</span>Add Question</div>
+  <div class="ni" onclick="nav('merge',this)"><span class="nic">🔗</span>Merge / Remap</div>
+  <div class="ni" onclick="nav('export',this)"><span class="nic">💾</span>Export / DOCX</div>
+  <div class="nd"></div>
+  <div class="ng"><div class="ngl">Diagnostics</div></div>
+  <div class="ni" onclick="nav('analytics',this)"><span class="nic">🔬</span>MCQ Analytics</div>
+</aside>
+
+<main>
+<!-- DASHBOARD -->
+<div class="page active" id="page-dash">
+  <div class="ph">
+    <div><div class="ph-title">Dashboard <em>&</em> Overview</div><div class="ph-sub" id="dash-info">Upload question papers to begin building your bank</div></div>
+    <div class="bg2">
+      <button class="btn bp" onclick="nav('upload',document.querySelectorAll('.ni')[1])">📤 Upload</button>
+      <button class="btn bg bsm" onclick="duplicateCheck()">🔍 Duplicates</button>
+      <button class="btn bg bsm" onclick="importJSON()">📂 Import JSON</button>
+      <button class="btn bg bsm" onclick="clearAll()">🗑️ Clear</button>
+    </div>
+  </div>
+  <div class="sg">
+    <div class="sc"><div class="sn" id="st-t" style="color:var(--accent)">0</div><div class="sl">Total</div></div>
+    <div class="sc"><div class="sn" id="st-sa" style="color:var(--blue)">0</div><div class="sl">Short Answer</div></div>
+    <div class="sc"><div class="sn" id="st-mcq" style="color:var(--gold)">0</div><div class="sl">MCQ</div></div>
+    <div class="sc"><div class="sn" id="st-pb" style="color:var(--purple)">0</div><div class="sl">Part B</div></div>
+    <div class="sc"><div class="sn" id="st-ct" style="color:var(--accent)">0</div><div class="sl">Cycle Test</div></div>
+    <div class="sc"><div class="sn" id="st-es" style="color:var(--green)">0</div><div class="sl">End Sem</div></div>
+    <div class="sc"><div class="sn" id="st-aqa" style="color:var(--purple)">0</div><div class="sl">AQA</div></div>
+    <div class="sc"><div class="sn" id="st-eq" style="color:var(--gold)">0</div><div class="sl">Equations</div></div>
+    <div class="sc"><div class="sn" id="st-tbl" style="color:var(--blue)">0</div><div class="sl">Tables</div></div>
+    <div class="sc"><div class="sn" id="st-img" style="color:var(--green)">0</div><div class="sl">Images</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">📈</div><div class="card-title">Unit-wise Breakdown</div></div>
+    <div id="unit-chart"><div class="empty"><span class="ei">📂</span><h3>No data yet</h3><p>Upload and process files to see statistics</p></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">📊</div><div class="card-title">Question Bank Analysis (Unit-wise)</div></div>
+    <div id="analysis-chart"><div class="empty"><span class="ei">📊</span><h3>No data yet</h3><p>Upload files to see full analysis</p></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">🎯</div><div class="card-title">CO × Bloom's Taxonomy Coverage</div></div>
+    <div id="co-chart"><div class="empty"><span class="ei">🎯</span><h3>No data yet</h3></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">📋</div><div class="card-title">Source Analytics — AQA / CT / ES</div></div>
+    <div id="src-chart"><div class="empty"><span class="ei">📋</span><h3>No data yet</h3><p>Upload files to see source breakdown</p></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">📊</div><div class="card-title">Mark-wise Breakdown</div></div>
+    <div id="marks-chart"><div class="empty"><span class="ei">📊</span><h3>No data yet</h3><p>Upload files to see mark distribution</p></div></div>
+  </div>
+</div>
+
+<!-- UPLOAD -->
+<div class="page" id="page-upload">
+  <div class="ph">
+    <div><div class="ph-title">Upload <em>Question Papers</em></div><div class="ph-sub">Drop or select multiple .docx files — equations & tables preserved natively</div></div>
+  </div>
+  <div class="fix-note">✅ <b>v8.2 Fix:</b> AQA MCQ duplicate options — 5-layer detection engine. Numbered list "1. 2. 3. 4." stripped from native XML via regex + direct content-matching against q.options[]. &lt;w:tab/&gt; captured as spaces. Per-section question numbering (SA/MCQ/Part B each restart at 1).</div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">🏫</div><div class="card-title">Subject Information</div></div>
+    <div class="fg">
+      <div class="fi"><label>Subject Name</label><input type="text" id="sub-name" placeholder="Auto-detected…"></div>
+      <div class="fi"><label>Course Code</label><input type="text" id="sub-code" placeholder="e.g. VEC311"></div>
+      <div class="fi"><label>Department</label><input type="text" id="sub-dept" value="ECE"></div>
+      <div class="fi"><label>Semester</label><input type="text" id="sub-sem" placeholder="e.g. Fifth Semester"></div>
+      <div class="fi"><label>Academic Year</label><input type="text" id="sub-year" placeholder="e.g. 2024-25"></div>
+      <div class="fi"><label>Subject Incharge</label><input type="text" id="sub-incharge" placeholder="Staff Name"></div>
+      <div class="fi"><label>Subject Expert</label><input type="text" id="sub-expert" placeholder="Expert Name"></div>
+      <div class="fi"><label>HOD Name</label><input type="text" id="sub-hod" placeholder="HOD Name"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">🎯</div><div class="card-title">CO Statements</div></div>
+    <div id="co-stmt-grid" class="fg"><div class="fi full" style="color:var(--ink3);font-size:12px;padding:6px 0">Upload and process files — CO statements will be extracted here.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">📚</div><div class="card-title">Unit Topics</div></div>
+    <div id="unit-topic-grid" class="fg"><div class="fi full" style="color:var(--ink3);font-size:12px;padding:6px 0">Upload and process files — unit topics will be extracted here.</div></div>
+  </div>
+  <div class="upload-grid">
+    <div class="uz" id="uz-ct" ondragover="dov(event,'ct')" ondragleave="dol('ct')" ondrop="ddr(event,'ct')">
+      <input type="file" multiple accept=".docx" onchange="fsel(event,'ct')">
+      <span class="zi">🔄</span><h3>Cycle Test Papers</h3><p>Internal Assessment / Quiz</p>
+      <div class="pbar" id="pb-ct" style="display:none"><div class="pfill" id="pf-ct" style="width:0%"></div></div>
+      <div class="fchips" id="fl-ct"></div>
+    </div>
+    <div class="uz" id="uz-es" ondragover="dov(event,'es')" ondragleave="dol('es')" ondrop="ddr(event,'es')">
+      <input type="file" multiple accept=".docx" onchange="fsel(event,'es')">
+      <span class="zi">📄</span><h3>End Semester Papers</h3><p>Final / University Examinations</p>
+      <div class="pbar" id="pb-es" style="display:none"><div class="pfill" id="pf-es" style="width:0%"></div></div>
+      <div class="fchips" id="fl-es"></div>
+    </div>
+    <div class="uz" id="uz-aqa" ondragover="dov(event,'aqa')" ondragleave="dol('aqa')" ondrop="ddr(event,'aqa')">
+      <input type="file" multiple accept=".docx" onchange="fsel(event,'aqa')">
+      <span class="zi">📚</span><h3>AQA / Question Bank</h3><p>Assessment Question Archive</p>
+      <div class="pbar" id="pb-aqa" style="display:none"><div class="pfill" id="pf-aqa" style="width:0%"></div></div>
+      <div class="fchips" id="fl-aqa"></div>
+    </div>
+  </div>
+  <div class="bg2" style="margin-bottom:14px">
+    <button class="btn bp" onclick="processAll()" id="btn-proc">⚙️ Process All Files</button>
+    <button class="btn bs" onclick="nav('export',document.querySelectorAll('.ni')[8])">📝 Go to Export</button>
+    <button class="btn bg bsm" onclick="importJSON()">📂 Import JSON</button>
+    <button class="btn bg bsm" onclick="clearAll()">🗑️ Clear All</button>
+  </div>
+  <div id="log-wrap" style="display:none" class="card">
+    <div class="card-hdr"><div class="card-icon">⚙️</div><div class="card-title">Processing Log</div></div>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+
+<!-- SHORT ANSWER -->
+<div class="page" id="page-sa">
+  <div class="ph">
+    <div><div class="ph-title">Part A – <em>Short Answer</em></div><div class="ph-sub">2-mark descriptive questions • organised by unit</div></div>
+    <div class="bg2"><button class="btn bs bsm" onclick="openAdd('SA')">➕ Add</button><button class="btn bg bsm" onclick="exportCSV('SA')">📥 CSV</button><button class="btn bg bsm" onclick="selectAll('SA')">☑ Select All</button><button class="btn bd bsm" id="del-sel-sa" onclick="deleteSelected()" style="display:none">🗑 Delete Selected</button></div>
+  </div>
+  <div class="filter-row">
+    <label>Filter:</label>
+    <select onchange="renderSec('SA')" id="fsa-u"><option value="">All Units</option><option value="1">Unit 1</option><option value="2">Unit 2</option><option value="3">Unit 3</option><option value="4">Unit 4</option><option value="5">Unit 5</option></select>
+    <select onchange="renderSec('SA')" id="fsa-s"><option value="">All Sources</option><option value="ct">CT</option><option value="es">ES</option><option value="aqa">AQA</option></select>
+    <select onchange="renderSec('SA')" id="fsa-co"><option value="">All COs</option><option>CO1</option><option>CO2</option><option>CO3</option><option>CO4</option><option>CO5</option></select>
+    <input type="text" id="fsa-q" placeholder="🔍 Search…" oninput="renderSec('SA')">
+    <span id="sa-count-badge" style="padding:3px 11px;background:var(--bg2);border:1px solid var(--border);border-radius:18px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--ink3)">0</span>
+  </div>
+  <div id="sa-c"></div>
+</div>
+
+<!-- MCQ -->
+<div class="page" id="page-mcq">
+  <div class="ph">
+    <div><div class="ph-title">Part A – <em>MCQ</em></div><div class="ph-sub">Multiple choice questions • unit-wise</div></div>
+    <div class="bg2"><button class="btn bs bsm" onclick="openAdd('MCQ')">➕ Add</button><button class="btn bg bsm" onclick="exportCSV('MCQ')">📥 CSV</button><button class="btn bg bsm" onclick="selectAll('MCQ')">☑ Select All</button><button class="btn bd bsm" id="del-sel-mcq" onclick="deleteSelected()" style="display:none">🗑 Delete Selected</button></div>
+  </div>
+  <div class="filter-row">
+    <label>Filter:</label>
+    <select onchange="renderSec('MCQ')" id="fmcq-u"><option value="">All Units</option><option value="1">Unit 1</option><option value="2">Unit 2</option><option value="3">Unit 3</option><option value="4">Unit 4</option><option value="5">Unit 5</option></select>
+    <select onchange="renderSec('MCQ')" id="fmcq-s"><option value="">All Sources</option><option value="ct">CT</option><option value="es">ES</option><option value="aqa">AQA</option></select>
+    <select onchange="renderSec('MCQ')" id="fmcq-co"><option value="">All COs</option><option>CO1</option><option>CO2</option><option>CO3</option><option>CO4</option><option>CO5</option></select>
+    <input type="text" id="fmcq-q" placeholder="🔍 Search…" oninput="renderSec('MCQ')">
+    <span id="mcq-count-badge" style="padding:3px 11px;background:var(--bg2);border:1px solid var(--border);border-radius:18px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--ink3)">0</span>
+  </div>
+  <div id="mcq-c"></div>
+</div>
+
+<!-- PART B -->
+<div class="page" id="page-pb">
+  <div class="ph">
+    <div><div class="ph-title">Part B – <em>Long Answer</em></div><div class="ph-sub">8/13/16-mark descriptive questions • unit-wise</div></div>
+    <div class="bg2"><button class="btn bs bsm" onclick="openAdd('PARTB')">➕ Add</button><button class="btn bg bsm" onclick="exportCSV('PARTB')">📥 CSV</button><button class="btn bg bsm" onclick="selectAll('PARTB')">☑ Select All</button><button class="btn bd bsm" id="del-sel-pb" onclick="deleteSelected()" style="display:none">🗑 Delete Selected</button></div>
+  </div>
+  <div class="filter-row">
+    <label>Filter:</label>
+    <select onchange="renderSec('PARTB')" id="fpb-u"><option value="">All Units</option><option value="1">Unit 1</option><option value="2">Unit 2</option><option value="3">Unit 3</option><option value="4">Unit 4</option><option value="5">Unit 5</option></select>
+    <select onchange="renderSec('PARTB')" id="fpb-s"><option value="">All Sources</option><option value="ct">CT</option><option value="es">ES</option><option value="aqa">AQA</option></select>
+    <select onchange="renderSec('PARTB')" id="fpb-co"><option value="">All COs</option><option>CO1</option><option>CO2</option><option>CO3</option><option>CO4</option><option>CO5</option></select>
+    <input type="text" id="fpb-q" placeholder="🔍 Search…" oninput="renderSec('PARTB')">
+    <span id="pb-count-badge" style="padding:3px 11px;background:var(--bg2);border:1px solid var(--border);border-radius:18px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--ink3)">0</span>
+  </div>
+  <div id="pb-c"></div>
+</div>
+
+<!-- ADD QUESTION -->
+<div class="page" id="page-add">
+  <div class="ph"><div><div class="ph-title">Add <em>Question</em> Manually</div></div></div>
+  <div class="card">
+    <div class="fg">
+      <div class="fi"><label>Type</label><select id="mf-type" onchange="updateMF()"><option value="SA">Part A – Short Answer (2 marks)</option><option value="MCQ">Part A – MCQ (2 marks)</option><option value="PARTB">Part B (8/16 marks)</option></select></div>
+      <div class="fi"><label>Source</label><select id="mf-src"><option value="ct">Cycle Test (CT)</option><option value="es">End Semester (ES)</option><option value="aqa">AQA</option></select></div>
+      <div class="fi"><label>Unit</label><select id="mf-unit"><option value="1">Unit 1</option><option value="2">Unit 2</option><option value="3">Unit 3</option><option value="4">Unit 4</option><option value="5">Unit 5</option></select></div>
+      <div class="fi"><label>CO</label><select id="mf-co"><option>CO1</option><option>CO2</option><option>CO3</option><option>CO4</option><option>CO5</option></select></div>
+      <div class="fi"><label>BTL</label><select id="mf-btl"><option value="K1">K1 – Remember</option><option value="K2">K2 – Understand</option><option value="K3">K3 – Apply</option><option value="K4">K4 – Analyse</option><option value="K5">K5 – Evaluate</option><option value="K6">K6 – Create</option></select></div>
+      <div class="fi"><label>Marks</label><select id="mf-marks"><option value="2">2</option><option value="8">8</option><option value="13">13</option><option value="16">16</option></select></div>
+      <div class="fi"><label>Q.No</label><input type="text" id="mf-qno" placeholder="e.g. 6(a)"></div>
+      <div class="fi full"><label>Question Text</label><textarea id="mf-q" placeholder="Enter full question text…"></textarea></div>
+      <div class="fi full" id="mf-opts" style="display:none">
+        <label>MCQ Options</label>
+        <div class="mcq-rows">
+          <div class="mcq-row"><div class="ol">A</div><input type="text" id="oa" placeholder="Option A"><input type="radio" name="corr" value="A"></div>
+          <div class="mcq-row"><div class="ol">B</div><input type="text" id="ob" placeholder="Option B"><input type="radio" name="corr" value="B"></div>
+          <div class="mcq-row"><div class="ol">C</div><input type="text" id="oc" placeholder="Option C"><input type="radio" name="corr" value="C"></div>
+          <div class="mcq-row"><div class="ol">D</div><input type="text" id="od" placeholder="Option D"><input type="radio" name="corr" value="D"></div>
+        </div>
+      </div>
+      <div class="fi full">
+        <label>Images / Diagrams</label>
+        <label class="img-area">📷 Click to attach images
+          <input type="file" accept="image/*" multiple style="display:none" onchange="handleImgs(event)">
+        </label>
+        <div class="imgp" id="mf-imgs"></div>
+      </div>
+    </div>
+    <div class="bg2" style="margin-top:14px">
+      <button class="btn bp" onclick="saveManual()">💾 Save Question</button>
+      <button class="btn bg" onclick="resetMF()">🔄 Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- MERGE -->
+<div class="page" id="page-merge">
+  <div class="ph">
+    <div><div class="ph-title">Merge <em>&</em> Remap</div><div class="ph-sub">Bulk reassign CO, BTL, Unit, Type across selected questions</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">🔧</div><div class="card-title">Bulk Reclassify Questions</div></div>
+    <div style="font-size:12.5px;color:var(--ink3);margin-bottom:14px">Select questions using the checkboxes in SA/MCQ/Part B pages, then apply new metadata here.</div>
+    <div class="fg">
+      <div class="fi"><label>New CO (leave blank to keep)</label><select id="remap-co"><option value="">— Keep existing —</option><option>CO1</option><option>CO2</option><option>CO3</option><option>CO4</option><option>CO5</option></select></div>
+      <div class="fi"><label>New BTL</label><select id="remap-btl"><option value="">— Keep existing —</option><option value="K1">K1</option><option value="K2">K2</option><option value="K3">K3</option><option value="K4">K4</option><option value="K5">K5</option><option value="K6">K6</option></select></div>
+      <div class="fi"><label>New Unit</label><select id="remap-unit"><option value="">— Keep existing —</option><option value="1">Unit 1</option><option value="2">Unit 2</option><option value="3">Unit 3</option><option value="4">Unit 4</option><option value="5">Unit 5</option></select></div>
+      <div class="fi"><label>New Type</label><select id="remap-type"><option value="">— Keep existing —</option><option value="SA">SA</option><option value="MCQ">MCQ</option><option value="PARTB">Part B</option></select></div>
+      <div class="fi"><label>New Source</label><select id="remap-src"><option value="">— Keep existing —</option><option value="ct">Cycle Test</option><option value="es">End Semester</option><option value="aqa">AQA</option></select></div>
+      <div class="fi"><label>New Marks</label><select id="remap-marks"><option value="">— Keep existing —</option><option value="2">2</option><option value="8">8</option><option value="13">13</option><option value="16">16</option></select></div>
+    </div>
+    <div class="bg2" style="margin-top:14px">
+      <button class="btn bp" onclick="applyRemap()">✅ Apply to Selected (<span id="remap-sel-count">0</span>)</button>
+      <button class="btn bg bsm" onclick="clearSelection()">✕ Clear Selection</button>
+    </div>
+    <div id="remap-preview" style="margin-top:14px"></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">🔍</div><div class="card-title">Duplicate Detector</div></div>
+    <div class="bg2">
+      <button class="btn bp" onclick="duplicateCheck()">🔍 Find Duplicates</button>
+      <button class="btn bg bsm" onclick="autoRemoveDups()">🗑 Auto-Remove All Dups</button>
+    </div>
+    <div id="dup-result" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- EXPORT -->
+<div class="page" id="page-export">
+  <div class="ph"><div><div class="ph-title">Export <em>&</em> DOCX Generation</div><div class="ph-sub">Output exactly matches AQA Question Bank Template format</div></div></div>
+  <div class="tmpl-badge">📄 Template: AQA Question Bank Format — Georgia font · F2F2F2/E5DFEC/FABF8F section headers · Unit-wise tables · CO Matrix + Full Analysis</div>
+  <div class="fix-note">🧮 <b>v8.2:</b> 5-layer AQA MCQ deduplication: getParaPlainText captures &lt;w:tab/&gt;, isMCQOptionLine catches 1.AND/1. AND/1.   AND, isOptionPara content-matches against q.options[]. Zero duplicate options guaranteed.</div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">🔧</div><div class="card-title">Export Filters & Options</div></div>
+    <div class="filter-row">
+      <select id="ef-u"><option value="">All Units</option><option value="1">Unit 1</option><option value="2">Unit 2</option><option value="3">Unit 3</option><option value="4">Unit 4</option><option value="5">Unit 5</option></select>
+      <select id="ef-s"><option value="">All Sources</option><option value="ct">Cycle Test</option><option value="es">End Semester</option><option value="aqa">AQA</option></select>
+      <select id="ef-t"><option value="">All Types</option><option value="SA">Short Answer</option><option value="MCQ">MCQ</option><option value="PARTB">Part B</option></select>
+      <select id="ef-co"><option value="">All COs</option><option>CO1</option><option>CO2</option><option>CO3</option><option>CO4</option><option>CO5</option></select>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+      <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ef-shuffle"> Shuffle question order</label>
+      <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ef-co-matrix" checked> Include CO×Unit matrix page</label>
+      <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ef-analysis" checked> Include full analysis table</label>
+      <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ef-cover" checked> Include cover page</label>
+      <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ef-ans-key" checked> Include MCQ answer key</label>
+    </div>
+    <div id="export-preview-stats" style="margin-bottom:10px"></div>
+    <div class="exp-grid">
+      <div class="exc primary-exp" onclick="exportDocx()"><span class="ei">📝</span><h4>Word (.docx)</h4><p>Template format. Perfect in MS Word</p></div>
+      <div class="exc" onclick="exportJSON()"><span class="ei">📋</span><h4>JSON Backup</h4><p>Full data for re-import</p></div>
+      <div class="exc" onclick="exportCSVAll()"><span class="ei">📊</span><h4>CSV / Excel</h4><p>Spreadsheet format</p></div>
+      <div class="exc" onclick="exportMarkdown()"><span class="ei">📄</span><h4>Markdown</h4><p>Text-based export</p></div>
+      <div class="exc" onclick="duplicateCheck()"><span class="ei">🔍</span><h4>Duplicate Check</h4><p>Find & remove</p></div>
+      <div class="exc" onclick="window.print()"><span class="ei">🖨️</span><h4>Print</h4><p>Print current view</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS PAGE -->
+<div class="page" id="page-analytics">
+  <div class="ph">
+    <div><div class="ph-title">MCQ <em>Deduplication Analytics</em></div><div class="ph-sub">v8.2 — 5-layer option detection engine diagnostics</div></div>
+    <div class="bg2">
+      <button class="btn bp" onclick="runMCQAudit()">🔬 Run Full Audit</button>
+      <button class="btn bg bsm" onclick="exportAuditJSON()">📥 Export Audit</button>
+    </div>
+  </div>
+
+  <!-- Engine explanation card -->
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">⚙️</div><div class="card-title">v8.2 — 5-Layer Deduplication Engine</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:10px">
+      <div style="background:rgba(46,125,79,.07);border:1px solid rgba(46,125,79,.25);border-radius:8px;padding:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--green);margin-bottom:5px">LAYER 1 — Tab Capture</div>
+        <div style="font-size:11.5px;color:var(--ink2)">getParaPlainText() converts &lt;w:tab/&gt; XML elements to spaces. AQA stores "1.[TAB]AND" — without this, regex sees "1.AND" and spacing checks fail.</div>
+      </div>
+      <div style="background:rgba(45,90,142,.07);border:1px solid rgba(45,90,142,.25);border-radius:8px;padding:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--blue);margin-bottom:5px">LAYER 2 — Label Detection</div>
+        <div style="font-size:11.5px;color:var(--ink2)">isMCQOptionLine() catches: A) a) (a) 1) and all variants. Three AQA sub-cases: "1.   AND" (2+ spaces), "1. AND" (1 space), "1.AND" (zero space after dot).</div>
+      </div>
+      <div style="background:rgba(184,134,11,.07);border:1px solid rgba(184,134,11,.25);border-radius:8px;padding:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--gold);margin-bottom:5px">LAYER 3 — Dot Pattern</div>
+        <div style="font-size:11.5px;color:var(--ink2)">isOptionPara() regex /^[1-4]\.\s*\S/ — matches dot followed by zero-or-more spaces. Catches all AQA numbered list formats regardless of whitespace.</div>
+      </div>
+      <div style="background:rgba(107,79,168,.07);border:1px solid rgba(107,79,168,.25);border-radius:8px;padding:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--purple);margin-bottom:5px">LAYER 4 — Justify Strip</div>
+        <div style="font-size:11.5px;color:var(--ink2)">Removes "Justify Your Answer" trailing lines that sometimes appear after MCQ options in AQA papers, preventing them from appearing in the DOCX output.</div>
+      </div>
+      <div style="background:rgba(200,75,47,.07);border:1px solid rgba(200,75,47,.25);border-radius:8px;padding:12px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);margin-bottom:5px">LAYER 5 — Content Match ★</div>
+        <div style="font-size:11.5px;color:var(--ink2)">Strips label prefix, normalises whitespace, then compares paragraph text directly against q.options[]. This is the most reliable layer — catches ANY format as long as option text was correctly parsed.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live audit results -->
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">📊</div><div class="card-title">MCQ Option Audit Results</div></div>
+    <div id="audit-summary" style="margin-bottom:14px"></div>
+    <div id="audit-results"><div class="empty"><span class="ei">🔬</span><h3>Click "Run Full Audit" to analyse all MCQ questions</h3><p>Checks each question for option extraction quality, detection method, and potential duplicates</p></div></div>
+  </div>
+
+  <!-- Option extraction breakdown -->
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">📈</div><div class="card-title">Option Extraction Statistics</div></div>
+    <div id="opt-stats"><div class="empty"><span class="ei">📈</span><h3>Run audit to see statistics</h3></div></div>
+  </div>
+
+  <!-- Duplicate risk checker -->
+  <div class="card">
+    <div class="card-hdr"><div class="card-icon">⚠️</div><div class="card-title">Potential Duplicate Risk Questions</div></div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:10px">Questions where native XML option lines may still be present — identified by checking if option text appears in question text itself.</div>
+    <div id="dup-risk-results"><div class="empty"><span class="ei">✅</span><h3>Run audit to check</h3></div></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle" id="mtitle">Edit Question</div><button class="mc" onclick="closeModal()">✕</button></div>
+    <div id="mbody"></div>
+  </div>
+</div>
+
+<div id="progress-overlay">
+  <div class="progress-box">
+    <h3 id="prog-title">Processing…</h3>
+    <div class="big-pbar"><div class="big-pfill" id="big-pfill" style="width:0%"></div></div>
+    <div class="prog-msg" id="prog-msg">Initialising…</div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+'use strict';
+const WNS  = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+const MNS  = 'http://schemas.openxmlformats.org/officeDocument/2006/math';
+const RNS  = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+const WPNS = 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing';
+const ANS  = 'http://schemas.openxmlformats.org/drawingml/2006/main';
+const PICNS= 'http://schemas.openxmlformats.org/drawingml/2006/picture';
+
+const CLR = {
+  unitHdr:'F2F2F2', colHdr:'F2F2F2', sectionSA:'E5DFEC',
+  sectionMCQ:'E5DFEC', sectionPB:'FABF8F',
+  rowAlt1:'FFFFFF', rowAlt2:'EFF3FB', matrixHdr:'4F6228',
+};
+const TMPL_COLS  = [940, 616, 734, 6311, 1134, 1276];
+const TMPL_TOTAL = TMPL_COLS.reduce((a,b)=>a+b,0);
+
+const DB = {
+  questions: [],
+  files: { ct:[], es:[], aqa:[] },
+  sub: { subject:'', code:'', dept:'ECE', semester:'', year:'', incharge:'', expert:'', hod:'', co_statements:{}, unit_topics:{} }
+};
+let mImgs = [];
+let _selectedIds = new Set();
+
+// ── Toast / Progress ──────────────────────────────────────
+function toast(msg,type=''){ const c=document.getElementById('toasts'); const t=document.createElement('div'); t.className='toast '+type; t.innerHTML=(type==='ok'?'✅':type==='err'?'❌':type==='warn'?'⚠️':'ℹ️')+' '+msg; c.appendChild(t); setTimeout(()=>t.remove(),4500); }
+function showProg(title){ document.getElementById('prog-title').textContent=title||'Processing…'; document.getElementById('progress-overlay').classList.add('show'); }
+function hideProg(){ document.getElementById('progress-overlay').classList.remove('show'); }
+function setProg(pct,msg){ document.getElementById('big-pfill').style.width=pct+'%'; if(msg) document.getElementById('prog-msg').textContent=msg; }
+
+// ── Navigation ────────────────────────────────────────────
+function nav(id,el){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active')); const pg=document.getElementById('page-'+id); if(pg) pg.classList.add('active'); if(el) el.classList.add('active'); if(id==='export') updateExportPreview(); if(id==='merge') updateRemapCount(); }
+
+// ── OMML → Text ───────────────────────────────────────────
+function ommlToText(node){ if(!node) return ''; const ln=node.localName||''; if(ln==='f'){ const num=node.getElementsByTagNameNS(MNS,'num'),den=node.getElementsByTagNameNS(MNS,'den'); return '('+(num.length?ommlChildren(num[0]):'?')+')/('+( den.length?ommlChildren(den[0]):'?')+')'; } if(ln==='sSup'){ const e=node.getElementsByTagNameNS(MNS,'e'),s=node.getElementsByTagNameNS(MNS,'sup'); return (e.length?ommlChildren(e[0]):'?')+'^{'+(s.length?ommlChildren(s[0]):'?')+'}'; } if(ln==='sSub'){ const e=node.getElementsByTagNameNS(MNS,'e'),s=node.getElementsByTagNameNS(MNS,'sub'); return (e.length?ommlChildren(e[0]):'?')+'_{'+(s.length?ommlChildren(s[0]):'?')+'}'; } if(ln==='rad'){ const e=node.getElementsByTagNameNS(MNS,'e'),deg=node.getElementsByTagNameNS(MNS,'deg'); return ((deg.length&&deg[0].textContent.trim())?ommlChildren(deg[0])+'√':'√')+'('+(e.length?ommlChildren(e[0]):'?')+')'; } if(ln==='r'){ let t=''; for(const x of node.getElementsByTagNameNS(MNS,'t')) t+=x.textContent; for(const x of node.getElementsByTagNameNS(WNS,'t')) t+=x.textContent; return t; } return ommlChildren(node); }
+function ommlChildren(n){ let r=''; for(let i=0;i<n.childNodes.length;i++) if(n.childNodes[i].nodeType===1) r+=ommlToText(n.childNodes[i]); return r; }
+
+// ── Rich HTML preview builder ─────────────────────────────
+function getCellText(tc){ const lines=[]; for(const p of tc.getElementsByTagNameNS(WNS,'p')){ let l=''; for(const r of p.getElementsByTagNameNS(WNS,'r')) for(const t of r.getElementsByTagNameNS(WNS,'t')) l+=t.textContent; for(const m of p.getElementsByTagNameNS(MNS,'oMath')) l+=' '+ommlToText(m); if(l.trim()) lines.push(l.trim()); } return lines.join('\n'); }
+
+function buildRichHtml(tcNode, imgMap){
+  let html=''; let text=''; let hasEq=false, hasTbl=false;
+  for(let ci=0;ci<tcNode.childNodes.length;ci++){
+    const child=tcNode.childNodes[ci]; if(child.nodeType!==1) continue;
+    const ln=child.localName||'';
+    if(ln==='p'){
+      let pHtml='', pText='';
+      for(let pi=0;pi<child.childNodes.length;pi++){
+        const pc=child.childNodes[pi]; if(pc.nodeType!==1) continue;
+        const pln=pc.localName||'';
+        if(pln==='r'){
+          for(const t of pc.getElementsByTagNameNS(WNS,'t')){ pText+=t.textContent; pHtml+=escW(t.textContent); }
+          for(const el of pc.getElementsByTagName('*')){
+            const eln=el.localName||el.tagName||'';
+            if(eln==='blip'){ let rId=null; for(let bi=0;bi<el.attributes.length;bi++) if(el.attributes[bi].localName==='embed'){ rId=el.attributes[bi].value; break; } if(rId&&imgMap[rId]) pHtml+='<img src="'+imgMap[rId].dataUrl+'" style="max-width:180px;max-height:120px;border-radius:5px;margin:4px 0;border:1px solid #ddd;display:block">'; }
+          }
+        } else if(pln==='oMath'||pln==='oMathPara'){
+          const eq=ommlToText(pc); hasEq=true; pText+=' ['+eq+'] '; pHtml+='<span class="eq-inline">'+escW(eq)+'</span>';
+        }
+      }
+      for(const m of child.getElementsByTagNameNS(MNS,'oMath')){ if(m.parentNode&&m.parentNode.localName!=='r'){ const eq=ommlToText(m); hasEq=true; pText+=' ['+eq+'] '; pHtml+='<span class="eq-inline">'+escW(eq)+'</span>'; } }
+      if(pText.trim()||pHtml.includes('<img')||pHtml.includes('eq-inline')){ text+=(text?'\n':'')+pText.trim(); html+=(html?'<br>':'')+pHtml; }
+    } else if(ln==='tbl'){
+      hasTbl=true; let tHtml='<div class="nested-tbl-wrap"><table class="nested-tbl">'; const rows=child.getElementsByTagNameNS(WNS,'tr');
+      for(let ri=0;ri<rows.length;ri++){ const tag=ri===0?'th':'td'; tHtml+='<tr>'; for(const tc2 of rows[ri].getElementsByTagNameNS(WNS,'tc')) tHtml+='<'+tag+'>'+escW(getCellText(tc2))+'</'+tag+'>'; tHtml+='</tr>'; }
+      tHtml+='</table></div>'; html+=(html?'<br>':'')+tHtml; text+=(text?'\n':'')+'[Table]';
+    } else if(ln==='oMathPara'){
+      const eq=ommlToText(child); hasEq=true; text+=(text?'\n':'')+'['+eq+']'; html+=(html?'<br>':'')+'<span class="eq-inline">'+escW(eq)+'</span>';
+    }
+  }
+  return {text:text.trim(), html:html.trim(), hasEq, hasTbl};
+}
+
+const _imgDimCache = {};
+function getImgDims(dataUrl){ return new Promise(resolve=>{ if(_imgDimCache[dataUrl]){ resolve(_imgDimCache[dataUrl]); return; } const img=new Image(); img.onload=()=>{ _imgDimCache[dataUrl]={w:img.width,h:img.height}; resolve(_imgDimCache[dataUrl]); }; img.onerror=()=>{ _imgDimCache[dataUrl]={w:0,h:0}; resolve(_imgDimCache[dataUrl]); }; img.src=dataUrl; }); }
+function isLogoLike(dims){ return dims.w>300&&(dims.w/Math.max(dims.h,1))>2.2; }
+
+// ── File handling ─────────────────────────────────────────
+function dov(e,c){ e.preventDefault(); document.getElementById('uz-'+c).classList.add('drag'); }
+function dol(c){ document.getElementById('uz-'+c).classList.remove('drag'); }
+function ddr(e,c){ e.preventDefault(); dol(c); addF([...e.dataTransfer.files].filter(f=>f.name.endsWith('.docx')),c); }
+function fsel(e,c){ addF([...e.target.files],c); e.target.value=''; }
+function addF(files,cat){ files.forEach(f=>{ if(!DB.files[cat].find(x=>x.name===f.name&&x.size===f.size)) DB.files[cat].push(f); }); renderChips(cat); }
+function removeFile(cat,i){ DB.files[cat].splice(i,1); renderChips(cat); }
+function renderChips(cat){ const list=document.getElementById('fl-'+cat),zone=document.getElementById('uz-'+cat); list.innerHTML=''; DB.files[cat].forEach((f,i)=>{ const d=document.createElement('div'); d.className='fc'; d.innerHTML='📄 '+(f.name.length>26?f.name.slice(0,23)+'…':f.name)+'<button class="fr" onclick="removeFile(\''+cat+'\','+i+')">✕</button>'; list.appendChild(d); }); zone.classList.toggle('filled',DB.files[cat].length>0); }
+function clearAll(){ if(DB.questions.length>0&&!confirm('Clear all '+DB.questions.length+' questions?')) return; DB.files={ct:[],es:[],aqa:[]}; DB.questions=[]; _selectedIds.clear(); DB.sub={subject:'',code:'',dept:'ECE',semester:'',year:'',incharge:'',expert:'',hod:'',co_statements:{},unit_topics:{}}; ['ct','es','aqa'].forEach(c=>{ renderChips(c); document.getElementById('pb-'+c).style.display='none'; }); document.getElementById('log-wrap').style.display='none'; document.getElementById('hbadge-sub').textContent='No Subject Loaded'; document.getElementById('hbadge-cnt').textContent='0 Questions'; updateSubjectFields(DB.sub); updateCounts(); renderAll(); toast('Cleared all data','warn'); }
+
+// ── Image map builders ────────────────────────────────────
+async function buildImgMap(zip){ const m={}; for(const[p,f] of Object.entries(zip.files)){ if(!p.startsWith('word/media/')) continue; const ext=p.split('.').pop().toLowerCase(); if(!['png','jpg','jpeg','gif','bmp','webp','wmf','emf'].includes(ext)) continue; const mime=ext==='png'?'image/png':ext==='gif'?'image/gif':ext==='webp'?'image/webp':'image/jpeg'; const b64=(await f.async('base64')).replace(/[\s\r\n]/g,''); const fn=p.split('/').pop(); m[fn]={dataUrl:'data:'+mime+';base64,'+b64,mime,b64,filename:fn,ext}; } return m; }
+async function buildRIdToImgMap(zip,imgMap){ const m={}; for(const[p] of Object.entries(zip.files)){ if(!p.toLowerCase().includes('word/_rels/')||!p.toLowerCase().endsWith('.rels')) continue; try{ const x=await zip.files[p].async('text'); new DOMParser().parseFromString(x,'text/xml').querySelectorAll('Relationship').forEach(r=>{ const type=r.getAttribute('Type')||''; if(!type.includes('/image')) return; const rId=r.getAttribute('Id'),tgt=r.getAttribute('Target')||''; const fn=tgt.includes('/')?tgt.split('/').pop():tgt; if(imgMap[fn]) m[rId]=imgMap[fn]; }); }catch(e){} } return m; }
+
+// ── Helpers ───────────────────────────────────────────────
+function exCoBtl(txt){ const cm=txt.match(/CO\s*([1-5])/i),bm=txt.match(/K[-–]?\s*([1-6])/i); return{co:cm?'CO'+cm[1]:null,btl:bm?'K'+bm[1]:null}; }
+function isHdr(t){ if(!t||t.trim().length<2) return true; const s=t.trim(); return /^(Part\s*[A-C]|PART\s*[–\-][AB]|\(OR\)|Answer ALL|Unit\s*-?\s*[1-5]\b|CO,?\s*BTL|Q\.\s*No\.|UNIT-\d|Syllabus:|Short Qu|Multiple Ch|^(Mark|Level|Portion|CO|BTL|K\s*Level)$)/i.test(s); }
+function parseMarks(txt){ if(!txt||!txt.trim()) return 0; const m1=txt.match(/(\d+)\s*[Mm]ark/); if(m1) return parseInt(m1[1]); const m2=txt.trim().match(/^(\d{1,2})$/); if(m2){ const n=parseInt(m2[1]); if([1,2,3,4,5,6,7,8,10,12,13,15,16,20,25].includes(n)) return n; } return 0; }
+
+// ══════════════════════════════════════════════════════════
+// MCQ DETECTION — v8.2 FIX: 5-layer AQA option detection
+// ══════════════════════════════════════════════════════════
+
+function isSubPartQuestion(line){
+  const t=line.trim();
+  if(/^\([a-d]\)\s*.{35,}/i.test(t)) return true;
+  if(/^\([a-d]\)\s*(what|find|define|state|explain|derive|prove|show|calculate|determine|describe|list|write|draw|compare|discuss|simplify|obtain|evaluate|justify)/i.test(t)) return true;
+  return false;
+}
+
+// ▶ PATCH 1: Added AQA "1.   text" detection (dot + 2+ spaces/tabs)
+function isMCQOptionLine(line){
+  const t=line.trim();
+  if(!t) return false;
+  if(/^[A-D][).]\s*\S/.test(t)) return true;
+  if(/^[a-d][).]\s*\S/.test(t)&&!isSubPartQuestion(t)) return true;
+  if(/^\([A-Da-d]\)\s*\S/.test(t)&&!isSubPartQuestion(t)) return true;
+  if(/^[1-4][).]\s*\S/.test(t)) return true;
+  // ▶ AQA numbered list — covers all spacing variants after getParaPlainText tab extraction
+  // Case 1: "1.   AND" — dot + 2+ spaces/tabs
+  if(/^[1-4]\\.[\\t ]{2,}\\S/.test(t)) return true;
+  // Case 2: "1. AND" — dot + single space (tab converted to space)
+  if(/^[1-4]\\. \\S/.test(t) && !isSubPartQuestion(t)) return true;
+  // Case 3: "1.AND" — dot directly before letter (tab stored as <w:tab/> XML element)
+  if(/^[1-4]\\.[A-Za-z(]/.test(t) && !isSubPartQuestion(t)) return true;
+  return false;
+}
+
+// ▶ PATCH 2: stripOptionLabel also strips AQA "1.   " prefix
+function stripOptionLabel(line){
+  return line.trim()
+    .replace(/^[A-Da-d1-4][).]\s*/,'')
+    .replace(/^\([A-Da-d1-4]\)\s*/,'')
+    .replace(/^[1-4]\.[\t ]+/,'')   // ▶ AQA: "1.   4 half adders" → "4 half adders"
+    .trim();
+}
+
+function extractInlineOptions(line){
+  const t=line.trim();
+  const startsA=/^A[).]/i.test(t)||/^\S+\s+A[).]/i.test(t);
+  if(startsA){ const parts=t.split(/\s+(?=[A-D][).]\s)/i); if(parts.length>=2){ const opts=parts.map(p=>stripOptionLabel(p)).filter(Boolean); if(opts.length>=2&&opts.every(o=>o.length>0&&o.length<120)) return opts.slice(0,4); } }
+  if(/\(a\)/i.test(t)){ const parts=t.split(/\s+(?=\([a-d]\)\s)/i); if(parts.length>=2){ const opts=parts.map(p=>stripOptionLabel(p)).filter(Boolean); if(opts.length>=2&&opts.every(o=>o.length>0&&o.length<120)) return opts.slice(0,4); } }
+  return [];
+}
+
+// ▶ PATCH 4: parseMCQopts Pass 2 also catches AQA "1.   text" lines
+function parseMCQopts(paras){
+  const allTexts=paras.map(p=>p.text||'').filter(t=>t.trim());
+  if(!allTexts.length) return {qText:'',opts:[]};
+  for(let i=0;i<allTexts.length;i++){ const io=extractInlineOptions(allTexts[i]); if(io.length>=2){ const qLines=allTexts.slice(0,i).filter(l=>/\S/.test(l)&&!/^justify\s*your\s*answer/i.test(l)); const qText=qLines.join('\n').trim()||allTexts[0]; return{qText,opts:io}; } }
+  // ▶ Pass 2: catch both standard labeled options AND AQA "1.   text" style
+  const optLines=paras.filter(p=>(isMCQOptionLine(p.text||'')||/^[1-4]\.[\t ]{2,}\S/.test((p.text||'').trim()))&&!isSubPartQuestion(p.text||''));
+  if(optLines.length>=2){ const qParas=paras.filter(p=>!optLines.includes(p)&&!/^justify\s*your\s*answer/i.test(p.text||'')); const qText=qParas.map(p=>p.text).join('\n').trim()||allTexts[0]; return{qText,opts:optLines.slice(0,4).map(o=>stripOptionLabel(o.text||''))}; }
+  function isQuestionLike(t){ return /\b(find|calculate|compute|determine|state|define|explain|prove|show|derive|evaluate|describe|given|let|consider|justify|simplify|obtain|design)\b/i.test(t)||/[?:]$/.test(t.trim())||t.length>120; }
+  let splitAt=allTexts.length;
+  for(let i=allTexts.length-1;i>=0;i--){ const t=allTexts[i].trim(); if(isQuestionLike(t)||t.length>120) break; if(t.length<=80) splitAt=i; else break; }
+  const tail=allTexts.slice(splitAt);
+  if(tail.length>=2&&tail.length<=4&&tail.every(o=>o.trim().length>0&&o.length<=100&&!isQuestionLike(o))){ return{qText:allTexts.slice(0,splitAt).join('\n').trim()||allTexts[0],opts:tail.map(o=>stripOptionLabel(o))}; }
+  return{qText:allTexts.join('\n').trim(),opts:[]};
+}
+
+function getCellLines(tcNode){ const lines=[]; for(const p of tcNode.getElementsByTagNameNS(WNS,'p')){ let l=''; for(const r of p.getElementsByTagNameNS(WNS,'r')) for(const t of r.getElementsByTagNameNS(WNS,'t')) l+=t.textContent; for(const m of p.getElementsByTagNameNS(MNS,'oMath')) l+=' '+ommlToText(m); if(l.trim()) lines.push(l.trim()); } return lines; }
+
+function parseOptionsCell(tcNode){
+  if(!tcNode) return [];
+  if(tcNode.getElementsByTagNameNS(WNS,'tbl').length>0) return [];
+  const lines=getCellLines(tcNode).filter(l=>l.trim());
+  if(!lines.length) return [];
+  for(const line of lines){ const io=extractInlineOptions(line); if(io.length>=2) return io; }
+  const labeled=lines.filter(l=>isMCQOptionLine(l)&&!isSubPartQuestion(l));
+  if(labeled.length>=2) return labeled.slice(0,4).map(l=>stripOptionLabel(l)).filter(Boolean);
+  const short=lines.filter(o=>o.length<100&&!isSubPartQuestion(o)&&!/justify|explain|derive|prove|describe|simplify|obtain|find|calculate/i.test(o));
+  if(short.length>=2&&short.length<=4) return short;
+  return [];
+}
+
+function classifyQ(marks,hasOpts,curSec){
+  if(marks>2) return 'PARTB';
+  if(curSec==='PARTB') return 'PARTB';
+  if(marks===2||marks===1){ if(curSec==='MCQ') return 'MCQ'; return hasOpts?'MCQ':'SA'; }
+  if(curSec==='MCQ') return 'MCQ';
+  if(hasOpts) return 'MCQ';
+  return 'SA';
+}
+
+const COU={'CO1':'1','CO2':'2','CO3':'3','CO4':'4','CO5':'5'};
+
+// ── Subject detection ─────────────────────────────────────
+function detectSubject(xmlDoc){
+  const info={subject:'',code:'',dept:'ECE',semester:'',year:'',incharge:'',expert:'',hod:'',co_statements:{},unit_topics:{}};
+  function paraToText(pNode){ let s=''; const ts=pNode.getElementsByTagNameNS(WNS,'t'); for(let i=0;i<ts.length;i++) s+=ts[i].textContent; return s.trim(); }
+  const bodyParaTexts=[];
+  const body=xmlDoc.getElementsByTagNameNS(WNS,'body')[0];
+  if(body){ for(let i=0;i<body.childNodes.length;i++){ const ch=body.childNodes[i]; if(ch.localName==='p'){ const t=paraToText(ch); if(t) bodyParaTexts.push(t); } } }
+  const allParaTexts=[]; const allParas=xmlDoc.getElementsByTagNameNS(WNS,'p'); for(let pi=0;pi<allParas.length;pi++){ const t=paraToText(allParas[pi]); if(t) allParaTexts.push(t); }
+  const seen=new Set(bodyParaTexts); const rawTexts=[...bodyParaTexts,...allParaTexts.filter(t=>!seen.has(t))];
+  const rmap={'I':'1','II':'2','III':'3','IV':'4','V':'5','1':'1','2':'2','3':'3','4':'4','5':'5'};
+  for(let i=0;i<rawTexts.length;i++){
+    const t=rawTexts[i],tn=rawTexts[i+1]||'',tn2=rawTexts[i+2]||'';
+    if(!info.code){ const cm=t.match(/\b([A-Z]{2,4}\d{3,4}[A-Z]?)\b/); if(cm) info.code=cm[1]; }
+    if(!info.subject){ const sm=t.match(/(?:Course|Subject)\s*(?:Name|Title)?\s*[:\-–]\s*(.{10,80})/i); if(sm&&!/Exam|Assessment|Department|Regulation|Code|Semester/i.test(sm[1])) info.subject=sm[1].trim(); }
+    if(!info.subject&&t.length>20&&t.length<120&&/Design|Technology|Circuit|Signal|Network|Electron|System|Communicat|Microprocess|Embedded|Digital|VLSI|Control|Power|Algorithm|Processor|Logic|Fundamental/i.test(t)&&!/Exam|Assessment|Semester|Dept|Answer|University|College|Department|Duration|Max\.?\s*Mark|Total\s*Mark|Date|Time\s*:|Reg\.?\s*No|Incharge|Expert|HOD|Unit\s*[-–]?\s*[1-5IVX]/i.test(t)) info.subject=t.trim().slice(0,100);
+    if(!info.semester){ const sm2=t.match(/(Fifth|Third|Fourth|Sixth|Seventh|Second|First|VIII|VII|VI|V|IV|III|II|I)\s*Semester/i); if(sm2) info.semester=sm2[0]; if(/^Semester\s*[:\-–]?\s*$/i.test(t)&&tn.trim()) info.semester=tn.trim(); }
+    if(!info.year){ const ym=t.match(/20\d{2}\s*[-–]\s*20?\d{2}/); if(ym) info.year=ym[0]; if(/^(?:Academic\s*)?Year\s*[:\-–]?\s*$/i.test(t)&&tn.trim()) info.year=tn.trim(); }
+    if(!info.incharge){ const lm=t.match(/Subject\s*In[-\s]?charge\s*[:\-–]?\s*(.*)/i); if(lm&&lm[1].trim().length>2) info.incharge=lm[1].trim(); else if(/Subject\s*In[-\s]?charge/i.test(t)&&tn.trim().length>2&&!/^[:\-–]$/.test(tn.trim())) info.incharge=tn.trim(); }
+    if(!info.expert){ const em=t.match(/Subject\s*Expert\s*[:\-–]?\s*(.*)/i); if(em&&em[1].trim().length>2) info.expert=em[1].trim(); else if(/Subject\s*Expert/i.test(t)&&tn.trim().length>2&&!/^[:\-–]$/.test(tn.trim())) info.expert=tn.trim(); }
+    if(!info.hod){ const hm=t.match(/H\.?O\.?D\.?\s*[:\-–]?\s*(.*)/i); if(hm&&hm[1].trim().length>2) info.hod=hm[1].trim(); else if(/\bHOD\b/i.test(t)&&tn.trim().length>2&&!/^[:\-–]$/.test(tn.trim())) info.hod=tn.trim(); }
+    const inl=t.match(/^CO\s*([1-5])\s*[:\u2013\-]\s*(.+)/i); if(inl){ const key='CO'+inl[1]; if(!info.co_statements[key]) info.co_statements[key]=inl[2].trim(); }
+    if(/^CO\s*([1-5])$/i.test(t.trim())){ const coNum=t.trim().match(/^CO\s*([1-5])$/i)[1]; const key='CO'+coNum; if(!info.co_statements[key]&&tn.trim().length>5&&!/^CO\s*\d/i.test(tn.trim())) info.co_statements[key]=tn.trim(); }
+    function extractUnitTopic(raw){ let s=raw.trim().replace(/^[-–:|\s]+/,'').trim(); const firstLine=s.split(/\n/)[0].trim(); s=firstLine; if(s.length>60){ const dotIdx=s.indexOf('.'),dashIdx=s.search(/\s[-–]\s/); let cut=Math.min(dotIdx>5?dotIdx:999,dashIdx>5?dashIdx:999,60); if(cut<s.length&&cut>3) s=s.slice(0,cut).trim().replace(/[,;:\-–\s]+$/,''); } return s; }
+    const utop=t.match(/^(?:UNIT|Unit)\s*[-–\s]?\s*([1-5IVX]+)\s*[:\-–|]+\s*(.{3,})/i);
+    if(utop){ const unum=rmap[utop[1].trim().toUpperCase()]; if(unum){ const topic=extractUnitTopic(utop[2]); if(topic.length>=3&&!/^(marks?|co\b|btl|k\s*level|portion|answer|question|sl\.?\s*no)/i.test(topic)){ if(!info.unit_topics[unum]) info.unit_topics[unum]=topic; } } }
+    const unitAlone=t.match(/^(?:UNIT|Unit)\s*[-–\s]?\s*([1-5IVX]+)\s*[-–:]?\s*$/i);
+    if(unitAlone&&tn.trim().length>=3){ const unum=rmap[unitAlone[1].trim().toUpperCase()]; const topicCandidate=extractUnitTopic(tn.trim()); if(unum&&!info.unit_topics[unum]&&topicCandidate.length>=3&&topicCandidate.length<=80&&!/^(marks?|co\b|btl|k\s*level|portion|answer|question|sl\.?\s*no|unit\s*[-–]?\s*[1-5IVX]|part|section|review|introduction)/i.test(topicCandidate)) info.unit_topics[unum]=topicCandidate; }
+    const nlIdx=t.indexOf('\n');
+    if(nlIdx>0){ const firstL=t.slice(0,nlIdx).trim(),secondL=t.slice(nlIdx+1).split('\n')[0].trim(); const unitInFirst=firstL.match(/^(?:UNIT|Unit)\s*[-–\s]?\s*([1-5IVX]+)\s*[:\-–]?\s*$/i); if(unitInFirst&&secondL.length>=3){ const unum=rmap[unitInFirst[1].trim().toUpperCase()]; const topic=extractUnitTopic(secondL); if(unum&&!info.unit_topics[unum]&&topic.length>=3&&!/^(marks?|co\b|btl|k\s*level|review|introduction)/i.test(topic)) info.unit_topics[unum]=topic; } }
+  }
+  return info;
+}
+
+function getDirectChildren(node,localName){ const r=[]; for(const c of node.childNodes){ if(c.localName===localName) r.push(c); } return r; }
+
+// ── Main DOCX parser ──────────────────────────────────────
+async function parseDocx(file,source){
+  try{
+    const zip=await JSZip.loadAsync(file);
+    const imgMap=await buildImgMap(zip);
+    const rIdImgMap=await buildRIdToImgMap(zip,imgMap);
+    const xmlTxt=await zip.files['word/document.xml'].async('text');
+    const xmlDoc=new DOMParser().parseFromString(xmlTxt,'text/xml');
+    const subInfo=detectSubject(xmlDoc);
+    const qs=[]; let qCnt=1;
+    const allTbls=[];
+    function collectTbls(node){ for(const c of node.childNodes){ if(c.localName==='tbl') allTbls.push(c); collectTbls(c); } }
+    collectTbls(xmlDoc.documentElement);
+    for(const tbl of allTbls){
+      const rows=getDirectChildren(tbl,'tr'); if(rows.length<3) continue;
+      let layout=null;
+      for(const row of rows){
+        const cells=getDirectChildren(row,'tc'); const nCells=cells.length; if(nCells<4) continue;
+        const allTxt=cells.map(c=>getCellText(c).trim().toLowerCase()); const joined=allTxt.join(' ');
+        const hasQHeader=/\bq\.?\s*no\b|\bquestion\b|\bq\.no/i.test(joined);
+        const hasCoHeader=allTxt.some(t=>/^co\s*\d?$|^course\s*outcome/i.test(t));
+        const hasBtlHeader=allTxt.some(t=>/^btl$|^k[\s-]?level$|^bloom|^knowledge\s*level/i.test(t));
+        const hasOptsHeader=allTxt.some(t=>/^options?$|^choices?$/i.test(t));
+        const co0val=exCoBtl(getCellText(cells[0])).co;
+        const co1val=nCells>1?exCoBtl(getCellText(cells[1])).co:null;
+        if(nCells>=5){
+          if(hasQHeader&&(hasCoHeader||hasBtlHeader)){ layout='7col'; break; }
+          if(hasOptsHeader&&hasQHeader){ layout='7col'; break; }
+          if(/sl\.?\s*no.*co.*btl|q\.?\s*no.*co.*btl|knowledge.*level/i.test(joined)){ layout='7col'; break; }
+          if(co1val&&getCellText(cells[3]).length>8){ layout='7col'; break; }
+          if(co1val&&/^k[1-6]$/i.test(allTxt[2])){ layout='7col'; break; }
+          if(allTxt[1]==='co'||allTxt[1]==='co2'||/^co\s*\d?$/.test(allTxt[1])){ layout='7col'; break; }
+        }
+        if(nCells===4){ if(co0val&&getCellText(cells[2]).length>8){ layout='4col'; break; } if(hasQHeader||hasCoHeader){ layout='4col'; break; } }
+      }
+      if(!layout){ for(const row of rows){ const cells=getDirectChildren(row,'tc'); if(cells.length>=5){ const co1=exCoBtl(getCellText(cells[1])).co; if(co1){ layout='7col'; break; } } } }
+      if(!layout) continue;
+      let curSec='SA';
+      for(const row of rows){
+        const cells=getDirectChildren(row,'tc');
+        if(cells.length===1){ const t=getCellText(cells[0]).trim(); if(/PART[\s–\-]*B|Part.*B\b|SECTION.*B\b|Long.?Answer|Descriptive/i.test(t)) curSec='PARTB'; else if(/MCQ|Multiple.?Choice|Choose.*(?:correct|best|answer)|I\.?\s*Choose|Part.*MCQ/i.test(t)) curSec='MCQ'; else if(/PART[\s–\-]*A|Part.*A\b|Short.?Answer|Fill.*blank|Two.?mark|2.?mark/i.test(t)) curSec='SA'; continue; }
+        if(cells.length===2){ const t0=getCellText(cells[0]).trim(),t1=getCellText(cells[1]).trim(); const both=(t0+' '+t1).toLowerCase(); if(/part\s*[bc]|section\s*[bc]|long.?answer|descriptive/i.test(both)) curSec='PARTB'; else if(/mcq|multiple.*choice|choose.*correct/i.test(both)) curSec='MCQ'; else if(/part\s*a|section\s*a|short.?answer/i.test(both)) curSec='SA'; continue; }
+        let qTcNode=null,optsTcNode=null,coTxt='',qnoTxt='',mrkTxt='',btlStr='';
+        if(layout==='4col'&&cells.length>=4){ coTxt=getCellText(cells[0]); qnoTxt=getCellText(cells[1]); mrkTxt=getCellText(cells[3]); qTcNode=cells[2]; }
+        else if(layout==='7col'&&cells.length>=5){ qnoTxt=getCellText(cells[0]); coTxt=getCellText(cells[1]); btlStr=getCellText(cells[2]); qTcNode=cells[3]; for(let ci=4;ci<cells.length;ci++){ const ct=getCellText(cells[ci]).trim(); if(!ct) continue; const mt=parseMarks(ct); const looksLikeMarks=(mt>0&&ct.length<=5&&!ct.includes('\n'))||/^\d{1,2}$/.test(ct); const looksLikeSrc=/^(ct|es|aqa|internal|external|end[\s.-]?sem|semester)$/i.test(ct); const numParas=cells[ci].getElementsByTagNameNS(WNS,'p').length; const looksLikeOpts=ct.includes('\n')||ct.length>8||isMCQOptionLine(ct)||numParas>=3; if(looksLikeSrc) continue; if(looksLikeOpts&&!optsTcNode){ optsTcNode=cells[ci]; } else if(looksLikeMarks&&!mrkTxt){ mrkTxt=String(mt||ct); } else if(mt>0&&!mrkTxt){ mrkTxt=String(mt); } else if(!optsTcNode&&!looksLikeMarks&&ct.length<80){ optsTcNode=cells[ci]; } } }
+        if(!qTcNode) continue;
+        const{co,btl:btlDetected}=exCoBtl(coTxt);
+        if(!co) continue;
+        if(isHdr(getCellText(qTcNode))&&!qTcNode.getElementsByTagNameNS(WNS,'tbl').length) continue;
+        const km=btlStr.match(/K\s*([1-6])/i); const btl=km?'K'+km[1]:(btlDetected||'K2');
+        const marks=parseMarks(mrkTxt)||2;
+        let{text,html,hasEq,hasTbl}=buildRichHtml(qTcNode,rIdImgMap);
+        const imgDataUrls=[];
+        for(const el of qTcNode.getElementsByTagName('*')){ const eln=el.localName||el.tagName||''; if(eln==='blip'){ let rId=null; for(let bi=0;bi<el.attributes.length;bi++) if(el.attributes[bi].localName==='embed'){ rId=el.attributes[bi].value; break; } if(rId&&rIdImgMap[rId]){ const du=rIdImgMap[rId].dataUrl; if(!imgDataUrls.includes(du)) imgDataUrls.push(du); } } }
+        const filteredImgUrls=imgDataUrls.filter(du=>{ const approxKB=Math.round(du.length*0.75/1024); if(approxKB>60&&text&&text.trim().length>20) return false; return true; });
+        let opts=[];
+        if(optsTcNode){ opts=parseOptionsCell(optsTcNode); }
+        if(opts.length<3){
+          const paraTexts=[]; for(let _ci=0;_ci<qTcNode.childNodes.length;_ci++){ const _ch=qTcNode.childNodes[_ci]; if(_ch.nodeType!==1||_ch.localName!=='p') continue; let l=''; for(const r of _ch.getElementsByTagNameNS(WNS,'r')) for(const t of r.getElementsByTagNameNS(WNS,'t')) l+=t.textContent; if(l.trim()) paraTexts.push({text:l.trim()}); }
+          const _hasTblInTc=Array.from(qTcNode.childNodes).some(c=>c.localName==='tbl');
+          if(!_hasTblInTc&&paraTexts.length>=2){ const parsed=parseMCQopts(paraTexts); if(parsed.opts.length>=2){ opts=parsed.opts; if(parsed.qText&&parsed.qText.trim()){ text=parsed.qText.trim(); html=parsed.qText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); } } }
+        }
+        const hasOpts=opts.length>=2;
+        let cleanText=text.trim(),cleanHtml=html.trim();
+        const hasJustify=/justify\s*your\s*answer/i.test(cleanText);
+        const effectiveCurSec=(hasJustify&&hasOpts)?'MCQ':curSec;
+        const qType=classifyQ(marks,hasOpts,effectiveCurSec);
+        if(hasOpts&&qType==='MCQ'){
+          const optSet=new Set(opts.map(o=>o.trim().toLowerCase()));
+          const textLines=cleanText.split('\n');
+          const filteredLines=textLines.filter(line=>{
+            const t=line.trim(); if(!t) return false;
+            if(isMCQOptionLine(t)&&!isSubPartQuestion(t)) return false;
+            // ▶ Also filter AQA "1.   text" numbered list lines
+            if(/^[1-4]\.[\t ]{1,}\S/.test(t)&&!isSubPartQuestion(t)) return false;
+            const stripped=stripOptionLabel(t).toLowerCase();
+            if(optSet.has(stripped)||optSet.has(t.toLowerCase())) return false;
+            if(extractInlineOptions(t).length>=2) return false;
+            if(/^justify\s*your\s*answer\.?$/i.test(t)) return false;
+            return true;
+          });
+          const cleaned=filteredLines.join('\n').trim();
+          if(cleaned) cleanText=cleaned;
+          if(!hasEq&&!hasTbl&&cleaned){ cleanHtml=filteredLines.map(l=>l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')).join('<br>'); }
+        }
+        if(!text.trim()&&!hasEq&&!hasTbl&&!html.includes('<img')) continue;
+        if(isHdr(text)&&!hasEq&&!hasTbl&&!html.includes('<img')) continue;
+        const unit=COU[co]||'1';
+        qs.push({id:source+'_'+Date.now()+'_'+(qCnt++),type:qType,unit,co,btl,marks,qno:qnoTxt||String(qCnt),text:cleanText,html:cleanHtml,options:(opts||[]).filter(o=>o!==undefined&&o!==null&&String(o).trim()!=='').slice(0,4).map(o=>String(o).trim()),correct:'',images:filteredImgUrls,_qTcNode:qTcNode,_rIdImgMap:rIdImgMap,_imgMap:imgMap,hasEquation:hasEq,hasNestedTable:hasTbl,source,filename:file.name,subject:subInfo.subject});
+      }
+    }
+    return{qs,subInfo};
+  }catch(err){ console.error('parseDocx:',err); return{qs:[],subInfo:{subject:'',code:'',dept:'ECE',semester:'',year:'',incharge:'',expert:'',hod:'',co_statements:{},unit_topics:{}}}; }
+}
+
+// ── Process all ───────────────────────────────────────────
+async function processAll(){
+  const allFiles=[...DB.files.ct,...DB.files.es,...DB.files.aqa];
+  if(!allFiles.length){ toast('No files uploaded yet!','warn'); return; }
+  const btn=document.getElementById('btn-proc'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Processing…';
+  document.getElementById('log-wrap').style.display='block';
+  const logEl=document.getElementById('log'); logEl.innerHTML='';
+  function addLog(msg,cls=''){ const d=document.createElement('div'); d.className=cls; d.textContent=msg; logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight; }
+  let totalNew=0;
+  for(const cat of['ct','es','aqa']){
+    if(!DB.files[cat].length) continue;
+    addLog('['+cat.toUpperCase()+'] Processing '+DB.files[cat].length+' file(s)…','linfo');
+    const prog=document.getElementById('pb-'+cat),fill=document.getElementById('pf-'+cat); prog.style.display='block';
+    for(let i=0;i<DB.files[cat].length;i++){
+      const f=DB.files[cat][i]; addLog('  → '+f.name); fill.style.width=Math.round(i/DB.files[cat].length*100)+'%';
+      try{
+        const{qs,subInfo}=await parseDocx(f,cat);
+        if(subInfo.subject&&!DB.sub.subject){ DB.sub.subject=subInfo.subject; addLog('    📌 Subject: '+subInfo.subject,'lok'); }
+        if(subInfo.code&&!DB.sub.code) DB.sub.code=subInfo.code;
+        if(subInfo.dept&&subInfo.dept!=='ECE'&&!DB.sub.dept) DB.sub.dept=subInfo.dept;
+        if(subInfo.semester&&!DB.sub.semester) DB.sub.semester=subInfo.semester;
+        if(subInfo.year&&!DB.sub.year){ DB.sub.year=subInfo.year; addLog('    📅 Year: '+subInfo.year,'lok'); }
+        if(subInfo.incharge&&!DB.sub.incharge){ DB.sub.incharge=subInfo.incharge; addLog('    👤 Incharge: '+subInfo.incharge,'lok'); }
+        if(subInfo.expert&&!DB.sub.expert){ DB.sub.expert=subInfo.expert; addLog('    👤 Expert: '+subInfo.expert,'lok'); }
+        if(subInfo.hod&&!DB.sub.hod){ DB.sub.hod=subInfo.hod; addLog('    👤 HOD: '+subInfo.hod,'lok'); }
+        if(subInfo.co_statements) Object.entries(subInfo.co_statements).forEach(([k,v])=>{ if(v&&!DB.sub.co_statements[k]){ DB.sub.co_statements[k]=v; addLog('    🎯 '+k+': '+v.slice(0,60),'lok'); } });
+        if(subInfo.unit_topics) Object.entries(subInfo.unit_topics).forEach(([k,v])=>{ if(v&&!DB.sub.unit_topics[String(k)]) DB.sub.unit_topics[String(k)]=v; });
+        let added=0;
+        qs.forEach(q=>{ const norm=t=>t.replace(/\s+/g,' ').toLowerCase().trim().slice(0,60); const isDup=DB.questions.some(x=>x.co===q.co&&x.unit===q.unit&&norm(x.text)===norm(q.text)); if(!isDup){ DB.questions.push(q); added++; } });
+        totalNew+=added;
+        addLog('    ✓ '+qs.length+' questions ('+added+' new, SA:'+qs.filter(q=>q.type==='SA').length+', MCQ:'+qs.filter(q=>q.type==='MCQ').length+', PB:'+qs.filter(q=>q.type==='PARTB').length+')','lok');
+      }catch(err){ addLog('    ✗ Error: '+err.message,'lerr'); }
+    }
+    fill.style.width='100%';
+  }
+  ['name','code','dept','sem','year','incharge','expert','hod'].forEach(k=>{ const el=document.getElementById('sub-'+k); if(!el) return; const v=el.value; if(v){ const map={name:'subject',code:'code',dept:'dept',sem:'semester',year:'year',incharge:'incharge',expert:'expert',hod:'hod'}; DB.sub[map[k]]=v; } });
+  updateSubjectFields(DB.sub);
+  addLog('✅ Done! Total: '+DB.questions.length+' ('+totalNew+' new)','lok');
+  btn.disabled=false; btn.textContent='⚙️ Process All Files';
+  document.getElementById('hbadge-sub').textContent=(DB.sub.code||'QB')+(DB.sub.subject?' – '+DB.sub.subject.slice(0,28):'');
+  document.getElementById('hbadge-cnt').textContent=DB.questions.length+' Questions';
+  updateCounts(); renderAll(); toast('Processed! '+DB.questions.length+' questions','ok');
+}
+
+function refreshUnitSelects(){ ['mf-unit','fsa-u','fmcq-u','fpb-u','ef-u'].forEach(id=>{ const sel=document.getElementById(id); if(!sel) return; [...sel.options].forEach(opt=>{ if(/^[1-5]$/.test(opt.value)) opt.text=getUnitTitle(opt.value); }); }); }
+function renderCoStmtFields(){ const wrap=document.getElementById('co-stmt-grid'); if(!wrap) return; wrap.innerHTML=''; for(let n=1;n<=5;n++){ const key='CO'+n,val=DB.sub.co_statements[key]||''; const row=document.createElement('div'); row.className='fi full'; row.innerHTML='<label>CO'+n+' Statement</label><input type="text" id="cos-'+key+'" value="'+escAttr(val)+'" placeholder="Auto-detected — or enter manually…" oninput="DB.sub.co_statements[\''+key+'\']=this.value;renderDash()">'; wrap.appendChild(row); } }
+function renderUnitTopicFields(){ const wrap=document.getElementById('unit-topic-grid'); if(!wrap) return; wrap.innerHTML=''; for(let n=1;n<=5;n++){ const k=String(n),val=DB.sub.unit_topics[k]||''; const row=document.createElement('div'); row.className='fi full'; const lbl=document.createElement('label'); lbl.textContent='Unit '+n+' Topic'; const inp=document.createElement('input'); inp.type='text'; inp.value=val; inp.placeholder='Auto-detected — or enter Unit '+n+' topic…'; inp.dataset.unitKey=k; inp.addEventListener('input',function(){ DB.sub.unit_topics[this.dataset.unitKey]=this.value; refreshUnitSelects(); renderAll(); }); row.appendChild(lbl); row.appendChild(inp); wrap.appendChild(row); } }
+function updateSubjectFields(info){ const fieldMap={name:'subject',code:'code',dept:'dept',sem:'semester',year:'year',incharge:'incharge',expert:'expert',hod:'hod'}; Object.entries(fieldMap).forEach(([elSuffix,key])=>{ const el=document.getElementById('sub-'+elSuffix); if(el) el.value=info[key]||''; }); renderCoStmtFields(); renderUnitTopicFields(); refreshUnitSelects(); }
+function getUN(u){ return DB.sub.unit_topics[String(u)]||''; }
+function getUnitTitle(u){ const t=getUN(u); return t?'Unit '+u+' : '+t:'Unit '+u; }
+
+// ── Render ────────────────────────────────────────────────
+function renderAll(){ refreshUnitSelects(); renderSec('SA'); renderSec('MCQ'); renderSec('PARTB'); renderDash(); updateCounts(); }
+function getFiltered(type){ const uid={SA:'fsa-u',MCQ:'fmcq-u',PARTB:'fpb-u'}[type]; const sid={SA:'fsa-s',MCQ:'fmcq-s',PARTB:'fpb-s'}[type]; const qid={SA:'fsa-q',MCQ:'fmcq-q',PARTB:'fpb-q'}[type]; const coid={SA:'fsa-co',MCQ:'fmcq-co',PARTB:'fpb-co'}[type]; const u=document.getElementById(uid)?.value||''; const s=document.getElementById(sid)?.value||''; const q=(document.getElementById(qid)?.value||'').toLowerCase(); const co=document.getElementById(coid)?.value||''; return DB.questions.filter(x=>x.type===type&&(!u||x.unit==u)&&(!s||x.source===s)&&(!q||x.text.toLowerCase().includes(q)||x.co.toLowerCase().includes(q))&&(!co||x.co===co)); }
+function highlight(text,term){ if(!term) return esc(text); const safe=term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); return esc(text).replace(new RegExp('('+safe+')','gi'),'<mark>$1</mark>'); }
+
+function renderSec(type){
+  const cid={SA:'sa-c',MCQ:'mcq-c',PARTB:'pb-c'}[type];
+  const cont=document.getElementById(cid);
+  const qs=getFiltered(type);
+  const qid={SA:'fsa-q',MCQ:'fmcq-q',PARTB:'fpb-q'}[type];
+  const term=(document.getElementById(qid)?.value||'').toLowerCase();
+  const badgeId={SA:'sa-count-badge',MCQ:'mcq-count-badge',PARTB:'pb-count-badge'}[type];
+  const badge=document.getElementById(badgeId); if(badge) badge.textContent=qs.length;
+  if(!qs.length){ const emojis={SA:'📝',MCQ:'🔘',PARTB:'📋'}; cont.innerHTML='<div class="empty"><span class="ei">'+emojis[type]+'</span><h3>No questions yet</h3><p>Upload files or add manually</p></div>'; return; }
+  const btlColors={'K1':'var(--green)','K2':'var(--blue)','K3':'var(--gold)','K4':'var(--accent)','K5':'var(--purple)','K6':'#c0392b'};
+  const srcBg={ct:'rgba(200,75,47,.1)',es:'rgba(46,125,79,.1)',aqa:'rgba(107,79,168,.1)'};
+  const srcColor={ct:'var(--accent)',es:'var(--green)',aqa:'var(--purple)'};
+  const srcLabel={ct:'CT',es:'ES',aqa:'AQA'};
+  let html='';
+  for(let u=1;u<=5;u++){
+    const uqs=qs.filter(q=>q.unit==u); if(!uqs.length) continue;
+    html+='<div class="unit-section">';
+    html+='<div class="unit-header" onclick="toggleUnit(this)"><div class="unit-num">'+u+'</div><div class="unit-title">'+esc(getUnitTitle(u))+'</div><div class="unit-meta">'+uqs.length+' question'+(uqs.length!==1?'s':'')+'</div><span class="unit-caret">▾</span></div><div class="unit-body">';
+    if(type==='SA'){
+      uqs.forEach((q,i)=>{
+        const btlColor=btlColors[q.btl]||'var(--blue)'; const sel=_selectedIds.has(q.id);
+        html+='<div class="q-card" id="qcard-'+q.id+'" style="'+(sel?'border-color:var(--accent);box-shadow:0 0 0 2px rgba(200,75,47,.15);':'')+'">';
+        html+='<div class="q-card-header"><input type="checkbox" '+(sel?'checked':'')+' onchange="toggleSel(\''+q.id+'\',this)" style="margin-right:4px;accent-color:var(--accent)"><div class="q-num-badge">'+(i+1)+'</div><span class="q-co-tag">'+q.co+'</span><span class="q-btl-tag" style="background:'+btlColor+'22;color:'+btlColor+'">'+q.btl+'</span><span class="q-marks-tag">'+q.marks+' M</span><span style="margin-left:auto"></span><span style="font-size:10px;padding:2px 7px;border-radius:5px;font-weight:600;background:'+srcBg[q.source]+';color:'+srcColor[q.source]+'">'+srcLabel[q.source]+'</span></div>';
+        html+='<div class="q-card-body"><div class="q-text">'+(q.html&&q.html.trim()?q.html:highlight(q.text,term)); if(q.hasEquation) html+=' <span class="q-has-eq-badge">∑ Eq</span>'; if(q.hasNestedTable) html+=' <span class="q-has-tbl-badge">⊞ Tbl</span>'; (q.images||[]).forEach(s=>{ html+='<img src="'+s+'" loading="lazy" style="max-width:160px;max-height:100px;border-radius:5px;margin:5px 4px 0 0;border:1px solid var(--border)" onerror="this.style.display=\'none\'">'; }); html+='</div><div class="sa-answer-line">Answer: _______________________________________________</div></div>';
+        html+='<div class="q-card-footer"><button class="btn bg bsm" onclick="editQ(\''+q.id+'\')" style="padding:4px 10px;font-size:11px">✎ Edit</button><button class="btn bd bsm" onclick="delQ(\''+q.id+'\')" style="padding:4px 10px;font-size:11px">🗑</button>'+(q.hasEquation||q.hasNestedTable?'<span style="font-size:10px;color:var(--green);margin-left:auto">✓ Native XML</span>':'')+'</div></div>';
+      });
+    } else if(type==='MCQ'){
+      uqs.forEach((q,i)=>{
+        const btlColor=btlColors[q.btl]||'var(--blue)'; const safeOpts=(q.options||[]).filter(o=>o!==undefined&&o!==null&&String(o).trim()!=='').slice(0,4).map(o=>String(o).trim()); const sel=_selectedIds.has(q.id);
+        html+='<div class="q-card" id="qcard-'+q.id+'" style="border-left:3px solid var(--gold);'+(sel?'border-color:var(--accent);box-shadow:0 0 0 2px rgba(200,75,47,.15);':'')+'">';
+        html+='<div class="q-card-header" style="background:linear-gradient(90deg,rgba(184,134,11,.07),transparent)"><input type="checkbox" '+(sel?'checked':'')+' onchange="toggleSel(\''+q.id+'\',this)" style="margin-right:4px;accent-color:var(--accent)"><div class="q-num-badge" style="background:linear-gradient(135deg,var(--gold),#e8a020)">'+(i+1)+'</div><span class="q-co-tag">'+q.co+'</span><span class="q-btl-tag" style="background:'+btlColor+'22;color:'+btlColor+'">'+q.btl+'</span><span class="q-marks-tag">'+q.marks+' M</span><span style="margin-left:auto"></span><span style="font-size:10px;padding:2px 7px;border-radius:5px;font-weight:600;background:'+srcBg[q.source]+';color:'+srcColor[q.source]+'">'+srcLabel[q.source]+'</span></div>';
+        html+='<div class="q-card-body"><div class="q-text">'+(q.html&&q.html.trim()?q.html:highlight(q.text,term)); if(q.hasEquation) html+=' <span class="q-has-eq-badge">∑ Eq</span>'; if(q.hasNestedTable) html+=' <span class="q-has-tbl-badge">⊞ Tbl</span>'; (q.images||[]).forEach(s=>{ html+='<img src="'+s+'" loading="lazy" style="max-width:160px;max-height:100px;border-radius:5px;margin:5px 4px 0 0;border:1px solid var(--border)" onerror="this.style.display=\'none\'">'; }); html+='</div>';
+        if(safeOpts.filter(o=>o.trim()).length>=2){ html+='<div class="opt-grid">'; const optLabels=['A','B','C','D'],optColors=['#2d5a8e','#2e7d4f','#b8860b','#c84b2f']; safeOpts.slice(0,4).forEach((o,j)=>{ if(!o.trim()) return; html+='<div class="opt-item"><div class="opt-label" style="background:'+optColors[j]+'">'+optLabels[j]+'</div><div class="opt-text">'+highlight(o,term)+'</div></div>'; }); html+='</div>'; } else html+='<div style="margin-top:7px;font-size:11px;color:var(--ink3);font-style:italic;padding:5px 9px;background:var(--bg2);border-radius:5px">⚠ Options not extracted — check source DOCX</div>';
+        html+='</div><div class="q-card-footer"><button class="btn bg bsm" onclick="editQ(\''+q.id+'\')" style="padding:4px 10px;font-size:11px">✎ Edit</button><button class="btn bd bsm" onclick="delQ(\''+q.id+'\')" style="padding:4px 10px;font-size:11px">🗑</button>'+(q.hasEquation||q.hasNestedTable?'<span style="font-size:10px;color:var(--green);margin-left:auto">✓ Native XML</span>':'')+'</div></div>';
+      });
+    } else if(type==='PARTB'){
+      uqs.forEach((q,i)=>{
+        const btlColor=btlColors[q.btl]||'var(--purple)'; const marksColor=q.marks>=16?'var(--accent)':q.marks>=13?'#c0392b':q.marks>=8?'var(--purple)':'var(--blue)'; const sel=_selectedIds.has(q.id);
+        html+='<div class="pb-card" id="qcard-'+q.id+'" style="'+(sel?'outline:2px solid var(--accent);':'')+'">';
+        html+='<div class="pb-header"><input type="checkbox" '+(sel?'checked':'')+' onchange="toggleSel(\''+q.id+'\',this)" style="margin-right:4px;accent-color:var(--accent)"><div class="q-num-badge" style="background:linear-gradient(135deg,var(--purple),#9b6fd4)">'+(i+1)+'</div><span class="q-co-tag">'+q.co+'</span><span class="q-btl-tag" style="background:'+btlColor+'22;color:'+btlColor+'">'+q.btl+'</span><span class="marks-big" style="background:'+marksColor+'18;color:'+marksColor+'">'+q.marks+' M</span><span style="margin-left:auto"></span><span style="font-size:10px;padding:2px 7px;border-radius:5px;font-weight:600;background:'+srcBg[q.source]+';color:'+srcColor[q.source]+'">'+srcLabel[q.source]+'</span></div>';
+        html+='<div class="pb-body"><div class="q-text" style="font-size:13px;line-height:1.75">'+(q.html&&q.html.trim()?q.html:highlight(q.text,term)); if(q.hasEquation) html+=' <span class="q-has-eq-badge">∑ Eq</span>'; if(q.hasNestedTable) html+=' <span class="q-has-tbl-badge">⊞ Tbl</span>'; (q.images||[]).forEach(s=>{ html+='<img src="'+s+'" loading="lazy" style="max-width:200px;max-height:130px;border-radius:6px;margin:7px 5px 0 0;border:1px solid var(--border)" onerror="this.style.display=\'none\'">'; }); html+='</div></div><div class="pb-footer"><button class="btn bg bsm" onclick="editQ(\''+q.id+'\')" style="padding:4px 10px;font-size:11px">✎ Edit</button><button class="btn bd bsm" onclick="delQ(\''+q.id+'\')" style="padding:4px 10px;font-size:11px">🗑</button>'+(q.hasEquation||q.hasNestedTable?'<span style="font-size:10px;color:var(--green);margin-left:auto">✓ Native XML</span>':'')+'</div></div>';
+      });
+    }
+    html+='</div></div>';
+  }
+  cont.innerHTML=html;
+  const delBtnMap={SA:'del-sel-sa',MCQ:'del-sel-mcq',PARTB:'del-sel-pb'};
+  const btn=document.getElementById(delBtnMap[type]); if(btn) btn.style.display=_selectedIds.size>0?'inline-flex':'none';
+}
+
+function toggleUnit(el){ el.classList.toggle('closed'); const body=el.nextElementSibling; if(body) body.style.display=el.classList.contains('closed')?'none':'block'; }
+function toggleSel(id,cb){ if(cb.checked) _selectedIds.add(id); else _selectedIds.delete(id); updateRemapCount(); const card=document.getElementById('qcard-'+id); if(card) card.style.outline=cb.checked?'2px solid var(--accent)':''; ['SA','MCQ','PARTB'].forEach(t=>{ const m={SA:'del-sel-sa',MCQ:'del-sel-mcq',PARTB:'del-sel-pb'}; const b=document.getElementById(m[t]); if(b) b.style.display=_selectedIds.size>0?'inline-flex':'none'; }); }
+function selectAll(type){ const qs=getFiltered(type); qs.forEach(q=>_selectedIds.add(q.id)); renderSec(type); updateRemapCount(); }
+function clearSelection(){ _selectedIds.clear(); renderAll(); updateRemapCount(); }
+function deleteSelected(){ if(!_selectedIds.size){ toast('No questions selected','warn'); return; } if(!confirm('Delete '+_selectedIds.size+' selected questions?')) return; DB.questions=DB.questions.filter(q=>!_selectedIds.has(q.id)); _selectedIds.clear(); updateCounts(); renderAll(); toast('Deleted','warn'); }
+function updateRemapCount(){ const el=document.getElementById('remap-sel-count'); if(el) el.textContent=_selectedIds.size; const prev=document.getElementById('remap-preview'); if(prev&&_selectedIds.size>0){ const sel=DB.questions.filter(q=>_selectedIds.has(q.id)); prev.innerHTML='<div style="font-size:11.5px;color:var(--ink3);margin-top:8px"><b>'+sel.length+' selected:</b> '+sel.slice(0,5).map(q=>esc(q.text.slice(0,40))+'…').join('<br>')+(sel.length>5?'<br>…and '+(sel.length-5)+' more':'')+'</div>'; } else if(prev) prev.innerHTML=''; }
+function applyRemap(){ if(!_selectedIds.size){ toast('Select questions first (use checkboxes)','warn'); return; } const co=document.getElementById('remap-co').value,btl=document.getElementById('remap-btl').value,unit=document.getElementById('remap-unit').value,type=document.getElementById('remap-type').value,src=document.getElementById('remap-src').value,marks=document.getElementById('remap-marks').value; let changed=0; DB.questions.forEach(q=>{ if(!_selectedIds.has(q.id)) return; if(co) q.co=co; if(btl) q.btl=btl; if(unit) q.unit=unit; if(type) q.type=type; if(src) q.source=src; if(marks) q.marks=parseInt(marks); changed++; }); _selectedIds.clear(); renderAll(); updateCounts(); toast('Updated '+changed+' questions','ok'); }
+
+// ── Analysis ──────────────────────────────────────────────
+function buildAnalysisHTML(){
+  if(!DB.questions.length) return '<div class="empty"><span class="ei">📊</span><h3>No data yet</h3><p>Upload files to see full analysis</p></div>';
+  const units=[1,2,3,4,5];
+  const rows=[
+    {label:'Part A (Descriptive)',fn:q=>q.type==='SA',section:'TYPE'},
+    {label:'Part A (MCQ)',fn:q=>q.type==='MCQ',section:''},
+    {label:'Part B',fn:q=>q.type==='PARTB',section:''},
+    {label:'AQA',fn:q=>q.source==='aqa',section:'SOURCE'},
+    {label:'Cycle Test',fn:q=>q.source==='ct',section:''},
+    {label:'End Sem',fn:q=>q.source==='es',section:''},
+    {label:'2 Mark',fn:q=>q.marks===2,section:'MARKS'},
+    {label:'8 Mark',fn:q=>q.marks===8,section:''},
+    {label:'16 Mark',fn:q=>q.marks===16,section:''},
+    {label:'K1',fn:q=>q.btl==='K1',section:'BTL'},
+    {label:'K2',fn:q=>q.btl==='K2',section:''},
+    {label:'K3',fn:q=>q.btl==='K3',section:''},
+    {label:'K4',fn:q=>q.btl==='K4',section:''},
+    {label:'K5',fn:q=>q.btl==='K5',section:''},
+  ];
+  const sectionMap={'Part A (Descriptive)':'Type','AQA':'Source','2 Mark':'Mark','K1':'BTL'};
+  let html='<div class="tw"><table class="analysis-tbl"><thead><tr><th style="text-align:left;min-width:140px">Category</th>'; units.forEach(u=>{ html+='<th>Unit '+u+'</th>'; }); html+='<th>Total</th></tr></thead><tbody>';
+  let curSection='';
+  rows.forEach(row=>{ if(sectionMap[row.label]&&sectionMap[row.label]!==curSection){ curSection=sectionMap[row.label]; html+='<tr class="section-row"><td colspan="7" style="font-size:9px;padding:4px 12px;letter-spacing:1px">— '+curSection.toUpperCase()+' —</td></tr>'; } const vals=units.map(u=>DB.questions.filter(q=>q.unit==u&&row.fn(q)).length); const total=vals.reduce((a,b)=>a+b,0); html+='<tr><td>'+row.label+'</td>'; vals.forEach(v=>{ html+='<td class="val-cell'+(v>0?' nz':'')+'">'+(v||'–')+'</td>'; }); html+='<td class="val-cell'+(total>0?' nz':'')+'"><b>'+total+'</b></td></tr>'; });
+  html+='</tbody></table></div>'; return html;
+}
+
+function renderDash(){
+  const total=DB.questions.length;
+  ['t','sa','mcq','pb','ct','es','aqa'].forEach(k=>{ const el=document.getElementById('st-'+k); if(el) el.textContent=DB.questions.filter(q=>k==='t'?true:k==='sa'?q.type==='SA':k==='mcq'?q.type==='MCQ':k==='pb'?q.type==='PARTB':q.source===k).length; });
+  const eqEl=document.getElementById('st-eq'); if(eqEl) eqEl.textContent=DB.questions.filter(q=>q.hasEquation).length;
+  const tblEl=document.getElementById('st-tbl'); if(tblEl) tblEl.textContent=DB.questions.filter(q=>q.hasNestedTable).length;
+  const imgEl=document.getElementById('st-img'); if(imgEl) imgEl.textContent=DB.questions.filter(q=>q.images&&q.images.length>0).length;
+  document.getElementById('hbadge-cnt').textContent=total+' Questions';
+  document.getElementById('dash-info').textContent=DB.sub.subject?(DB.sub.code||'')+' – '+DB.sub.subject+' | '+(DB.sub.dept||'ECE')+' | '+(DB.sub.semester||''):'Upload files to begin';
+  if(total){
+    let rows=''; for(let u=1;u<=5;u++){ const uqs=DB.questions.filter(q=>q.unit==u); if(!uqs.length) continue; const bw=Math.round(uqs.length/total*100); rows+='<tr><td style="font-family:\'JetBrains Mono\',monospace;font-weight:700;color:var(--accent)">Unit '+u+'</td><td>'+esc(getUN(u))+'</td><td style="font-family:\'JetBrains Mono\',monospace;color:var(--blue)">'+uqs.filter(q=>q.type==='SA').length+'</td><td style="font-family:\'JetBrains Mono\',monospace;color:var(--gold)">'+uqs.filter(q=>q.type==='MCQ').length+'</td><td style="font-family:\'JetBrains Mono\',monospace;color:var(--purple)">'+uqs.filter(q=>q.type==='PARTB').length+'</td><td style="font-weight:700">'+uqs.length+'</td><td><div style="background:var(--bg2);border-radius:4px;overflow:hidden;height:7px"><div style="background:linear-gradient(90deg,var(--accent),var(--accent2));height:100%;width:'+bw+'%"></div></div></td></tr>'; }
+    document.getElementById('unit-chart').innerHTML='<div class="tw"><table class="qb"><thead><tr><th>Unit</th><th>Topic</th><th style="color:var(--blue)">SA</th><th style="color:var(--gold)">MCQ</th><th style="color:var(--purple)">Part B</th><th>Total</th><th style="min-width:90px">Distribution</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+    document.getElementById('analysis-chart').innerHTML=buildAnalysisHTML();
+    const KS=['K1','K2','K3','K4','K5','K6'],KC={'K1':'var(--green)','K2':'var(--blue)','K3':'var(--gold)','K4':'var(--accent)','K5':'var(--purple)','K6':'#c0392b'};
+    let crow=''; for(let co=1;co<=5;co++){ const cqs=DB.questions.filter(q=>q.co==='CO'+co); if(!cqs.length) continue; const stmt=DB.sub.co_statements['CO'+co]||''; crow+='<tr><td style="font-family:\'JetBrains Mono\',monospace;font-weight:700;color:var(--accent)">CO'+co+'</td><td colspan="2" style="color:var(--ink3);font-size:11px;font-style:italic">'+esc(stmt)+'</td>'+KS.map(k=>{ const n=cqs.filter(q=>q.btl===k).length; return '<td style="text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:12px;'+(n?'color:'+KC[k]+';font-weight:700':'color:var(--ink3)')+'">'+(n||'–')+'</td>'; }).join('')+'<td style="text-align:center;font-weight:700">'+cqs.length+'</td></tr>'; }
+    document.getElementById('co-chart').innerHTML='<div class="tw"><table class="qb"><thead><tr><th>CO</th><th colspan="2" style="color:var(--ink3)">Statement</th>'+KS.map(k=>'<th style="color:'+KC[k]+'">'+k+'</th>').join('')+'<th>Total</th></tr></thead><tbody>'+crow+'</tbody></table></div>';
+    const srcRows=['aqa','ct','es'].map(src=>{ const label={aqa:'AQA',ct:'CT (Cycle Test)',es:'ES (End Sem)'}[src]; const clr={aqa:'var(--purple)',ct:'var(--accent)',es:'var(--green)'}[src]; const tot=DB.questions.filter(q=>q.source===src).length; if(!tot) return ''; const unitCells=[1,2,3,4,5].map(u=>{ const n=DB.questions.filter(q=>q.source===src&&q.unit==u).length; return '<td style="text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:13px;'+(n?'font-weight:700;color:'+clr:'color:var(--ink3)')+'">'+(n||'–')+'</td>'; }).join(''); return '<tr><td style="font-weight:700;color:'+clr+'">'+label+'</td>'+unitCells+'<td style="text-align:center;font-weight:700">'+tot+'</td></tr>'; }).join('');
+    document.getElementById('src-chart').innerHTML=srcRows?'<div class="tw"><table class="qb"><thead><tr><th>Source</th><th style="text-align:center">Unit 1</th><th style="text-align:center">Unit 2</th><th style="text-align:center">Unit 3</th><th style="text-align:center">Unit 4</th><th style="text-align:center">Unit 5</th><th style="text-align:center">Total</th></tr></thead><tbody>'+srcRows+'</tbody></table></div>':'<div class="empty"><span class="ei">📋</span><h3>No data yet</h3></div>';
+    const allMarks=[...new Set(DB.questions.map(q=>q.marks))].sort((a,b)=>a-b);
+    const markRows=allMarks.map(m=>{ const qs=DB.questions.filter(q=>q.marks==m); const sa=qs.filter(q=>q.type==='SA').length,mcq=qs.filter(q=>q.type==='MCQ').length,pb=qs.filter(q=>q.type==='PARTB').length; return '<tr><td style="font-family:\'JetBrains Mono\',monospace;font-weight:700;color:var(--ink)">'+m+' Mark'+(m>1?'s':'')+'</td><td style="text-align:center;color:var(--blue)">'+sa+'</td><td style="text-align:center;color:var(--gold)">'+mcq+'</td><td style="text-align:center;color:var(--purple)">'+pb+'</td><td style="text-align:center;font-weight:700">'+qs.length+'</td></tr>'; }).join('');
+    document.getElementById('marks-chart').innerHTML=markRows?'<div class="tw"><table class="qb"><thead><tr><th>Mark Type</th><th style="text-align:center;color:var(--blue)">SA</th><th style="text-align:center;color:var(--gold)">MCQ</th><th style="text-align:center;color:var(--purple)">Part B</th><th style="text-align:center">Total</th></tr></thead><tbody>'+markRows+'</tbody></table></div>':'<div class="empty"><span class="ei">📊</span><h3>No data yet</h3></div>';
+  }
+}
+function updateCounts(){ const map={sa:'SA',mcq:'MCQ',pb:'PARTB'}; ['sa','mcq','pb'].forEach(t=>{ const n=DB.questions.filter(q=>q.type===map[t]).length; document.getElementById('nc-'+t).textContent=n; const badge=document.getElementById(t+'-count-badge'); if(badge) badge.textContent=n; }); }
+function updateExportPreview(){ const qs=getExportQs(); const el=document.getElementById('export-preview-stats'); if(!el) return; const eq=qs.filter(q=>q.hasEquation).length,tbl=qs.filter(q=>q.hasNestedTable).length,img=qs.filter(q=>q.images&&q.images.length).length; el.innerHTML='<div class="exp-preview">📊 Export preview: <b>'+qs.length+'</b> questions — SA: <b>'+qs.filter(q=>q.type==='SA').length+'</b> | MCQ: <b>'+qs.filter(q=>q.type==='MCQ').length+'</b> | Part B: <b>'+qs.filter(q=>q.type==='PARTB').length+'</b>\n🧮 With equations: <b>'+eq+'</b> | With tables: <b>'+tbl+'</b> | With images: <b>'+img+'</b>\n✅ Output format: AQA Question Bank Template (Georgia · Unit tables · F2F2F2/E5DFEC/FABF8F colours · Full Analysis)</div>'; }
+
+// ── CRUD ──────────────────────────────────────────────────
+function delQ(id){ if(!confirm('Delete this question?')) return; DB.questions=DB.questions.filter(q=>q.id!==id); updateCounts(); renderAll(); toast('Deleted','warn'); }
+function editQ(id){ const q=DB.questions.find(x=>x.id===id); if(!q) return; document.getElementById('mtitle').textContent='Edit Question'; document.getElementById('mbody').innerHTML='<div class="fg"><div class="fi"><label>CO</label><select id="eq-co">'+[1,2,3,4,5].map(n=>'<option value="CO'+n+'"'+(q.co==='CO'+n?' selected':'')+'>CO'+n+'</option>').join('')+'</select></div><div class="fi"><label>BTL</label><select id="eq-btl">'+[1,2,3,4,5,6].map(n=>'<option value="K'+n+'"'+(q.btl==='K'+n?' selected':'')+'>K'+n+' – '+['Remember','Understand','Apply','Analyse','Evaluate','Create'][n-1]+'</option>').join('')+'</select></div><div class="fi"><label>Unit</label><select id="eq-unit">'+[1,2,3,4,5].map(n=>'<option value="'+n+'"'+(q.unit==n?' selected':'')+'>'+escAttr(getUnitTitle(n))+'</option>').join('')+'</select></div><div class="fi"><label>Marks</label><select id="eq-marks">'+[2,8,13,16].map(m=>'<option value="'+m+'"'+(q.marks==m?' selected':'')+'>'+m+'</option>').join('')+'</select></div><div class="fi"><label>Type</label><select id="eq-type"><option value="SA"'+(q.type==='SA'?' selected':'')+'>SA</option><option value="MCQ"'+(q.type==='MCQ'?' selected':'')+'>MCQ</option><option value="PARTB"'+(q.type==='PARTB'?' selected':'')+'>Part B</option></select></div><div class="fi"><label>Source</label><select id="eq-src"><option value="ct"'+(q.source==='ct'?' selected':'')+'>CT – Cycle Test</option><option value="es"'+(q.source==='es'?' selected':'')+'>ES – End Semester</option><option value="aqa"'+(q.source==='aqa'?' selected':'')+'>AQA</option></select></div><div class="fi full"><label>Question Text</label><textarea id="eq-txt" style="min-height:100px">'+escTxt(q.text)+'</textarea></div></div><div class="bg2" style="margin-top:14px"><button class="btn bp" onclick="saveEdit(\''+id+'\')">💾 Save</button><button class="btn bg" onclick="closeModal()">Cancel</button></div>'; document.getElementById('modal').classList.add('open'); }
+function saveEdit(id){ const q=DB.questions.find(x=>x.id===id); if(!q) return; q.co=document.getElementById('eq-co').value; q.btl=document.getElementById('eq-btl').value; q.unit=document.getElementById('eq-unit').value; q.marks=parseInt(document.getElementById('eq-marks').value); q.type=document.getElementById('eq-type').value; q.source=document.getElementById('eq-src').value; const newText=document.getElementById('eq-txt').value; if(newText!==q.text){ q.text=newText; q.html=''; q._qTcNode=null; } closeModal(); updateCounts(); renderAll(); toast('Updated!','ok'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function updateMF(){ const t=document.getElementById('mf-type').value; document.getElementById('mf-opts').style.display=t==='MCQ'?'block':'none'; document.getElementById('mf-marks').value=t==='PARTB'?'16':'2'; }
+function handleImgs(e){ [...e.target.files].forEach(f=>{ const r=new FileReader(); r.onload=ev=>{ mImgs.push(ev.target.result); renderMImgs(); }; r.readAsDataURL(f); }); e.target.value=''; }
+function renderMImgs(){ document.getElementById('mf-imgs').innerHTML=mImgs.map((s,i)=>'<div class="ithumb"><img src="'+s+'"><button class="ri" onclick="removeMImg('+i+')">✕</button></div>').join(''); }
+function removeMImg(i){ mImgs.splice(i,1); renderMImgs(); }
+function openAdd(t){ nav('add',document.querySelectorAll('.ni')[6]); document.getElementById('mf-type').value=t; updateMF(); }
+function saveManual(){ const txt=document.getElementById('mf-q').value.trim(); if(!txt){ toast('Question text required!','err'); return; } const type=document.getElementById('mf-type').value; let opts=[],correct=''; if(type==='MCQ'){ opts=['oa','ob','oc','od'].map(id=>document.getElementById(id).value); const r=document.querySelector('input[name="corr"]:checked'); correct=r?r.value:''; } DB.questions.push({id:'manual_'+Date.now(),type,unit:document.getElementById('mf-unit').value,co:document.getElementById('mf-co').value,btl:document.getElementById('mf-btl').value,marks:parseInt(document.getElementById('mf-marks').value),qno:document.getElementById('mf-qno').value,text:txt,html:'',options:opts,correct,images:[...mImgs],_qTcNode:null,_rIdImgMap:null,_imgMap:null,_localRIdRemap:null,hasEquation:false,hasNestedTable:false,source:document.getElementById('mf-src').value,filename:'Manual',subject:DB.sub.subject}); resetMF(); updateCounts(); renderAll(); toast('Question added!','ok'); }
+function resetMF(){ document.getElementById('mf-q').value=''; ['oa','ob','oc','od'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); document.querySelectorAll('input[name="corr"]').forEach(r=>r.checked=false); mImgs=[]; renderMImgs(); }
+
+// ── Duplicate check ───────────────────────────────────────
+function duplicateCheck(){ const map={}; DB.questions.forEach(q=>{ const k=q.text.trim().toLowerCase().slice(0,60); if(!map[k]) map[k]=[]; map[k].push(q); }); const dups=Object.values(map).filter(a=>a.length>1); const resultEl=document.getElementById('dup-result'); if(!dups.length){ toast('No duplicates found! ✅','ok'); if(resultEl) resultEl.innerHTML='<div class="fix-note">✅ No duplicates found in '+DB.questions.length+' questions.</div>'; return; } let html='<p style="font-size:12px;color:var(--ink3);margin-bottom:10px">Found <b style="color:var(--accent)">'+dups.length+'</b> duplicate group(s).</p>'; dups.slice(0,10).forEach(group=>{ html+='<div style="background:rgba(200,75,47,.06);border:1px solid rgba(200,75,47,.15);border-radius:7px;padding:9px;margin-bottom:7px"><div style="font-size:11.5px;color:var(--ink);margin-bottom:5px">'+esc(group[0].text.slice(0,100))+'…</div>'+group.map((q,i)=>'<div style="display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink3);padding:2px 0"><span class="pill p-'+q.source+'">'+q.source.toUpperCase()+'</span> '+q.co+' | '+q.type+' | Unit '+q.unit+(i>0?'<button class="btn bd bsm" style="margin-left:auto;padding:2px 7px;font-size:10px" onclick="delQ(\''+q.id+'\');duplicateCheck()">🗑 Remove</button>':'<span style="margin-left:auto;color:var(--green);font-size:10px">✓ Keep</span>')+'</div>').join('')+'</div>'; }); if(resultEl) resultEl.innerHTML=html; if(!resultEl||!document.getElementById('page-merge').classList.contains('active')){ document.getElementById('mtitle').textContent='🔍 Duplicate Checker'; document.getElementById('mbody').innerHTML=html+'<div class="bg2" style="margin-top:12px"><button class="btn bg" onclick="closeModal()">Close</button><button class="btn bd bsm" onclick="autoRemoveDups();closeModal()">🗑 Auto-Remove All</button></div>'; document.getElementById('modal').classList.add('open'); } }
+function autoRemoveDups(){ const map={}; const toDelete=[]; DB.questions.forEach(q=>{ const k=q.co+'|'+q.text.trim().toLowerCase().slice(0,60); if(map[k]) toDelete.push(q.id); else map[k]=true; }); DB.questions=DB.questions.filter(q=>!toDelete.includes(q.id)); updateCounts(); renderAll(); toast('Removed '+toDelete.length+' duplicates','ok'); if(document.getElementById('page-merge').classList.contains('active')) duplicateCheck(); }
+
+// ══════════════════════════════════════════════════════════
+// NATIVE DOCX EXPORT — TEMPLATE FORMAT
+// ══════════════════════════════════════════════════════════
+
+const FULL_NS=[`xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"`,`xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex"`,`xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"`,`xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink"`,`xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d"`,`xmlns:o="urn:schemas-microsoft-com:office:office"`,`xmlns:r="${RNS}"`,`xmlns:m="${MNS}"`,`xmlns:v="urn:schemas-microsoft-com:vml"`,`xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing"`,`xmlns:wp="${WPNS}"`,`xmlns:w10="urn:schemas-microsoft-com:office:word"`,`xmlns:w="${WNS}"`,`xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"`,`xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"`,`xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex"`,`xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid"`,`xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml"`,`xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash"`,`xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex"`,`xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup"`,`xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk"`,`xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml"`,`xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"`,`xmlns:a="${ANS}"`,`xmlns:pic="${PICNS}"`].join(' ');
+
+function serialiseNodeToXmlString(node){ if(!node) return ''; try{ const raw=new XMLSerializer().serializeToString(node); const wrapped=`<_root_ ${FULL_NS}>${raw}</_root_>`; const reparsed=new DOMParser().parseFromString(wrapped,'application/xml'); if(reparsed.documentElement.localName==='parsererror') return raw; const inner=reparsed.documentElement.firstElementChild; if(!inner) return raw; const result=new XMLSerializer().serializeToString(inner); return result.replace(/ xmlns:xml="[^"]*"/g,'').replace(/ xmlns:ns\d+="[^"]*"/g,''); }catch(e){ return ''; } }
+
+function serialiseTcChildren(tcNode){ const xmlParts=[]; for(let i=0;i<tcNode.childNodes.length;i++){ const child=tcNode.childNodes[i]; if(child.nodeType!==1) continue; const ln=child.localName||''; if(ln==='tcPr') continue; const xmlStr=serialiseNodeToXmlString(child); if(xmlStr) xmlParts.push(xmlStr); } return xmlParts; }
+
+function remapRIdsInString(xmlStr,rIdRemap){ if(!rIdRemap||Object.keys(rIdRemap).length===0) return xmlStr; let s=xmlStr; for(const[oldId,newId] of Object.entries(rIdRemap)){ if(!oldId||!newId) continue; const escaped=oldId.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); s=s.replace(new RegExp('(r:embed|r:id|r:href)="'+escaped+'"','g'),'$1="'+newId+'"'); } return s; }
+
+function escXml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;'); }
+
+function gPara(text,opts={}){ const bold=opts.bold?'<w:b/><w:bCs/>':''; const sz=opts.sz||20; const color=opts.color?`<w:color w:val="${opts.color}"/>`:'<w:color w:val="000000" w:themeColor="text1"/>'; const jc=opts.center?'<w:jc w:val="center"/>':opts.right?'<w:jc w:val="right"/>':opts.left?'<w:jc w:val="left"/>':''; const spacing=opts.spacing?`<w:spacing w:after="${opts.spacingAfter||0}" w:line="${opts.spacing}" w:lineRule="auto"/>`:opts.spacingAfter!==undefined?`<w:spacing w:after="${opts.spacingAfter}"/>`:''; const shd=opts.fill?`<w:shd w:val="clear" w:color="auto" w:fill="${opts.fill}"/>`:''; const ind=opts.indent?`<w:ind w:left="${opts.indent}"/>`:''; const safeText=escXml(text||''); const spPres=safeText!==safeText.trim()||text.startsWith(' ')||text.endsWith(' ')?' xml:space="preserve"':''; return `<w:p><w:pPr>${jc}${shd}${spacing}${ind}<w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>${bold}${color}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/>${bold}${color}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/></w:rPr><w:t${spPres}>${safeText}</w:t></w:r></w:p>`; }
+
+function getParaPlainText(paraXml){
+  // Extract all <w:t> text AND replace <w:tab/> with a space
+  // AQA DOCX stores "1.[TAB]AND" as <w:t>1.</w:t><w:tab/><w:t>AND</w:t>
+  // Without capturing <w:tab/>, we get "1.AND" which breaks option detection
+  let result = paraXml
+    .replace(/<w:tab\/>/g, ' ')         // ▶ tabs → space
+    .replace(/<w:br[^/]*\/>/g, ' ')     // line breaks → space
+    .replace(/<w:t[^>]*>([^<]*)<\/w:t>/g, (m,t) => t);  // extract text
+  // Strip all remaining XML tags
+  result = result.replace(/<[^>]+>/g, '');
+  return result.replace(/\s+/g, ' ').trim();
+}
+
+// ▶ v8.2: isOptionPara — 5-layer detection + content-match against known options
+// Layer 5 is the KEY FIX: matches paragraph text against q.options[] directly
+function isOptionPara(paraXml, knownOptions){
+  const txt = getParaPlainText(paraXml);
+  if(!txt) return false;
+  // L1: All options inline "A) x  B) y  C) z  D) w"
+  if(extractInlineOptions(txt).length >= 2) return true;
+  // L2: Standard labeled option: A) a) (a) 1) 1.
+  if(isMCQOptionLine(txt) && !isSubPartQuestion(txt)) return true;
+  // L3: AQA dot pattern — any spacing after dot (catches tab→space conversion)
+  if(/^[1-4]\\.\\s*\\S/.test(txt) && !isSubPartQuestion(txt)) return true;
+  // L4: "Justify Your Answer" trailing line
+  if(/^justify\\s*your\\s*answer\\.?$/i.test(txt)) return true;
+  // L5: Content-match — strip label, compare to each known option value
+  //     This is the most reliable layer — catches ANY numbering/label format
+  if(knownOptions && knownOptions.length >= 2){
+    const norm = s => s.toLowerCase().replace(/\\s+/g,' ').trim();
+    const stripped = norm(stripOptionLabel(txt));
+    for(const opt of knownOptions){
+      if(!opt || !opt.trim()) continue;
+      if(stripped === norm(opt)) return true;  // stripped content matches option
+      if(norm(txt) === norm(opt)) return true; // full text IS the option
+    }
+  }
+  return false;
+}
+
+function buildQCellContentStr(q){
+  if(q._qTcNode){
+    const parts=serialiseTcChildren(q._qTcNode);
+    let combined=parts.join('');
+    if(q._localRIdRemap&&Object.keys(q._localRIdRemap).length>0) combined=remapRIdsInString(combined,q._localRIdRemap);
+    // ▶ For MCQ: strip option paragraphs from native XML to prevent duplicate options
+    // This handles AQA "1. 2. 3. 4." numbered lists AND standard A)/B)/C)/D) labeled options
+    if(q.type==='MCQ'&&q.options&&q.options.filter(o=>o&&o.trim()).length>=2){
+      const cleanOpts = q.options.filter(o=>o&&o.trim());
+      const paraBlocks = combined.match(/<w:p[\s>][\s\S]*?<\/w:p>/g)||[];
+      // ▶ v8.2: Pass known options to isOptionPara for Layer 5 content-matching
+      const questionParas = paraBlocks.filter(p=>!isOptionPara(p, cleanOpts));
+      // Fallback: if ALL paragraphs were stripped, keep at least the first one
+      combined = questionParas.length>0
+        ? questionParas.join('')
+        : paraBlocks.slice(0,Math.max(1,paraBlocks.length-4)).join('');
+    }
+    if(!combined.includes('<w:p')) combined+='<w:p/>';
+    combined=combined.trim(); if(!combined) combined='<w:p/>';
+    return combined;
+  }
+  let str=''; const lines=q.text.split('\n').filter(Boolean);
+  for(const line of lines) str+=gPara(line,{sz:20});
+  if(!str) str=gPara(q.text||'[No text]',{sz:20});
+  return str;
+}
+
+// ══════════════════════════════════════════════════════════
+// DOCX TABLE BUILDERS — Per-section numbering (SA / MCQ / PartB restart at 1)
+// ══════════════════════════════════════════════════════════
+function buildUnitTableStr(unitNum,allQs,zip,relsXmlParts,seenMedia,sectionCounters){
+  const uTitle=getUnitTitle(unitNum);
+  const totalW=TMPL_TOTAL; const[w0,w1,w2,w3,w4,w5]=TMPL_COLS; const EXTRA=18;
+  const gridCols=TMPL_COLS.map(w=>`<w:gridCol w:w="${w}"/>`).join('')+`<w:gridCol w:w="${EXTRA}"/>`;
+  const tblBorders=`<w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:left w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:right w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="auto"/></w:tblBorders>`;
+  function tc(w,content,fill,jc,vAlign='center'){ const shdXml=fill?`<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>`:''; const vAlignXml=`<w:vAlign w:val="${vAlign||'center'}"/>`; const safeContent=content&&content.trim()?content:'<w:p/>'; return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${shdXml}${vAlignXml}</w:tcPr>${safeContent}</w:tc>`; }
+  const unitTitleRow=`<w:tr><w:trPr><w:cantSplit/><w:trHeight w:val="500"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="${totalW+EXTRA}" w:type="dxa"/><w:gridSpan w:val="7"/><w:shd w:val="clear" w:color="auto" w:fill="${CLR.unitHdr}"/><w:vAlign w:val="center"/></w:tcPr>${gPara(uTitle,{bold:true,sz:28,center:true,fill:CLR.unitHdr})}</w:tc></w:tr>`;
+  const colHdrRow=`<w:tr><w:trPr><w:gridAfter w:val="1"/><w:wAfter w:w="${EXTRA}" w:type="dxa"/><w:cantSplit/><w:trHeight w:val="1950"/></w:trPr>${tc(w0,gPara('Q. No.',{bold:true,sz:18,center:true}),CLR.colHdr,'center')}${tc(w1,gPara('CO',{bold:true,sz:18,center:true}),CLR.colHdr,'center')}${tc(w2,gPara('Knowledge Level',{bold:true,sz:18,center:true}),CLR.colHdr,'center')}${tc(w3,gPara('Questions',{bold:true,sz:18,center:true}),CLR.colHdr,'center')}${tc(w4,gPara('Mark',{bold:true,sz:18,center:true}),CLR.colHdr,'center')}${tc(w5,gPara('Source',{bold:true,sz:18,center:true}),CLR.colHdr,'center')}</w:tr>`;
+  function sectionHdrRow(label,fillColor){ return `<w:tr><w:trPr><w:gridAfter w:val="1"/><w:wAfter w:w="${EXTRA}" w:type="dxa"/><w:cantSplit/><w:trHeight w:val="508"/></w:trPr>${tc(w0,gPara('Q. No.',{bold:true,sz:18,center:true}),fillColor)}${tc(w1,gPara('CO',{bold:true,sz:18,center:true}),fillColor)}${tc(w2,gPara('K Level',{bold:true,sz:18,center:true}),fillColor)}${tc(w3,gPara(label,{bold:true,sz:18,center:true}),fillColor)}${tc(w4,gPara('Mark',{bold:true,sz:18,center:true}),fillColor)}${tc(w5,gPara('Source',{bold:true,sz:18,center:true}),fillColor)}</w:tr>`; }
+  const srcCode={ct:'CT',es:'ES',aqa:'AQA'};
+
+  // ▶ Per-section numbering: sectionCounters = {SA:n, MCQ:n, PARTB:n} — persists across units
+  function qRow(q,sectionKey,fillColor){
+    const qNum=sectionCounters[sectionKey]++;
+    const fill=fillColor||(qNum%2===0?CLR.rowAlt1:CLR.rowAlt2);
+    if(q._rIdImgMap&&q._localRIdRemap){ for(const[origRId,newRId] of Object.entries(q._localRIdRemap)){ const imgObj=q._rIdImgMap[origRId]; if(!imgObj) continue; const fn=(imgObj.filename||('img_'+origRId+'.png')).replace(/[^a-zA-Z0-9._-]/g,'_'); if(!seenMedia.has(fn)){ seenMedia.add(fn); zip.file('word/media/'+fn,imgObj.b64,{base64:true}); } relsXmlParts.push(`<Relationship Id="${newRId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${fn}"/>`); } }
+    const qContent=buildQCellContentStr(q);
+    let mcqOptStr='';
+    if(q.type==='MCQ'&&q.options&&q.options.filter(o=>o&&o.trim()).length>=2){ const labels=['(a)','(b)','(c)','(d)']; q.options.filter(o=>o&&o.trim()).slice(0,4).forEach((opt,i)=>{ mcqOptStr+=gPara(labels[i]+' '+opt,{sz:18}); }); }
+    const qCellContent=q.type==='MCQ'&&mcqOptStr?`<w:tc><w:tcPr><w:tcW w:w="${w3}" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="${fill}"/><w:vAlign w:val="top"/></w:tcPr>${qContent}${mcqOptStr}</w:tc>`:`<w:tc><w:tcPr><w:tcW w:w="${w3}" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="${fill}"/><w:vAlign w:val="top"/></w:tcPr>${qContent}</w:tc>`;
+    return `<w:tr><w:trPr><w:gridAfter w:val="1"/><w:wAfter w:w="${EXTRA}" w:type="dxa"/><w:cantSplit/></w:trPr>${tc(w0,gPara(String(qNum),{sz:18,center:true}),fill,'center')}${tc(w1,gPara(q.co,{bold:true,sz:18,center:true}),fill,'center')}${tc(w2,gPara(q.btl,{sz:18,center:true}),fill,'center')}${qCellContent}${tc(w4,gPara(String(q.marks),{sz:18,center:true}),fill,'center')}${tc(w5,gPara(srcCode[q.source]||q.source.toUpperCase(),{sz:18,center:true}),fill,'center')}</w:tr>`;
+  }
+
+  const sepRow=`<w:tr><w:trPr><w:gridAfter w:val="1"/><w:wAfter w:w="${EXTRA}" w:type="dxa"/><w:trHeight w:val="454"/></w:trPr>${tc(w0,gPara('',{sz:18}),'')}${tc(w1,gPara('',{sz:18}),'')}${tc(w2,gPara('',{sz:18}),'')}${tc(w3,gPara('PART \u2013B',{bold:true,sz:18,center:true}),'')}${tc(w4,gPara('',{sz:18}),'')}${tc(w5,gPara('',{sz:18}),'')}</w:tr>`;
+  const saQs=allQs.filter(q=>q.type==='SA'),mcqQs=allQs.filter(q=>q.type==='MCQ'),pbQs=allQs.filter(q=>q.type==='PARTB');
+  let rows='';
+  rows+=unitTitleRow; rows+=colHdrRow;
+  rows+=sectionHdrRow('PART \u2013A (Descriptive)',CLR.sectionSA);
+  if(saQs.length){ saQs.forEach((q,i)=>{ rows+=qRow(q,'SA',i%2===0?'FFFFFF':'EEF3FB'); }); } else rows+=`<w:tr><w:trPr><w:gridAfter w:val="1"/><w:wAfter w:w="${EXTRA}" w:type="dxa"/></w:trPr>${tc(w0,'<w:p/>','')}${tc(w1,'<w:p/>','')}${tc(w2,'<w:p/>','')}${tc(w3,gPara('No questions',{sz:18}),'')}${tc(w4,'<w:p/>','')}${tc(w5,'<w:p/>','')}</w:tr>`;
+  rows+=sectionHdrRow('PART \u2013A (MCQ)',CLR.sectionMCQ);
+  if(mcqQs.length){ mcqQs.forEach((q,i)=>{ rows+=qRow(q,'MCQ',i%2===0?'FFFFFF':'EEF3FB'); }); } else rows+=`<w:tr><w:trPr><w:gridAfter w:val="1"/><w:wAfter w:w="${EXTRA}" w:type="dxa"/></w:trPr>${tc(w0,'<w:p/>','')}${tc(w1,'<w:p/>','')}${tc(w2,'<w:p/>','')}${tc(w3,gPara('No questions',{sz:18}),'')}${tc(w4,'<w:p/>','')}${tc(w5,'<w:p/>','')}</w:tr>`;
+  rows+=sepRow;
+  rows+=sectionHdrRow('Question',CLR.sectionPB);
+  if(pbQs.length){ pbQs.forEach((q,i)=>{ rows+=qRow(q,'PARTB',i%2===0?'FFFFFF':'FFF7EF'); }); } else rows+=`<w:tr><w:trPr><w:gridAfter w:val="1"/><w:wAfter w:w="${EXTRA}" w:type="dxa"/></w:trPr>${tc(w0,'<w:p/>','')}${tc(w1,'<w:p/>','')}${tc(w2,'<w:p/>','')}${tc(w3,gPara('No questions',{sz:18}),'')}${tc(w4,'<w:p/>','')}${tc(w5,'<w:p/>','')}</w:tr>`;
+  return `<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="${totalW}" w:type="dxa"/>${tblBorders}<w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid>${gridCols}</w:tblGrid>${rows}</w:tbl>`;
+}
+
+function buildAnalysisDocxStr(){ const units=[1,2,3,4,5]; const totalW=10000; const colW=[2200,1500,1500,1500,1500,1500]; const analysisRows=[{label:'Part A (Descriptive)',fn:q=>q.type==='SA'},{label:'Part A (MCQ)',fn:q=>q.type==='MCQ'},{label:'Part B',fn:q=>q.type==='PARTB'},{label:'AQA',fn:q=>q.source==='aqa'},{label:'Cycle Test',fn:q=>q.source==='ct'},{label:'End Sem',fn:q=>q.source==='es'},{label:'2 Mark',fn:q=>q.marks===2},{label:'8 Mark',fn:q=>q.marks===8},{label:'16 Mark',fn:q=>q.marks===16},{label:'K1',fn:q=>q.btl==='K1'},{label:'K2',fn:q=>q.btl==='K2'},{label:'K3',fn:q=>q.btl==='K3'},{label:'K4',fn:q=>q.btl==='K4'},{label:'K5',fn:q=>q.btl==='K5'}]; function tc(w,content,fill){ const shdXml=fill?`<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>`:''; return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${shdXml}<w:vAlign w:val="center"/></w:tcPr>${content||'<w:p/>'}</w:tc>`; } const tblBorders=`<w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:left w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:right w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="auto"/></w:tblBorders>`; let tblRows=''; tblRows+=`<w:tr><w:trPr><w:trHeight w:val="500"/></w:trPr>${tc(colW[0],gPara('Analysis',{bold:true,sz:20}),CLR.colHdr)}${units.map((u,i)=>tc(colW[i+1],gPara('Unit '+u,{bold:true,sz:18,center:true}),CLR.colHdr)).join('')}</w:tr>`; analysisRows.forEach((row,ri)=>{ const vals=units.map(u=>DB.questions.filter(q=>q.unit==u&&row.fn(q)).length); const rowFill=ri%2===0?'FFFFFF':'F7F7F7'; tblRows+=`<w:tr><w:trPr><w:trHeight w:val="400"/></w:trPr>${tc(colW[0],gPara(row.label,{bold:true,sz:18}),rowFill)}${vals.map((v,i)=>tc(colW[i+1],gPara(v>0?String(v):'',{sz:18,center:true}),rowFill)).join('')}</w:tr>`; }); return `<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="${totalW}" w:type="dxa"/>${tblBorders}</w:tblPr><w:tblGrid>${colW.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${tblRows}</w:tbl>`; }
+
+function buildCoUnitMatrixStr(){ const units=['Unit 1','Unit 2','Unit 3','Unit 4','Unit 5']; const colW=[1500,1500,1500,1500,1500,1500]; const totalW=colW.reduce((a,b)=>a+b,0); function tc(w,content,fill){ const shdXml=fill?`<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>`:''; return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${shdXml}<w:vAlign w:val="center"/></w:tcPr>${content||'<w:p/>'}</w:tc>`; } const rows=[{label:'',vals:units},{label:'Part A (Descriptive)',vals:units.map((_,i)=>DB.questions.filter(q=>q.type==='SA'&&q.unit==i+1).length)},{label:'Part A (MCQ)',vals:units.map((_,i)=>DB.questions.filter(q=>q.type==='MCQ'&&q.unit==i+1).length)},{label:'Part B',vals:units.map((_,i)=>DB.questions.filter(q=>q.type==='PARTB'&&q.unit==i+1).length)},{label:'AQA',vals:units.map((_,i)=>DB.questions.filter(q=>q.source==='aqa'&&q.unit==i+1).length)},{label:'CT (Cycle Test)',vals:units.map((_,i)=>DB.questions.filter(q=>q.source==='ct'&&q.unit==i+1).length)},{label:'ES (End Sem)',vals:units.map((_,i)=>DB.questions.filter(q=>q.source==='es'&&q.unit==i+1).length)}]; let tblRows=''; rows.forEach((row,ri)=>{ const fill=ri===0?CLR.colHdr:''; const valStr=row.vals.map((v,i)=>tc(colW[i+1],gPara(String(v),{sz:18,center:true}),fill)).join(''); tblRows+=`<w:tr><w:trPr><w:trHeight w:val="400"/></w:trPr>${tc(colW[0],gPara(row.label,{bold:ri===0,sz:18}),fill)}${valStr}</w:tr>`; }); return `<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="${totalW}" w:type="dxa"/></w:tblPr><w:tblGrid>${colW.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${tblRows}</w:tbl>`; }
+
+function buildCoverTableStr(){ const sub=DB.sub; const totalW=9889; const colW=[2093,3260,2268,2268]; function tc(w,content,gridSpan){ const gs=gridSpan?`<w:gridSpan w:val="${gridSpan}"/>`:''; return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${gs}<w:vAlign w:val="center"/></w:tcPr>${content||'<w:p/>'}</w:tc>`; } function lbl(t){ return gPara(t,{bold:true,sz:20}); } function val(t){ return gPara(t||'',{sz:20}); } return `<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="${totalW}" w:type="dxa"/></w:tblPr><w:tblGrid>${colW.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid><w:tr><w:trPr><w:trHeight w:val="500"/></w:trPr>${tc(colW[0]+colW[1],'<w:p/>',2)}${tc(colW[2],lbl('Department:'))}${tc(colW[3],val(sub.dept||'ECE'))}</w:tr><w:tr><w:trPr><w:trHeight w:val="500"/></w:trPr>${tc(colW[0],lbl('Course Code:'))}${tc(colW[1],val(sub.code||''))}${tc(colW[2],lbl('Semester:'))}${tc(colW[3],val(sub.semester||''))}</w:tr><w:tr><w:trPr><w:trHeight w:val="500"/></w:trPr>${tc(colW[0],lbl('Course Name:'))}${tc(colW[1],val(sub.subject||''))}${tc(colW[2],lbl('Year:'))}${tc(colW[3],val(sub.year||''))}</w:tr><w:tr><w:trPr><w:trHeight w:val="500"/></w:trPr>${tc(colW[0],lbl('Subject Incharge:'))}${tc(colW[1],val(sub.incharge||''))}${tc(colW[2],lbl('Subject Expert:'))}${tc(colW[3],val(sub.expert||''))}</w:tr><w:tr><w:trPr><w:trHeight w:val="500"/></w:trPr>${tc(colW[0],lbl('HOD:'))}${tc(colW[1]+colW[2]+colW[3],val(sub.hod||''),3)}</w:tr></w:tbl>`; }
+
+function buildCoStmtTableStr(){ const totalW=9889; const colW=[1500,8389]; function tc(w,content){ return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>${content||'<w:p/>'}</w:tc>`; } let rows=''; for(let i=1;i<=5;i++){ const stmt=DB.sub.co_statements['CO'+i]||''; rows+=`<w:tr><w:trPr><w:trHeight w:val="400"/></w:trPr>${tc(colW[0],gPara('CO'+i,{bold:true,sz:20,center:true}))}${tc(colW[1],gPara(stmt,{sz:20}))}</w:tr>`; } return `<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="${totalW}" w:type="dxa"/></w:tblPr><w:tblGrid>${colW.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${rows}</w:tbl>`; }
+
+function buildAnswerKeyStr(workQs){ const mcqs=workQs.filter(q=>q.type==='MCQ'&&q.correct); if(!mcqs.length) return ''; const totalW=9889; const colW=[800,5000,1500,2589]; function tc(w,c){ return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>${c||'<w:p/>'}</w:tc>`; } let rows=`<w:tr><w:trPr><w:trHeight w:val="400"/></w:trPr>${tc(colW[0],gPara('No.',{bold:true,sz:18,center:true}))}${tc(colW[1],gPara('Q.No',{bold:true,sz:18}))}${tc(colW[2],gPara('Answer',{bold:true,sz:18,center:true}))}${tc(colW[3],gPara('Unit',{bold:true,sz:18,center:true}))}</w:tr>`; mcqs.forEach((q,i)=>{ const fill=i%2===0?'FFFFFF':'F2F2F2'; rows+=`<w:tr><w:trPr><w:trHeight w:val="400"/></w:trPr>${tc(colW[0],gPara(String(i+1),{sz:18,center:true}))}${tc(colW[1],gPara(q.qno||'',{sz:18}))}${tc(colW[2],gPara(q.correct,{bold:true,sz:18,center:true}))}${tc(colW[3],gPara('Unit '+q.unit,{sz:18,center:true}))}</w:tr>`; }); return `<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="${totalW}" w:type="dxa"/></w:tblPr><w:tblGrid>${colW.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${rows}</w:tbl>`; }
+
+// ── Main export ───────────────────────────────────────────
+async function exportDocx(){
+  const qs=getExportQs(); if(!qs.length){ toast('No questions to export','warn'); return; }
+  showProg('Building Template DOCX…'); setProg(5,'Collecting questions and media…');
+  const sub=DB.sub;
+  const shuffle=document.getElementById('ef-shuffle')?.checked;
+  const incMatrix=document.getElementById('ef-co-matrix')?.checked;
+  const incAnalysis=document.getElementById('ef-analysis')?.checked;
+  const incCover=document.getElementById('ef-cover')?.checked;
+  const incAnsKey=document.getElementById('ef-ans-key')?.checked;
+  const year=sub.year||new Date().getFullYear()+'-'+(new Date().getFullYear()+1);
+  let workQs=[...qs]; if(shuffle) workQs.sort(()=>Math.random()-.5);
+  let rIdCounter=200;
+  for(const q of workQs){ if(!q._rIdImgMap){ q._localRIdRemap={}; continue; } const remap={}; for(const origRId of Object.keys(q._rIdImgMap)) remap[origRId]='rId'+(++rIdCounter); q._localRIdRemap=remap; }
+  setProg(15,'Assembling document XML…');
+  const zip=new JSZip(); const relsXmlParts=[]; const seenMedia=new Set();
+  let bodyXml='';
+  if(incCover){ bodyXml+=gPara(`                       AQA \u2013 Assessment Question Archive `,{sz:36,color:'000000'}); bodyXml+=gPara(`${year} Even Semester Course`,{sz:28,center:true}); bodyXml+=buildCoverTableStr(); bodyXml+=`<w:p/>`; bodyXml+=gPara('Course Outcomes:',{bold:true,sz:24}); bodyXml+=buildCoStmtTableStr(); bodyXml+=`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`; }
+
+  // ▶ Per-section counters — shared across all units, restart per section type
+  // SA: 1,2,3...  MCQ: 1,2,3...  PARTB: 1,2,3... (continuous across all 5 units)
+  const sectionCounters = { SA: 1, MCQ: 1, PARTB: 1 };
+
+  for(let u=1;u<=5;u++){
+    const uqs=workQs.filter(q=>q.unit==u); if(!uqs.length) continue;
+    setProg(20+u*10,'Building Unit '+u+' table…');
+    bodyXml+=buildUnitTableStr(u,uqs,zip,relsXmlParts,seenMedia,sectionCounters);
+    bodyXml+=`<w:p/>`;
+    if(u<5) bodyXml+=`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
+  }
+  if(incMatrix){ bodyXml+=`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`; bodyXml+=gPara('Question Bank – Unit wise Analysis',{bold:true,sz:28,center:true}); bodyXml+=`<w:p/>`; bodyXml+=buildCoUnitMatrixStr(); }
+  if(incAnalysis){ bodyXml+=`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`; bodyXml+=gPara('Question Bank – Detailed Analysis',{bold:true,sz:28,center:true}); bodyXml+=`<w:p/>`; bodyXml+=buildAnalysisDocxStr(); }
+  if(incAnsKey){ const keyStr=buildAnswerKeyStr(workQs); if(keyStr){ bodyXml+=`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`; bodyXml+=gPara('MCQ Answer Key',{bold:true,sz:28}); bodyXml+=`<w:p/>`; bodyXml+=keyStr; } }
+  setProg(75,'Assembling DOCX package…');
+  const docXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${FULL_NS} mc:Ignorable="w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14"><w:body>${bodyXml}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="720" w:bottom="1080" w:left="720" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  zip.file('word/document.xml',docXml);
+  const relsXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>${[...new Set(relsXmlParts)].join('\n  ')}</Relationships>`;
+  zip.file('word/_rels/document.xml.rels',relsXml);
+  zip.file('_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+  zip.file('word/styles.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="${WNS}" xmlns:m="${MNS}" xmlns:r="${RNS}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Georgia" w:eastAsia="Georgia" w:hAnsi="Georgia" w:cs="Georgia"/><w:sz w:val="20"/><w:szCs w:val="20"/><w:color w:val="000000" w:themeColor="text1"/><w:lang w:val="en-IN" w:eastAsia="en-IN" w:bidi="ta-LK"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:basedOn w:val="TableNormal"/><w:uiPriority w:val="39"/><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr><w:tblPr><w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:left w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:right w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="auto"/></w:tblBorders></w:tblPr></w:style><w:style w:type="paragraph" w:styleId="Normal"><w:name w:val="Normal"/><w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:lang w:val="en-IN"/></w:rPr></w:style></w:styles>`);
+  zip.file('word/settings.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:settings xmlns:w="${WNS}" xmlns:m="${MNS}"><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat><m:mathPr><m:mathFont m:val="Cambria Math"/><m:brkBin m:val="before"/><m:brkBinSub m:val="--"/><m:smallFrac m:val="0"/><m:dispDef/><m:lMargin m:val="0"/><m:rMargin m:val="0"/><m:defJc m:val="centerGroup"/><m:wrapIndent m:val="1440"/><m:intLim m:val="subSup"/><m:naryLim m:val="undOvr"/></m:mathPr></w:settings>`);
+  const extTypes=new Set(['png','jpg','jpeg','gif','bmp','emf','wmf']); const defaults=[...extTypes].map(ext=>{ const ct=ext==='png'?'image/png':ext==='gif'?'image/gif':ext==='bmp'?'image/bmp':(ext==='emf'||ext==='wmf')?'image/x-'+ext:'image/jpeg'; return `<Default Extension="${ext}" ContentType="${ct}"/>`; }).join('\n  ');
+  zip.file('[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>${defaults}<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/></Types>`);
+  setProg(92,'Generating DOCX blob…');
+  const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',compression:'DEFLATE',compressionOptions:{level:6}});
+  setProg(100,'Downloading…');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(sub.code||'QB')+'_QuestionBank_v8.2.docx'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
+  setTimeout(hideProg,1200); toast('Downloaded '+a.download,'ok');
+}
+
+// ── Other exports ─────────────────────────────────────────
+function getExportQs(){ let qs=[...DB.questions]; const u=document.getElementById('ef-u')?.value||'',s=document.getElementById('ef-s')?.value||'',t=document.getElementById('ef-t')?.value||'',co=document.getElementById('ef-co')?.value||''; if(u) qs=qs.filter(q=>q.unit==u); if(s) qs=qs.filter(q=>q.source===s); if(t) qs=qs.filter(q=>q.type===t); if(co) qs=qs.filter(q=>q.co===co); return qs; }
+function exportJSON(){ const qs=getExportQs(); if(!qs.length){ toast('No questions to export','warn'); return; } const clean=qs.map(q=>{ const{_qTcNode,_rIdImgMap,_imgMap,_localRIdRemap,...rest}=q; return rest; }); dl(JSON.stringify({course:DB.sub,exportDate:new Date().toISOString(),total:clean.length,questions:clean},null,2),(DB.sub.code||'QB')+'_QuestionBank.json','application/json'); toast('JSON exported!','ok'); }
+function exportCSV(type){ const qs=type?DB.questions.filter(q=>q.type===type):getExportQs(); if(!qs.length){ toast('No questions','warn'); return; } const h='Q.No,CO,BTL,Unit,Type,Question,OptionA,OptionB,OptionC,OptionD,Marks,Source,File,HasEquation,HasTable'; const rows=qs.map((q,i)=>[i+1,q.co,q.btl,'Unit '+q.unit,q.type,'"'+(q.text||'').replace(/"/g,'""').replace(/\n/g,' ')+'"','"'+(q.options&&q.options[0]||'').replace(/"/g,'""')+'"','"'+(q.options&&q.options[1]||'').replace(/"/g,'""')+'"','"'+(q.options&&q.options[2]||'').replace(/"/g,'""')+'"','"'+(q.options&&q.options[3]||'').replace(/"/g,'""')+'"',q.marks,q.source,q.filename,q.hasEquation?'Y':'N',q.hasNestedTable?'Y':'N'].join(',')); dl(h+'\n'+rows.join('\n'),(DB.sub.code||'QB')+'_'+(type||'All')+'.csv','text/csv'); toast('CSV exported!','ok'); }
+function exportCSVAll(){ exportCSV(''); }
+function exportMarkdown(){ const qs=getExportQs(); if(!qs.length){ toast('No questions','warn'); return; } let md=`# ${DB.sub.subject||'Question Bank'}\n**${DB.sub.code||''}** | ${DB.sub.dept||'ECE'} | ${DB.sub.semester||''}\n\nGenerated: ${new Date().toLocaleDateString()}\n\n`; const types=[{t:'SA',label:'Part A – Short Answer'},{t:'MCQ',label:'Part A – MCQ'},{t:'PARTB',label:'Part B – Long Answer'}]; for(const{t,label} of types){ const tqs=qs.filter(q=>q.type===t); if(!tqs.length) continue; md+=`## ${label}\n\n`; for(let u=1;u<=5;u++){ const uqs=tqs.filter(q=>q.unit==u); if(!uqs.length) continue; md+=`### ${getUnitTitle(u)}\n\n`; uqs.forEach((q,i)=>{ md+=`**${i+1}.** ${q.text} *(${q.co}, ${q.btl}, ${q.marks}M)*\n`; if(q.options&&q.options.length>=2) q.options.forEach((o,oi)=>{ if(o) md+=`   ${['a)','b)','c)','d)'][oi]} ${o}\n`; }); md+='\n'; }); } } dl(md,(DB.sub.code||'QB')+'_QuestionBank.md','text/markdown'); toast('Markdown exported!','ok'); }
+function importJSON(){ const inp=document.createElement('input'); inp.type='file'; inp.accept='.json'; inp.onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const txt=await f.text(); const data=JSON.parse(txt); if(!data.questions||!Array.isArray(data.questions)){ toast('Invalid JSON format','err'); return; } let added=0; data.questions.forEach(q=>{ const key=(q.co||'')+' | '+(q.text||'').slice(0,50).toLowerCase().trim(); if(!DB.questions.find(x=>(x.co+' | '+x.text.slice(0,50).toLowerCase().trim())===key)){ if(!q.id) q.id='imp_'+Date.now()+'_'+Math.random().toString(36).slice(2); q._qTcNode=null; q._rIdImgMap=null; q._imgMap=null; q._localRIdRemap=null; if(q.hasEquation===undefined) q.hasEquation=false; if(q.hasNestedTable===undefined) q.hasNestedTable=false; DB.questions.push(q); added++; } }); if(data.course){ if(data.course.subject&&!DB.sub.subject) DB.sub.subject=data.course.subject; if(data.course.code&&!DB.sub.code) DB.sub.code=data.course.code; if(data.course.dept) DB.sub.dept=data.course.dept; if(data.course.semester) DB.sub.semester=data.course.semester; if(data.course.year) DB.sub.year=data.course.year; if(data.course.incharge) DB.sub.incharge=data.course.incharge; if(data.course.expert) DB.sub.expert=data.course.expert; if(data.course.hod) DB.sub.hod=data.course.hod; Object.entries(data.course.co_statements||{}).forEach(([k,v])=>{ if(v) DB.sub.co_statements[k]=v; }); Object.entries(data.course.unit_topics||{}).forEach(([k,v])=>{ if(v) DB.sub.unit_topics[String(k)]=v; }); updateSubjectFields(DB.sub); } document.getElementById('hbadge-cnt').textContent=DB.questions.length+' Questions'; updateCounts(); renderAll(); toast('Imported '+added+' questions!','ok'); }catch(err){ toast('Import failed: '+err.message,'err'); } }; inp.click(); }
+function dl(content,filename,type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=filename; a.click(); }
+
+// ── Utils ─────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+function escTxt(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escAttr(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escW(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+
+
+// ══════════════════════════════════════════════════════════
+// MCQ ANALYTICS ENGINE — v8.2
+// ══════════════════════════════════════════════════════════
+
+function detectOptionMethod(q) {
+  // Determines which detection layer found the options for this question
+  if (!q.options || q.options.filter(o=>o&&o.trim()).length < 2) return 'none';
+  const txt = q.text || '';
+  
+  // Check if inline options were present in question text
+  if (extractInlineOptions(txt).length >= 2) return 'L1-inline';
+  
+  // Check if source text has labeled options
+  const lines = txt.split('\n');
+  const hasLabeled = lines.some(l => isMCQOptionLine(l.trim()) && !isSubPartQuestion(l.trim()));
+  if (hasLabeled) return 'L2-labeled';
+  
+  // Check numbered dot pattern
+  const hasDot = lines.some(l => /^[1-4]\.\s*\S/.test(l.trim()));
+  if (hasDot) return 'L3-dot';
+  
+  // Check if extracted from separate options cell
+  if (q._optsTcNode) return 'L0-optscell';
+  
+  // Tail detection
+  return 'L4-tail';
+}
+
+function checkDuplicateRisk(q) {
+  // Check if question text contains lines that look like the options (would duplicate in DOCX)
+  if (!q._qTcNode || !q.options || q.options.filter(o=>o&&o.trim()).length < 2) return [];
+  const opts = q.options.filter(o=>o&&o.trim());
+  const risks = [];
+  
+  // Simulate what getParaPlainText + isOptionPara would see
+  const xmlParts = [];
+  try {
+    for (let i = 0; i < q._qTcNode.childNodes.length; i++) {
+      const child = q._qTcNode.childNodes[i];
+      if (child.nodeType !== 1 || child.localName !== 'p') continue;
+      
+      // Extract text including tab conversion
+      let pText = '';
+      for (const el of child.getElementsByTagName('*')) {
+        const ln = el.localName || '';
+        if (ln === 't') pText += el.textContent;
+        else if (ln === 'tab') pText += ' ';
+      }
+      pText = pText.replace(/\s+/g, ' ').trim();
+      if (!pText) continue;
+      
+      // Check if this para would be caught by isOptionPara
+      const wouldBeStripped = isOptionPara('<w:p>' + pText + '</w:p>', opts);
+      const strippedText = stripOptionLabel(pText).toLowerCase().trim();
+      const matchesOpt = opts.some(o => o && strippedText === o.toLowerCase().trim());
+      
+      if (matchesOpt && !wouldBeStripped) {
+        risks.push({ text: pText, reason: 'Option text in XML but NOT caught by isOptionPara' });
+      }
+    }
+  } catch(e) {}
+  return risks;
+}
+
+function runMCQAudit() {
+  const mcqs = DB.questions.filter(q => q.type === 'MCQ');
+  if (!mcqs.length) { toast('No MCQ questions to audit', 'warn'); return; }
+  
+  const results = mcqs.map(q => {
+    const opts = (q.options || []).filter(o => o && o.trim());
+    const method = detectOptionMethod(q);
+    const dupRisks = q._qTcNode ? checkDuplicateRisk(q) : [];
+    return {
+      id: q.id,
+      co: q.co,
+      unit: q.unit,
+      source: q.source,
+      textPreview: (q.text || '').slice(0, 80),
+      optCount: opts.length,
+      opts: opts,
+      method,
+      dupRisks,
+      hasIssue: opts.length < 2 || dupRisks.length > 0
+    };
+  });
+  
+  const total = results.length;
+  const ok = results.filter(r => !r.hasIssue && r.optCount >= 2).length;
+  const noOpts = results.filter(r => r.optCount < 2).length;
+  const dupRisk = results.filter(r => r.dupRisks.length > 0).length;
+  
+  // Summary
+  const pct = Math.round(ok / total * 100);
+  document.getElementById('audit-summary').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px">
+      <div class="sc"><div class="sn" style="color:var(--ink)">${total}</div><div class="sl">Total MCQ</div></div>
+      <div class="sc"><div class="sn" style="color:var(--green)">${ok}</div><div class="sl">Clean (${pct}%)</div></div>
+      <div class="sc"><div class="sn" style="color:var(--accent)">${noOpts}</div><div class="sl">No Options</div></div>
+      <div class="sc"><div class="sn" style="color:var(--gold)">${dupRisk}</div><div class="sl">Dup Risk</div></div>
+    </div>
+    <div style="background:var(--bg2);border-radius:7px;height:10px;overflow:hidden">
+      <div style="height:100%;background:linear-gradient(90deg,var(--green),var(--accent));width:${pct}%;transition:width .5s"></div>
+    </div>
+    <div style="font-size:11px;color:var(--ink3);margin-top:4px;font-family:'JetBrains Mono',monospace">${pct}% extraction success rate</div>
+  `;
+  
+  // Method breakdown
+  const methods = {};
+  results.forEach(r => { methods[r.method] = (methods[r.method] || 0) + 1; });
+  const methodLabels = {
+    'L0-optscell':'Options Cell','L1-inline':'Inline A) B) C)','L2-labeled':'Labeled 1) A)','L3-dot':'AQA Dot 1.','L4-tail':'Tail Detection','none':'Not Extracted'
+  };
+  const methodColors = {
+    'L0-optscell':'var(--green)','L1-inline':'var(--blue)','L2-labeled':'var(--purple)','L3-dot':'var(--gold)','L4-tail':'var(--accent)','none':'var(--ink3)'
+  };
+  
+  let statsHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:9px">';
+  for (const [m, cnt] of Object.entries(methods)) {
+    statsHtml += `<div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid ${methodColors[m]||'var(--ink3)'};border-radius:8px;padding:11px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:${methodColors[m]||'var(--ink3)'};margin-bottom:3px">${m}</div>
+      <div style="font-size:1.3rem;font-weight:700;color:var(--ink)">${cnt}</div>
+      <div style="font-size:10px;color:var(--ink3)">${methodLabels[m]||m}</div>
+    </div>`;
+  }
+  statsHtml += '</div>';
+  document.getElementById('opt-stats').innerHTML = statsHtml;
+  
+  // Per-question results
+  let html = '';
+  const issues = results.filter(r => r.hasIssue);
+  const clean = results.filter(r => !r.hasIssue);
+  
+  if (issues.length) {
+    html += `<div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:8px;letter-spacing:.5px">⚠ QUESTIONS NEEDING ATTENTION (${issues.length})</div>`;
+    issues.forEach(r => {
+      html += `<div style="background:rgba(200,75,47,.05);border:1px solid rgba(200,75,47,.2);border-radius:8px;padding:10px;margin-bottom:7px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:5px">
+          <span class="q-co-tag">${r.co}</span>
+          <span class="pill p-${r.source}">${r.source.toUpperCase()}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--bg2);padding:2px 7px;border-radius:5px">Unit ${r.unit}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent)">${r.method}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink3);margin-left:auto">${r.optCount} opts</span>
+        </div>
+        <div style="font-size:12px;color:var(--ink);font-style:italic;margin-bottom:5px">"${esc(r.textPreview)}…"</div>
+        ${r.optCount < 2 ? '<div style="font-size:11px;color:var(--accent)">❌ Options not extracted ('+r.optCount+'/4)</div>' : ''}
+        ${r.dupRisks.map(risk=>`<div style="font-size:11px;color:var(--gold)">⚠ Dup risk: "${esc(risk.text)}" — ${risk.reason}</div>`).join('')}
+      </div>`;
+    });
+  }
+  
+  html += `<div style="font-size:11px;font-weight:700;color:var(--green);margin:12px 0 8px;letter-spacing:.5px">✅ CLEAN QUESTIONS (${clean.length})</div>`;
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:7px">';
+  clean.slice(0, 50).forEach(r => {
+    html += `<div style="background:rgba(46,125,79,.04);border:1px solid rgba(46,125,79,.15);border-radius:7px;padding:8px 10px;font-size:11.5px">
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:3px">
+        <span class="q-co-tag" style="font-size:10px">${r.co}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink3)">${r.method}</span>
+        <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green)">${r.optCount} opts ✓</span>
+      </div>
+      <div style="color:var(--ink2);font-size:11px">${esc(r.textPreview.slice(0,55))}…</div>
+      <div style="font-size:10px;color:var(--green);margin-top:3px">(a)${esc(r.opts[0]||'')} (b)${esc(r.opts[1]||'')}</div>
+    </div>`;
+  });
+  if (clean.length > 50) html += `<div style="font-size:11px;color:var(--ink3);padding:10px;text-align:center">…and ${clean.length-50} more clean questions</div>`;
+  html += '</div>';
+  
+  document.getElementById('audit-results').innerHTML = html || '<div class="empty"><span class="ei">✅</span><h3>All MCQ questions look clean!</h3></div>';
+  
+  // Dup risk panel
+  const risks = results.filter(r => r.dupRisks.length > 0);
+  if (risks.length) {
+    let rHtml = '';
+    risks.forEach(r => {
+      rHtml += `<div style="background:rgba(184,134,11,.06);border:1px solid rgba(184,134,11,.2);border-radius:8px;padding:10px;margin-bottom:7px">
+        <div style="font-weight:700;font-size:12px;margin-bottom:4px">${r.co} · Unit ${r.unit} · <span style="color:var(--gold)">${r.dupRisks.length} risk(s)</span></div>
+        <div style="font-size:11.5px;color:var(--ink2);margin-bottom:5px">"${esc(r.textPreview)}…"</div>
+        ${r.dupRisks.map(d=>`<div style="font-size:11px;background:rgba(184,134,11,.08);border-radius:5px;padding:5px 8px;margin-top:4px">⚠ XML contains: <code style="background:var(--bg2);padding:1px 4px;border-radius:3px">${esc(d.text)}</code></div>`).join('')}
+      </div>`;
+    });
+    document.getElementById('dup-risk-results').innerHTML = rHtml;
+  } else {
+    document.getElementById('dup-risk-results').innerHTML = '<div class="fix-note">✅ No duplicate risk detected in any MCQ question. All option paragraphs will be correctly stripped from native XML.</div>';
+  }
+  
+  toast(`Audit complete: ${ok}/${total} clean (${pct}%)`, ok===total?'ok':'warn');
+}
+
+function exportAuditJSON() {
+  const mcqs = DB.questions.filter(q => q.type === 'MCQ');
+  if (!mcqs.length) { toast('No MCQ questions', 'warn'); return; }
+  const results = mcqs.map(q => ({
+    id: q.id, co: q.co, unit: q.unit, source: q.source,
+    text: q.text.slice(0, 120),
+    optCount: (q.options||[]).filter(o=>o&&o.trim()).length,
+    options: q.options,
+    method: detectOptionMethod(q),
+    hasNativeXML: !!q._qTcNode
+  }));
+  const blob = new Blob([JSON.stringify({audit_date:new Date().toISOString(), total:results.length, results}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'MCQ_Audit_v82.json'; a.click();
+  toast('Audit JSON exported', 'ok');
+}
+
+// ── Init ──────────────────────────────────────────────────
+document.getElementById('modal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); if((e.ctrlKey||e.metaKey)&&e.key==='s'){ e.preventDefault(); if(DB.questions.length) exportJSON(); else toast('No questions yet','warn'); } if((e.ctrlKey||e.metaKey)&&e.key==='d'){ e.preventDefault(); duplicateCheck(); } if((e.ctrlKey||e.metaKey)&&e.key==='e'){ e.preventDefault(); if(DB.questions.length) exportDocx(); } });
+(function(){ renderUnitTopicFields(); renderCoStmtFields(); refreshUnitSelects(); renderAll(); setTimeout(()=>toast('v8.2 Ready — AQA MCQ 5-layer fix — AQA MCQ duplicate options fixed • Per-section Q numbering | Ctrl+E=Export DOCX',''),900); })();
+</script>
+</body>
+</html>
