@@ -6,6 +6,7 @@
 <title>KCET · Question Paper Generator v11</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://unpkg.com/compromise@14.14.2/builds/compromise.js"></script>
 <style>
 :root{
   --ink:#05080f;--ink2:#1a2035;--ink3:#2d3655;
@@ -311,6 +312,28 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .rph-trigger{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid var(--purple);background:rgba(124,58,237,.06);color:var(--purple);margin-top:6px;transition:all var(--t)}.rph-trigger:hover{background:var(--purple);color:#fff}
 .rph-trigger.rephrased{background:linear-gradient(135deg,var(--teal),#00a896);color:#fff;border-color:var(--teal)}
 
+/* ── BLOOM TAXONOMY BAR ── */
+.rph-bloom-bar{padding:12px 20px;background:#f8f9fc;border-bottom:1px solid var(--grey2);display:flex;flex-direction:column;gap:8px}
+.rph-bloom-row{display:flex;gap:16px;flex-wrap:wrap}
+.rph-bloom-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:280px}
+.rph-bloom-lbl{font-size:9px;font-weight:700;color:var(--grey6);text-transform:uppercase;letter-spacing:.6px;font-family:var(--fm)}
+.rph-bloom-opts{display:flex;gap:4px;flex-wrap:wrap}
+/* Bloom level buttons — each K has its own colour */
+.rph-bloom-btn{padding:4px 11px;border-radius:16px;font-size:10.5px;font-weight:700;cursor:pointer;border:1.5px solid transparent;transition:all var(--t);white-space:nowrap;font-family:var(--fm)}
+.rph-bloom-btn[data-k="K1"]{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}.rph-bloom-btn[data-k="K1"]:hover,.rph-bloom-btn[data-k="K1"].act{background:#1d4ed8;color:#fff;border-color:#1d4ed8;box-shadow:0 2px 8px rgba(29,78,216,.3)}
+.rph-bloom-btn[data-k="K2"]{background:#f0fdf4;color:#166534;border-color:#bbf7d0}.rph-bloom-btn[data-k="K2"]:hover,.rph-bloom-btn[data-k="K2"].act{background:#16a34a;color:#fff;border-color:#16a34a;box-shadow:0 2px 8px rgba(22,163,74,.3)}
+.rph-bloom-btn[data-k="K3"]{background:#fff7ed;color:#c2410c;border-color:#fed7aa}.rph-bloom-btn[data-k="K3"]:hover,.rph-bloom-btn[data-k="K3"].act{background:#ea580c;color:#fff;border-color:#ea580c;box-shadow:0 2px 8px rgba(234,88,12,.3)}
+.rph-bloom-btn[data-k="K4"]{background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff}.rph-bloom-btn[data-k="K4"]:hover,.rph-bloom-btn[data-k="K4"].act{background:#9333ea;color:#fff;border-color:#9333ea;box-shadow:0 2px 8px rgba(147,51,234,.3)}
+.rph-bloom-btn[data-k="K5"]{background:#fff1f2;color:#be123c;border-color:#fda4af}.rph-bloom-btn[data-k="K5"]:hover,.rph-bloom-btn[data-k="K5"].act{background:#e11d48;color:#fff;border-color:#e11d48;box-shadow:0 2px 8px rgba(225,29,72,.3)}
+.rph-bloom-btn[data-k="K6"]{background:#fefce8;color:#854d0e;border-color:#fde047}.rph-bloom-btn[data-k="K6"]:hover,.rph-bloom-btn[data-k="K6"].act{background:#ca8a04;color:#fff;border-color:#ca8a04;box-shadow:0 2px 8px rgba(202,138,4,.3)}
+/* Knowledge dimension buttons */
+.rph-know-btn{padding:4px 11px;border-radius:16px;font-size:10.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--grey3);background:var(--white);color:var(--grey6);transition:all var(--t);white-space:nowrap}
+.rph-know-btn:hover{border-color:var(--teal);color:var(--teal);background:#e0faf7}
+.rph-know-btn.act{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 2px 8px rgba(0,194,168,.3)}
+/* Verb hint strip */
+.rph-verb-hint{font-size:10px;color:var(--grey5);font-family:var(--fm);background:var(--grey2);border-radius:var(--r6);padding:5px 10px;line-height:1.6;min-height:28px;transition:all .2s}
+.rph-verb-hint strong{color:var(--ink2)}
+
 /* QUICK FILL */
 .qf-strip{background:linear-gradient(to right,var(--sky6),var(--white));border:1px solid var(--sky4);border-radius:var(--r10);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
 .qf-lbl{font-size:10px;font-weight:700;color:var(--sky);text-transform:uppercase;letter-spacing:.5px;font-family:var(--fm)}
@@ -336,9 +359,9 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 <!-- TOPBAR -->
 <div class="tb">
   <div class="tb-logo">📋</div>
-  <div><div class="tb-t">KCET Question Paper Generator</div><div class="tb-s">R2021 CBCS · Question Bank → Exam Template</div></div>
+  <div><div class="tb-t">KCET Question Paper Generator</div><div class="tb-s">R2021 CBCS · AQA Question Bank → Exam Template</div></div>
   <span class="tb-ver">v11.0</span>
-  <div class="tb-pill" id="bankPill">No QB loaded</div>
+  <div class="tb-pill" id="bankPill">No AQA loaded</div>
 </div>
 
 <!-- STEP NAV -->
@@ -357,12 +380,12 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 <!-- §1 UPLOAD -->
 <div class="sec-hdr"><div class="sec-dot blue">1</div><h2>Upload Source Files</h2></div>
 <div class="card anim-in">
-  <div class="card-hdr"><span>📂</span><h3>Question Bank &amp; Template</h3></div>
+  <div class="card-hdr"><span>📂</span><h3>AQA Question Bank &amp; Template</h3></div>
   <div class="card-body">
     <div class="up-grid">
       <div class="uz" id="aqaZ" ondragover="ev(event,'aqaZ','ov')" ondragleave="ev(event,'aqaZ','')" ondrop="dr(event,'aqaZ')">
         <input type="file" id="aqaF" accept=".docx" onchange="handleAQA(this.files[0])"/>
-        <div class="uz-ic">📋</div><div class="uz-tit">Question Bank</div>
+        <div class="uz-ic">📋</div><div class="uz-tit">AQA Question Bank</div>
         <div class="uz-sub">Drag &amp; drop or click · .DOCX</div>
         <div class="uz-ok" id="aqaOk" style="display:none"></div><div class="uz-sz" id="aqaSz"></div>
       </div>
@@ -419,9 +442,14 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   </div>
   <div id="ai-offline-panel" style="display:none">
     <div class="offline-info">
-      <strong>⚡ Offline Mode — No API Key Required</strong><br>
-      Uses built-in local rephrasing engine. Generates multiple variants by restructuring sentence order, swapping synonyms, changing question format (direct ↔ indirect), and altering verb tense.<br>
-      <span style="color:rgba(255,255,255,.4)">Quality is lower than AI-powered rephrasing but works without internet.</span>
+      <strong>⚡ Offline Mode — Powered by Compromise.js NLP Library</strong><br>
+      Uses <strong>Compromise.js</strong> — a real browser-based NLP engine (loaded via CDN, ~180KB). It performs genuine linguistic transformations:<br>
+      &nbsp;• <strong>Verb tense change</strong> — past / future / negative via POS tagging<br>
+      &nbsp;• <strong>Noun pluralization</strong> — singular ↔ plural<br>
+      &nbsp;• <strong>Contraction expansion</strong> — "don't" → "do not"<br>
+      &nbsp;• <strong>Question format rewrite</strong> — Define → Describe, Explain → Outline, etc.<br>
+      &nbsp;• <strong>Academic synonym swap</strong> — engineering-domain synonym dictionary<br>
+      <span style="color:rgba(255,255,255,.35)">No API key or internet needed after page load. Quality is lower than AI but linguistically valid.</span>
     </div>
   </div>
 </div>
@@ -525,15 +553,40 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
       <div class="rph-prov-btn" id="rpb-openai" onclick="setRphProvider('openai')">🟢 ChatGPT</div>
       <span id="rphApiStatus" style="margin-left:auto;font-size:10px;font-family:var(--fm);color:rgba(255,255,255,.3)"></span>
     </div>
-    <!-- Style options -->
-    <div class="rph-styles">
-      <span class="rph-style-lbl">Style:</span>
-      <span class="rph-opt act" onclick="setRphStyle(this,'rephrase')">Rephrase</span>
-      <span class="rph-opt" onclick="setRphStyle(this,'simplify')">Simplify</span>
-      <span class="rph-opt" onclick="setRphStyle(this,'formal')">More Formal</span>
-      <span class="rph-opt" onclick="setRphStyle(this,'elaborate')">Elaborate</span>
-      <span class="rph-opt" onclick="setRphStyle(this,'concise')">Concise</span>
-      <button class="rph-gen-btn" onclick="runRephrase()">⚡ Generate</button>
+    <!-- Bloom Taxonomy + Knowledge Dimension selector -->
+    <div class="rph-bloom-bar" id="rphBloomBar">
+      <div class="rph-bloom-row">
+        <div class="rph-bloom-group">
+          <div class="rph-bloom-lbl">🎯 Bloom's Level</div>
+          <div class="rph-bloom-opts" id="rphBloomOpts">
+            <span class="rph-bloom-btn act" data-k="K1" onclick="setBloom(this,'K1')" title="Remember — recall facts">K1 Remember</span>
+            <span class="rph-bloom-btn" data-k="K2" onclick="setBloom(this,'K2')" title="Understand — explain ideas">K2 Understand</span>
+            <span class="rph-bloom-btn" data-k="K3" onclick="setBloom(this,'K3')" title="Apply — use in new situations">K3 Apply</span>
+            <span class="rph-bloom-btn" data-k="K4" onclick="setBloom(this,'K4')" title="Analyze — draw connections">K4 Analyze</span>
+            <span class="rph-bloom-btn" data-k="K5" onclick="setBloom(this,'K5')" title="Evaluate — justify decisions">K5 Evaluate</span>
+            <span class="rph-bloom-btn" data-k="K6" onclick="setBloom(this,'K6')" title="Create — produce new work">K6 Create</span>
+          </div>
+        </div>
+        <div class="rph-bloom-group">
+          <div class="rph-bloom-lbl">📚 Knowledge Dimension</div>
+          <div class="rph-bloom-opts" id="rphKnowOpts">
+            <span class="rph-know-btn act" data-kd="factual" onclick="setKnow(this,'factual')" title="Basic facts and terminology">Factual</span>
+            <span class="rph-know-btn" data-kd="conceptual" onclick="setKnow(this,'conceptual')" title="Concepts, principles, theories">Conceptual</span>
+            <span class="rph-know-btn" data-kd="procedural" onclick="setKnow(this,'procedural')" title="Methods, algorithms, procedures">Procedural</span>
+            <span class="rph-know-btn" data-kd="metacognitive" onclick="setKnow(this,'metacognitive')" title="Self-regulation and reflection">Metacognitive</span>
+          </div>
+        </div>
+      </div>
+      <div class="rph-verb-hint" id="rphVerbHint"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <span class="rph-bloom-lbl">Style:</span>
+        <span class="rph-opt act" onclick="setRphStyle(this,'rephrase')">Rephrase</span>
+        <span class="rph-opt" onclick="setRphStyle(this,'simplify')">Simplify</span>
+        <span class="rph-opt" onclick="setRphStyle(this,'formal')">More Formal</span>
+        <span class="rph-opt" onclick="setRphStyle(this,'elaborate')">Elaborate</span>
+        <span class="rph-opt" onclick="setRphStyle(this,'concise')">Concise</span>
+        <button class="rph-gen-btn" onclick="runRephrase()">⚡ Generate</button>
+      </div>
     </div>
     <!-- Body -->
     <div class="rph-body">
@@ -617,6 +670,39 @@ function onKeyChange(){
   document.getElementById('aiStatusTxt').style.color='rgba(255,255,255,.35)';
 }
 
+/* ── RATE LIMIT HELPERS ── */
+// Parse retry-after header (seconds) or use exponential backoff
+function getRetryAfter(resp,attempt){
+  const h=resp?.headers?.get('retry-after')||resp?.headers?.get('x-ratelimit-reset-requests')||'';
+  if(h){const n=parseFloat(h);if(!isNaN(n)&&n>0)return Math.min(n,60);}
+  return Math.min(4*Math.pow(2,attempt),60); // 4s, 8s, 16s, 32s, 60s cap
+}
+
+async function countdown429(seconds,labelEl){
+  for(let s=Math.ceil(seconds);s>0;s--){
+    if(labelEl)labelEl.textContent=`⏳ Rate limited — retrying in ${s}s…`;
+    await delay(1000);
+  }
+}
+
+// Unified fetch with 429 retry+backoff, max 3 attempts
+async function fetchWithRetry(url,options,onWait){
+  const MAX=3;
+  for(let attempt=0;attempt<MAX;attempt++){
+    const r=await fetch(url,options);
+    if(r.status!==429)return r; // success or non-429 error — return as-is
+    const wait=getRetryAfter(r,attempt);
+    if(attempt===MAX-1){
+      // Last attempt failed — throw meaningful error
+      let body={};try{body=await r.json();}catch(_){}
+      const msg=body?.error?.message||`Rate limit exceeded. Please wait ${Math.ceil(wait)}s and try again.`;
+      throw new Error(`429 Rate Limited: ${msg}`);
+    }
+    if(onWait)await onWait(wait,attempt+1,MAX);
+    else await delay(wait*1000);
+  }
+}
+
 async function testAPIKey(){
   const prov=G.aiProvider;
   if(prov==='offline'){showAIStatus('ok','Offline mode — no key needed');return;}
@@ -624,23 +710,36 @@ async function testAPIKey(){
   if(!key){showAIStatus('err','Please enter an API key first');return;}
   showAIStatus('spin','Testing connection…');
   try{
+    let r;
+    const onWait=async(secs)=>{
+      for(let s=Math.ceil(secs);s>0;s--){
+        showAIStatus('spin',`⏳ Rate limited — retrying in ${s}s…`);
+        await delay(1000);
+      }
+      showAIStatus('spin','Retrying…');
+    };
     if(prov==='claude'){
-      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:10,messages:[{role:'user',content:'Hi'}]})});
-      if(r.status===401)throw new Error('Invalid API key');
-      if(!r.ok)throw new Error(`HTTP ${r.status}`);
+      r=await fetchWithRetry('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:10,messages:[{role:'user',content:'Hi'}]})},onWait);
+      if(r.status===401)throw new Error('Invalid API key — check key and try again');
+      if(r.status===403)throw new Error('Access denied — check your API permissions');
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
       showAIStatus('ok','✅ Claude connected successfully');
     }else if(prov==='gemini'){
-      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}]})});
-      if(r.status===400||r.status===403)throw new Error('Invalid API key');
-      if(!r.ok)throw new Error(`HTTP ${r.status}`);
+      r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}]})},onWait);
+      if(r.status===400||r.status===403){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||'Invalid API key');}
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
       showAIStatus('ok','✅ Gemini connected successfully');
     }else if(prov==='openai'){
-      const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:5,messages:[{role:'user',content:'Hi'}]})});
-      if(r.status===401)throw new Error('Invalid API key');
-      if(!r.ok)throw new Error(`HTTP ${r.status}`);
+      r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:5,messages:[{role:'user',content:'Hi'}]})},onWait);
+      if(r.status===401)throw new Error('Invalid API key — check key and try again');
+      if(r.status===403)throw new Error('Access denied — check billing or permissions');
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
       showAIStatus('ok','✅ OpenAI connected successfully');
     }
-  }catch(e){showAIStatus('err','❌ '+e.message);}
+  }catch(e){
+    const is429=e.message.includes('429')||e.message.toLowerCase().includes('rate limit');
+    showAIStatus('err','❌ '+(is429?'Rate limit hit — wait a moment then retry. Consider switching to Offline mode.':e.message));
+  }
 }
 
 function showAIStatus(state,msg){
@@ -1140,88 +1239,266 @@ function renderSelBox(container,q,slotKey){
   container.appendChild(box);
 }
 
-/* ══════════════════════════
-   OFFLINE REPHRASE ENGINE
-   ══════════════════════════ */
-const synonymMap={
-  'define':'explain','explain':'describe','describe':'outline','state':'mention',
-  'what is':'what do you mean by','find':'calculate','calculate':'determine','determine':'evaluate',
-  'write':'state','list':'enumerate','enumerate':'list','discuss':'elaborate on',
-  'compare':'differentiate between','differentiate':'distinguish between',
-  'derive':'prove','prove':'derive','obtain':'find',
-  'the':'a','a':'the','an':'a'
+/* ══════════════════════════════════════════════════════
+   OFFLINE REPHRASE ENGINE  —  Bloom × Knowledge Aware
+   Powered by Compromise.js NLP + curated verb tables
+   ══════════════════════════════════════════════════════ */
+
+/* ── Bloom's Taxonomy × Knowledge Dimension data (must be first) ── */
+const BLOOM_DATA={
+  K1:{name:'Remember',   color:'#1d4ed8', bg:'#eff6ff',
+    factual:      {verbs:['Define','List','Recall','State','Name','Identify','Label','Recognize'],       hint:'Recall basic facts and terminology'},
+    conceptual:   {verbs:['Recall','Recognize','List','Name','Identify','Reproduce'],                   hint:'Recall concepts and categories'},
+    procedural:   {verbs:['List','Name the steps of','Identify','Recall the method for'],               hint:'Recall procedures and algorithms'},
+    metacognitive:{verbs:['Identify your knowledge of','Recall how you learned','List what you know about'], hint:'Recall learning strategies used'}
+  },
+  K2:{name:'Understand', color:'#16a34a', bg:'#f0fdf4',
+    factual:      {verbs:['Explain','Describe','Summarize','Classify','Interpret','Give examples of'], hint:'Explain meaning of basic facts'},
+    conceptual:   {verbs:['Explain','Classify','Compare','Discuss','Interpret','Paraphrase'],           hint:'Explain concepts, theories, principles'},
+    procedural:   {verbs:['Explain the procedure for','Describe how to','Summarize the steps'],         hint:'Explain how a method works'},
+    metacognitive:{verbs:['Explain your understanding of','Describe your learning approach to'],         hint:'Explain your cognitive process'}
+  },
+  K3:{name:'Apply',      color:'#ea580c', bg:'#fff7ed',
+    factual:      {verbs:['Use','Calculate','Compute','Solve','Apply','Demonstrate'],                    hint:'Use facts to solve straightforward problems'},
+    conceptual:   {verbs:['Apply','Use the concept of','Demonstrate','Execute','Implement'],             hint:'Apply principles to new situations'},
+    procedural:   {verbs:['Calculate','Carry out','Execute the procedure for','Solve using'],            hint:'Execute a procedure to solve a problem'},
+    metacognitive:{verbs:['Select and apply the appropriate method for','Decide how to approach'],       hint:'Choose and apply correct strategies'}
+  },
+  K4:{name:'Analyze',    color:'#9333ea', bg:'#fdf4ff',
+    factual:      {verbs:['Differentiate','Distinguish','Compare','Categorize','Examine'],               hint:'Break down facts into parts'},
+    conceptual:   {verbs:['Analyze','Differentiate between','Compare and contrast','Examine','Break down'], hint:'Analyze relationships between concepts'},
+    procedural:   {verbs:['Analyze the steps of','Differentiate between the methods','Examine how'],   hint:'Analyze how a procedure works'},
+    metacognitive:{verbs:['Deconstruct your thinking about','Analyze how you solved','Examine your approach to'], hint:'Reflect on your problem-solving process'}
+  },
+  K5:{name:'Evaluate',   color:'#e11d48', bg:'#fff1f2',
+    factual:      {verbs:['Judge','Assess the accuracy of','Verify','Critique','Justify'],               hint:'Make judgements about factual information'},
+    conceptual:   {verbs:['Evaluate','Judge','Critique','Justify','Defend','Recommend'],                 hint:'Justify a position based on principles'},
+    procedural:   {verbs:['Evaluate the efficiency of','Judge the appropriateness of','Assess the method'], hint:'Evaluate which procedure is most appropriate'},
+    metacognitive:{verbs:['Evaluate your own understanding of','Reflect on and assess your learning of'], hint:'Judge your own knowledge and strategies'}
+  },
+  K6:{name:'Create',     color:'#ca8a04', bg:'#fefce8',
+    factual:      {verbs:['Construct','Produce','Formulate','Design','Assemble a list of'],              hint:'Use facts to produce something new'},
+    conceptual:   {verbs:['Design','Formulate','Construct','Develop a theory about','Create'],          hint:'Generate new ideas or structures'},
+    procedural:   {verbs:['Design a procedure for','Develop an algorithm for','Construct a method to'], hint:'Create a new process or solution'},
+    metacognitive:{verbs:['Plan your approach to','Design a learning strategy for','Formulate your own method for'], hint:'Create a personalized learning plan'}
+  }
+};
+const KD_DESC={
+  factual:      'Basic facts, terminology, specific details',
+  conceptual:   'Categories, principles, theories, models',
+  procedural:   'Subject-specific skills, algorithms, methods',
+  metacognitive:'Cognitive strategies, self-knowledge, reflection'
 };
 
-function offlineRephrase(text,style){
+/* Engineering/academic synonym dictionary */
+const ACAD_SYN={
+  'define':'explain','explain':'describe','describe':'outline','outline':'summarize',
+  'state':'mention','identify':'name','name':'identify',
+  'discuss':'elaborate on','examine':'analyze','analyze':'examine','analyse':'examine',
+  'evaluate':'assess','assess':'evaluate','derive':'deduce','deduce':'derive',
+  'obtain':'determine','determine':'find','find':'calculate','calculate':'compute',
+  'write':'express','list':'enumerate','enumerate':'list','illustrate':'demonstrate',
+  'demonstrate':'show','show':'illustrate','compare':'contrast',
+  'differentiate':'distinguish','distinguish':'differentiate',
+  'prove':'verify','verify':'prove','apply':'use','implement':'realize',
+  'develop':'construct','construct':'build','design':'formulate','formulate':'design',
+  'investigate':'study','study':'investigate','classify':'categorize',
+  'categorize':'classify','predict':'estimate','estimate':'predict',
+};
+
+/* Safe Compromise.js NLP wrapper */
+function nlpTransform(text, fn){
+  try{
+    if(typeof nlp==='undefined')return null;
+    const doc=nlp(text);fn(doc);
+    const out=doc.text().trim();
+    return(out&&out!==text)?out:null;
+  }catch(e){return null;}
+}
+
+/* Pick random verb from bloom verb list */
+function pickVerb(bloomK,knowDim,idx=0){
+  const bd=BLOOM_DATA[bloomK];if(!bd)return'Explain';
+  const kd=bd[knowDim]||bd.factual;
+  return kd.verbs[idx%kd.verbs.length];
+}
+
+/* Strip leading verb/stem from a question */
+function stripStem(text){
+  return text
+    .replace(/^(What\s+is|What\s+are|What\s+do\s+you\s+mean\s+by|Define|Explain|Describe|Outline|State|List|Enumerate|Discuss|Analyze|Analyse|Examine|Derive|Prove|Find|Calculate|Determine|Compare|Differentiate|Illustrate|Demonstrate|Evaluate|Justify|Design|Construct|Formulate|Develop|Investigate|Classify|Apply|Implement|Write|Name|Identify|Summarize|Briefly\s+explain|Give\s+a|Critically\s+analyze|Deduce|Compute|Verify)\s+/i,'')
+    .replace(/\?+$/,'').trim();
+}
+
+/* ── MAIN OFFLINE REPHRASE — Bloom × Knowledge Aware ── */
+function offlineRephrase(text, style, bloomK='K1', knowDim='factual'){
   const variants=[];
-  // Variant 1: Synonym substitution
-  let v1=text;
-  for(const[k,v]of Object.entries(synonymMap)){
-    const re=new RegExp('\\b'+k+'\\b','gi');
-    if(re.test(v1)){v1=v1.replace(re,(m)=>m[0]===m[0].toUpperCase()?v.charAt(0).toUpperCase()+v.slice(1):v);break;}
+  const bd=BLOOM_DATA[bloomK]||BLOOM_DATA.K1;
+  const kd=bd[knowDim]||bd.factual;
+  const bColor=bd.color||'#1d4ed8';
+  const endPunct=text.match(/[?.!]$/)?.[0]||'?';
+  const core=stripStem(text);
+  const addV=(label,t,method,bloom=bloomK,kd2=knowDim)=>{
+    if(!t||t===text||t.trim().length<6)return;
+    if(variants.some(v=>v.text.trim()===t.trim()))return;
+    variants.push({label,text:t.trim(),method,bloom,knowDim:kd2,color:bColor});
+  };
+
+  /* ── V1–V3: Use first 3 action verbs for this Bloom×Knowledge cell ── */
+  kd.verbs.slice(0,3).forEach((verb,i)=>{
+    const v=`${verb} ${core}${endPunct}`;
+    addV(`${bloomK} ${bd.name} — Verb ${i+1}: "${verb}"`,v,`bloom-verb-${i}`);
+  });
+
+  /* ── V4: Compromise.js NLP transforms scoped to Bloom level ── */
+  if(bloomK==='K1'||bloomK==='K2'){
+    // Remember/Understand → tense normalization (present)
+    const vExp=nlpTransform(text,doc=>doc.contractions().expand());
+    if(vExp)addV(`${bloomK} ${bd.name} — Expanded (NLP)`,vExp,'nlp-expand');
+    const vPlur=nlpTransform(text,doc=>doc.nouns().toPlural());
+    if(vPlur)addV(`${bloomK} ${bd.name} — Plural Form (NLP)`,vPlur,'nlp-plural');
   }
-  if(v1!==text)variants.push({label:'Synonym Swap',text:v1});
-  // Variant 2: Question format change
-  let v2=text.trim();
-  if(/^(What|Define|Explain|State|List)/i.test(v2)){
-    v2=v2.replace(/^What is/i,'Briefly explain what is');
-    v2=v2.replace(/^Define/i,'Give the definition of');
-    v2=v2.replace(/^Explain/i,'With a brief description, explain');
-    v2=v2.replace(/^State/i,'Write a short note on');
-    v2=v2.replace(/^List/i,'Enumerate the');
-    if(v2!==text)variants.push({label:'Format Change',text:v2});
+  if(bloomK==='K3'||bloomK==='K4'){
+    // Apply/Analyze → past context, procedural framing
+    const vPast=nlpTransform(text,doc=>doc.verbs().toPastTense());
+    if(vPast)addV(`${bloomK} ${bd.name} — Past Tense (NLP)`,'In a given scenario, '+vPast,'nlp-past');
+    const vFut=nlpTransform(text,doc=>doc.verbs().toFutureTense());
+    if(vFut)addV(`${bloomK} ${bd.name} — Future Context (NLP)`,'Predict how '+vFut,'nlp-future');
   }
-  // Variant 3: Passive/active voice flip hint
-  let v3=text;
-  if(/\bis\s+defined\s+as\b/i.test(v3))v3=v3.replace(/\bis\s+defined\s+as\b/i,'refers to');
-  else if(/\brefers\s+to\b/i.test(v3))v3=v3.replace(/\brefers\s+to\b/i,'is defined as');
-  else if(/^How\s+/i.test(v3))v3='Describe how '+v3.replace(/^How\s+/i,'');
-  else v3='Briefly describe: '+v3;
-  if(v3!==text)variants.push({label:'Structural Rewrite',text:v3});
-  // Variant 4: Elaborate/concise based on style
+  if(bloomK==='K5'||bloomK==='K6'){
+    // Evaluate/Create → negative hypothesis, creative framing
+    const vNeg=nlpTransform(text,doc=>doc.verbs().toNegative());
+    if(vNeg&&vNeg!==text)addV(`${bloomK} ${bd.name} — Critical Negative (NLP)`,'Critically justify why: '+vNeg,'nlp-negative');
+  }
+
+  /* ── V5: Knowledge dimension specific transforms ── */
+  if(knowDim==='factual'){
+    addV(`Factual — Recall format`,`State the definition and key facts about ${core}${endPunct}`,'kd-factual');
+  }else if(knowDim==='conceptual'){
+    addV(`Conceptual — Principle format`,`Explain the underlying concept and theoretical basis of ${core}${endPunct}`,'kd-conceptual');
+  }else if(knowDim==='procedural'){
+    addV(`Procedural — Step-by-step format`,`Describe step-by-step the procedure or algorithm for ${core}${endPunct}`,'kd-procedural');
+  }else if(knowDim==='metacognitive'){
+    addV(`Metacognitive — Reflective format`,`Reflect on and explain your understanding of ${core} and describe the strategy you use to approach it.`,'kd-metacognitive');
+  }
+
+  /* ── V6: Style-specific overlays ── */
   if(style==='elaborate'){
-    variants.push({label:'Elaborate',text:text.replace(/\?$/,'')+'? Explain with suitable examples and reasons.'});
+    const verb=pickVerb(bloomK,knowDim,0);
+    addV(`${bloomK} Elaborate`,`${verb} ${core} with suitable diagrams, examples, and real-world engineering applications${endPunct}`,'style-elaborate');
   }else if(style==='concise'){
-    const words=text.split(' ');
-    if(words.length>8)variants.push({label:'Concise',text:words.slice(0,Math.ceil(words.length*0.7)).join(' ')+(text.endsWith('?')?'?':'')});
+    const verb=pickVerb(bloomK,knowDim,1);
+    const words=core.split(' ');
+    addV(`${bloomK} Concise`,`${verb} ${words.slice(0,Math.ceil(words.length*.65)).join(' ')}${endPunct}`,'style-concise');
   }else if(style==='formal'){
-    variants.push({label:'Formal',text:'Critically analyze and discuss: '+text.replace(/^(What|Define|Explain|State)/i,'').trim()});
+    const verb=pickVerb(bloomK,knowDim,2);
+    addV(`${bloomK} Formal Academic`,`Critically ${verb.toLowerCase()} ${core} with appropriate justification and supporting evidence${endPunct}`,'style-formal');
   }else if(style==='simplify'){
-    variants.push({label:'Simplified',text:'In simple words, '+text.charAt(0).toLowerCase()+text.slice(1)});
+    const verb=pickVerb(bloomK,knowDim,0);
+    addV(`${bloomK} Simplified`,`In simple terms, ${verb.toLowerCase()} ${core}${endPunct}`,'style-simplify');
   }
-  // Always include original reworded
-  if(variants.length===0)variants.push({label:'Reworded',text:text+' (Explain in your own words)'});
+
+  /* ── V7: Academic synonym swap ── */
+  let vSyn=text;let swapped=false;
+  for(const[k,v]of Object.entries(ACAD_SYN)){
+    const re=new RegExp('\\b'+k+'\\b','i');
+    if(re.test(vSyn)){vSyn=vSyn.replace(re,(m)=>m[0]===m[0].toUpperCase()?v.charAt(0).toUpperCase()+v.slice(1):v);swapped=true;break;}
+  }
+  if(swapped)addV(`Synonym Substitution (${bloomK})`,vSyn,'synonym');
+
+  /* ── V8: Higher-order escalation — show what the NEXT bloom level looks like ── */
+  const kOrder=['K1','K2','K3','K4','K5','K6'];
+  const nextK=kOrder[kOrder.indexOf(bloomK)+1];
+  if(nextK){
+    const nextBd=BLOOM_DATA[nextK];const nextVerb=nextBd[knowDim]?.verbs[0]||nextBd.factual.verbs[0];
+    addV(`⬆ Escalated to ${nextK} ${nextBd.name}`,`${nextVerb} ${core}${endPunct}`,'escalate',nextK,knowDim);
+  }
+
+  /* Fallback */
+  if(variants.length===0)addV(`${bloomK} Reworded`,`${pickVerb(bloomK,knowDim,0)} ${core} in your own words${endPunct}`,'fallback');
+
   return variants;
+}
+
+/* Check NLP lib */
+function checkNLPLib(){
+  if(typeof nlp!=='undefined'){
+    try{const test=nlp('the student defines the system').verbs().toPastTense().text();return{ok:true,msg:`Compromise.js v14 ✓ — "${test}"`};}
+    catch(e){return{ok:false,msg:'Compromise.js error: '+e.message};}
+  }
+  return{ok:false,msg:'Compromise.js not loaded — check CDN'};
 }
 
 /* ══════════════════════════
    REPHRASE MODAL
    ══════════════════════════ */
+/* ══════════════════════════
+   REPHRASE MODAL
+   ══════════════════════════ */
+function updateVerbHint(){
+  const{bloomK,knowDim}=G.rph;
+  const bData=BLOOM_DATA[bloomK];
+  if(!bData)return;
+  const kData=bData[knowDim]||bData.factual;
+  const verbs=kData.verbs.slice(0,5).join(', ');
+  const hint=`<strong>${bloomK} ${bData.name} × ${knowDim.charAt(0).toUpperCase()+knowDim.slice(1)}</strong> — ${kData.hint}<br>
+    <span style="color:var(--sky)">Suggested action verbs: </span>${verbs}…`;
+  const el=document.getElementById('rphVerbHint');
+  if(el)el.innerHTML=hint;
+}
+
 function openRph(slotKey,q){
+  /* Inherit Bloom level from question if available */
+  const qK=(q.k||'K1').toUpperCase();
+  const initK=BLOOM_DATA[qK]?qK:'K1';
   G.rph={slotKey,origQ:q,rephrasedText:null,style:'rephrase',
+    bloomK:initK, knowDim:'factual',
     mode:G.aiProvider==='offline'?'offline':'online',
     provider:G.aiProvider==='offline'?'claude':G.aiProvider,
     offlineVariants:[],selectedVariant:null};
+
   document.getElementById('rphOrig').textContent=q.text||'(no text)';
-  document.getElementById('rphNewWrap').innerHTML=`<div class="rph-panel-body" style="color:var(--grey5);font-style:italic;font-family:var(--ff)">Click ⚡ Generate to rephrase…</div>`;
+  document.getElementById('rphNewWrap').innerHTML=`<div class="rph-panel-body" style="color:var(--grey5);font-style:italic;font-family:var(--ff)">Select Bloom level + Knowledge dimension, then click ⚡ Generate…</div>`;
   document.getElementById('rphUseBtn').disabled=true;
   document.getElementById('rphStatusBadge').textContent='';
+  /* Reset Bloom buttons — highlight question's own K level */
+  document.querySelectorAll('.rph-bloom-btn').forEach(b=>b.classList.toggle('act',b.dataset.k===initK));
+  document.querySelectorAll('.rph-know-btn').forEach(b=>b.classList.toggle('act',b.dataset.kd==='factual'));
   document.querySelectorAll('.rph-opt').forEach(o=>o.classList.toggle('act',o.textContent==='Rephrase'));
   G.rph.style='rephrase';
+  updateVerbHint();
   setRphMode(G.rph.mode);
   setRphProvider(G.rph.provider);
   document.getElementById('rphModal').classList.add('show');
 }
 function closeRph(){document.getElementById('rphModal').classList.remove('show');}
 
+function setBloom(el,k){
+  G.rph.bloomK=k;
+  document.querySelectorAll('.rph-bloom-btn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  updateVerbHint();
+  /* Auto-reset result panel when target changes */
+  document.getElementById('rphNewWrap').innerHTML=`<div class="rph-panel-body" style="color:var(--grey5);font-style:italic;font-family:var(--ff)">Bloom level changed — click ⚡ Generate again…</div>`;
+  document.getElementById('rphUseBtn').disabled=true;
+}
+
+function setKnow(el,kd){
+  G.rph.knowDim=kd;
+  document.querySelectorAll('.rph-know-btn').forEach(b=>b.classList.remove('act'));
+  el.classList.add('act');
+  updateVerbHint();
+  document.getElementById('rphNewWrap').innerHTML=`<div class="rph-panel-body" style="color:var(--grey5);font-style:italic;font-family:var(--ff)">Knowledge dimension changed — click ⚡ Generate again…</div>`;
+  document.getElementById('rphUseBtn').disabled=true;
+}
+
 function setRphMode(mode){
   G.rph.mode=mode;
   document.getElementById('rphModeOnline').className='rph-mode-btn'+(mode==='online'?' act-online':'');
   document.getElementById('rphModeOffline').className='rph-mode-btn'+(mode==='offline'?' act-offline':'');
   document.getElementById('rphProviderRow').style.display=mode==='online'?'flex':'none';
-  document.getElementById('rphProviderBadge').textContent=mode==='offline'?'Mode: Offline Engine':'Mode: Online AI — '+G.rph.provider;
-  document.getElementById('rphNewHdr').textContent=mode==='offline'?'⚡ Offline Variants':'✨ AI Rephrased Version';
-  // Check if key available for selected provider
+  document.getElementById('rphProviderBadge').textContent=mode==='offline'?'Mode: Offline NLP Engine':'Mode: Online AI — '+G.rph.provider;
+  document.getElementById('rphNewHdr').textContent=mode==='offline'?'⚡ Bloom-Aligned Offline Variants':'✨ Bloom-Aligned AI Rephrased Version';
   if(mode==='online'){
     const key=G.apiKeys[G.rph.provider]||'';
     document.getElementById('rphApiStatus').textContent=key?'✅ Key available':'⚠️ No API key — go to AI Settings';
@@ -1247,72 +1524,154 @@ function setRphStyle(el,style){
 }
 
 async function runRephrase(){
-  const{origQ,mode,provider,style}=G.rph;
+  const{origQ,mode,provider,style,bloomK,knowDim}=G.rph;
   if(!origQ)return;
   const wrap=document.getElementById('rphNewWrap');
-  document.getElementById('rphUseBtn').disabled=true;
-  document.getElementById('rphStatusBadge').textContent='';
-  G.rph.selectedVariant=null;G.rph.rephrasedText=null;
+  const badge=document.getElementById('rphStatusBadge');
+  const useBtn=document.getElementById('rphUseBtn');
+  useBtn.disabled=true; badge.textContent='';
+  G.rph.selectedVariant=null; G.rph.rephrasedText=null;
 
+  const bd=BLOOM_DATA[bloomK]||BLOOM_DATA.K1;
+  const kd=bd[knowDim]||bd.factual;
+  const bloomLabel=`${bloomK} ${bd.name}`;
+  const kdLabel=knowDim.charAt(0).toUpperCase()+knowDim.slice(1);
+
+  /* ── OFFLINE (Compromise.js + Bloom-aware rules) ── */
   if(mode==='offline'){
-    // Offline engine
-    wrap.innerHTML='<div class="rph-loading"><div class="rph-spin"></div><span>Generating offline variants…</span></div>';
-    await delay(400);
-    const variants=offlineRephrase(origQ.text||'',style);
+    const libCheck=checkNLPLib();
+    wrap.innerHTML=`<div class="rph-loading"><div class="rph-spin"></div><span>Running Bloom-aware NLP engine (${bloomLabel} × ${kdLabel})…</span></div>`;
+    await delay(300);
+    const variants=offlineRephrase(origQ.text||'',style,bloomK,knowDim);
     G.rph.offlineVariants=variants;
-    if(!variants.length){wrap.innerHTML='<div class="rph-panel-body" style="color:var(--grey5)">Could not generate variants for this question.</div>';return;}
-    wrap.innerHTML='<div style="padding:10px"><div style="font-size:10px;font-weight:700;color:var(--grey6);text-transform:uppercase;font-family:var(--fm);margin-bottom:8px">Select a variant to use:</div><div class="offline-variants" id="offlineVarList"></div></div>';
+    if(!variants.length){
+      wrap.innerHTML='<div class="rph-panel-body" style="color:var(--grey5)">Could not generate variants for this question.</div>';
+      return;
+    }
+    const libBadge=libCheck.ok
+      ? `<span style="font-size:9px;font-family:var(--fm);background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;padding:2px 8px;border-radius:10px">⚡ Compromise.js NLP</span>`
+      : `<span style="font-size:9px;font-family:var(--fm);background:#fff8e6;border:1px solid #fde68a;color:#92740a;padding:2px 8px;border-radius:10px">⚠️ Rule-based fallback</span>`;
+    const bloomBadge=`<span style="font-size:9px;font-family:var(--fm);background:${bd.bg};border:1px solid ${bd.color}44;color:${bd.color};padding:2px 8px;border-radius:10px;font-weight:700">${bloomLabel}</span>`;
+    const kdBadge=`<span style="font-size:9px;font-family:var(--fm);background:#e0faf7;border:1px solid #9ee8e0;color:var(--teal);padding:2px 8px;border-radius:10px;font-weight:700">${kdLabel}</span>`;
+    wrap.innerHTML=`<div style="padding:10px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <div style="font-size:10px;font-weight:700;color:var(--grey6);text-transform:uppercase;font-family:var(--fm)">Bloom-aligned variants:</div>
+        ${bloomBadge}${kdBadge}${libBadge}
+      </div>
+      <div class="offline-variants" id="offlineVarList"></div>
+    </div>`;
     const list=document.getElementById('offlineVarList');
     variants.forEach((v,i)=>{
       const d=document.createElement('div');d.className='offline-var';
-      d.innerHTML=`<div class="offline-var-lbl">${v.label}</div><div class="offline-var-txt">${esc(v.text)}</div>`;
+      const isNLP=(v.method||'').startsWith('nlp');
+      const isEsc=(v.method||'').startsWith('escalate');
+      const vBd=BLOOM_DATA[v.bloom||bloomK]||bd;
+      const tagStyle=`background:${vBd.bg};color:${vBd.color};border:1px solid ${vBd.color}44`;
+      const methodTag=isNLP?`<span style="font-size:8px;font-family:var(--fm);padding:1px 6px;border-radius:8px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd">🧠 NLP</span>`
+        :isEsc?`<span style="font-size:8px;font-family:var(--fm);padding:1px 6px;border-radius:8px;background:#fef3c7;color:#92400e;border:1px solid #fcd34d">⬆ Escalated</span>`
+        :`<span style="font-size:8px;font-family:var(--fm);padding:1px 6px;border-radius:8px;background:var(--grey2);color:var(--grey6);border:1px solid var(--grey3)">📝 Rule</span>`;
+      d.innerHTML=`
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;flex-wrap:wrap">
+          <div class="offline-var-lbl" style="margin-bottom:0;flex:1">${v.label}</div>
+          <span style="font-size:8px;font-family:var(--fm);padding:1px 7px;border-radius:8px;${tagStyle}">${v.bloom||bloomK} ${BLOOM_DATA[v.bloom||bloomK]?.name||''}</span>
+          ${methodTag}
+        </div>
+        <div class="offline-var-txt">${esc(v.text)}</div>`;
       d.onclick=()=>{
         document.querySelectorAll('.offline-var').forEach(x=>x.classList.remove('selected'));
         d.classList.add('selected');
-        G.rph.selectedVariant=i;G.rph.rephrasedText=v.text;
-        document.getElementById('rphUseBtn').disabled=false;
-        document.getElementById('rphStatusBadge').textContent='✅ Variant selected';
+        G.rph.selectedVariant=i; G.rph.rephrasedText=v.text;
+        useBtn.disabled=false; badge.textContent='✅ Variant selected';
       };
       list.appendChild(d);
     });
-    document.getElementById('rphStatusBadge').textContent=`${variants.length} variants generated`;
-  }else{
-    // Online AI
-    const key=G.apiKeys[provider]||'';
-    if(!key){wrap.innerHTML='<div class="rph-panel-body" style="color:var(--coral)">⚠️ No API key set for '+provider+'. Go to AI Settings tab.</div>';return;}
-    wrap.innerHTML=`<div class="rph-loading"><div class="rph-spin"></div><span>Rephrasing with ${provider}…</span></div>`;
-    const styleInstructions={
-      rephrase:'Rephrase the question differently while preserving the same meaning, topic, and difficulty.',
-      simplify:'Simplify the language so it is easier to understand while keeping the same core question.',
-      formal:'Make the question more formal and academically rigorous.',
-      elaborate:'Add more context or detail to make the question clearer and more specific.',
-      concise:'Make the question more concise and direct without losing essential meaning.'
-    };
-    const prompt=`You are an academic question rephraser for engineering exams. ${styleInstructions[style]||styleInstructions.rephrase}\n\nRULES:\n- Keep the same subject: ${origQ.unit||'Engineering'}\n- Keep the same Bloom level and difficulty (${origQ.marks||2} marks)\n- Output ONLY the rephrased question text\n- No preamble, no explanation, no quotes\n- Preserve technical terms exactly\n\nOriginal: ${origQ.text}\n\nRephrased:`;
-    try{
-      let text='';
-      if(provider==='claude'){
-        const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,messages:[{role:'user',content:prompt}]})});
-        if(!r.ok){const e=await r.json();throw new Error(e?.error?.message||`HTTP ${r.status}`);}
-        const d=await r.json();text=(d.content||[]).map(c=>c.text||'').join('').trim();
-      }else if(provider==='gemini'){
-        const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400}})});
-        if(!r.ok){const e=await r.json();throw new Error(e?.error?.message||`HTTP ${r.status}`);}
-        const d=await r.json();text=(d.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
-      }else if(provider==='openai'){
-        const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:400,messages:[{role:'user',content:prompt}]})});
-        if(!r.ok){const e=await r.json();throw new Error(e?.error?.message||`HTTP ${r.status}`);}
-        const d=await r.json();text=(d.choices?.[0]?.message?.content||'').trim();
-      }
-      if(!text)throw new Error('Empty response from AI');
-      G.rph.rephrasedText=text;
-      wrap.innerHTML=`<div class="rph-panel-body">${esc(text)}</div>`;
-      document.getElementById('rphUseBtn').disabled=false;
-      document.getElementById('rphStatusBadge').textContent='✅ Ready';
-    }catch(e){
-      wrap.innerHTML=`<div class="rph-panel-body" style="color:var(--coral)">⚠️ ${esc(e.message)}</div>`;
-      document.getElementById('rphStatusBadge').textContent='❌ Error';
+    const nlpCount=variants.filter(v=>(v.method||'').startsWith('nlp')).length;
+    badge.textContent=`${variants.length} variants (${nlpCount} NLP · ${bloomLabel} × ${kdLabel})`;
+    return;
+  }
+
+  /* ── ONLINE AI — Bloom × Knowledge enriched prompt ── */
+  const key=G.apiKeys[provider]||'';
+  if(!key){
+    wrap.innerHTML=`<div class="rph-panel-body" style="color:var(--coral)">⚠️ No API key set for <strong>${provider}</strong>.<br>Go to <strong>Step 2 — AI Settings</strong> and paste your key.</div>`;
+    return;
+  }
+
+  const styleInstructions={
+    rephrase:'Rephrase the question to naturally reflect the target Bloom level and knowledge type.',
+    simplify:'Simplify the language while keeping it at the specified Bloom cognitive level.',
+    formal:'Make the question more formally worded at the specified Bloom level.',
+    elaborate:'Expand the question to require deeper engagement at the specified Bloom level.',
+    concise:'Make the question concise while still targeting the specified Bloom level.'
+  };
+
+  const verbList=kd.verbs.slice(0,4).join(', ');
+
+  const prompt=`You are an expert educational assessment designer specializing in Bloom's Revised Taxonomy.
+
+TASK: Rephrase the given engineering exam question to precisely target the specified Bloom's level and knowledge dimension.
+
+TARGET BLOOM LEVEL: ${bloomLabel}
+- Description: ${kd.hint}
+- Suggested action verbs: ${verbList}
+
+TARGET KNOWLEDGE DIMENSION: ${kdLabel}
+- Description: ${KD_DESC[knowDim]||''}
+
+STYLE: ${styleInstructions[style]||styleInstructions.rephrase}
+
+SUBJECT CONTEXT: ${origQ.unit||'Engineering'} (${origQ.marks||2} marks)
+
+STRICT RULES:
+1. Start the rephrased question with one of these action verbs: ${verbList}
+2. Preserve ALL technical terms, formulas, and subject matter exactly
+3. The question difficulty and marks (${origQ.marks||2}M) must remain appropriate
+4. Output ONLY the rephrased question — no explanation, no quotes, no preamble
+5. The question must clearly require the ${bd.name.toLowerCase()} cognitive process
+6. Knowledge type is ${kdLabel}: ${KD_DESC[knowDim]||''}
+
+ORIGINAL QUESTION:
+${origQ.text}
+
+REPHRASED QUESTION (${bloomLabel} — ${kdLabel}):`;
+
+  const setStatus=msg=>{wrap.innerHTML=`<div class="rph-loading"><div class="rph-spin"></div><span id="rphLiveStatus">${esc(msg)}</span></div>`;};
+  const onWait=async(secs,attempt,max)=>{
+    for(let s=Math.ceil(secs);s>0;s--){setStatus(`⏳ Rate limited (429) — retrying in ${s}s… (attempt ${attempt}/${max})`);badge.textContent=`⏳ Retry ${attempt}/${max} in ${s}s`;await delay(1000);}
+    setStatus(`🔄 Retrying… (attempt ${attempt}/${max})`);badge.textContent=`🔄 Attempt ${attempt}/${max}`;
+  };
+
+  setStatus(`Rephrasing for ${bloomLabel} × ${kdLabel} with ${provider}…`);
+
+  try{
+    let text='',r;
+    if(provider==='claude'){
+      r=await fetchWithRetry('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,messages:[{role:'user',content:prompt}]})},onWait);
+      if(r.status===401)throw new Error('Invalid API key');if(r.status===403)throw new Error('Access denied');
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+      const d=await r.json();text=(d.content||[]).map(c=>c.text||'').join('').trim();
+    }else if(provider==='gemini'){
+      r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400}})},onWait);
+      if(r.status===400||r.status===403){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||'Invalid Gemini API key');}
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+      const d=await r.json();text=(d.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
+    }else if(provider==='openai'){
+      r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:400,messages:[{role:'user',content:prompt}]})},onWait);
+      if(r.status===401)throw new Error('Invalid API key');if(r.status===403)throw new Error('Access denied');
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+      const d=await r.json();text=(d.choices?.[0]?.message?.content||'').trim();
     }
+    if(!text)throw new Error('Empty response from AI');
+    G.rph.rephrasedText=text;
+    const bloomBadge=`<span style="font-size:9px;font-family:var(--fm);background:${bd.bg};border:1px solid ${bd.color}44;color:${bd.color};padding:2px 8px;border-radius:10px;font-weight:700;display:inline-block;margin-bottom:8px">${bloomLabel} × ${kdLabel}</span>`;
+    wrap.innerHTML=`<div style="padding:10px 12px">${bloomBadge}<div style="font-size:13px;color:var(--ink2);line-height:1.8;font-family:'Times New Roman',serif">${esc(text)}</div></div>`;
+    useBtn.disabled=false;badge.textContent=`✅ Ready — ${bloomLabel} × ${kdLabel}`;
+  }catch(e){
+    const is429=e.message.includes('429')||e.message.toLowerCase().includes('rate limit');
+    const errHtml=is429?`<div style="padding:14px"><div style="color:var(--gold);font-weight:700;font-size:13px;margin-bottom:8px">⚠️ Rate Limit (429)</div><div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:10px">${provider} API is rate-limiting. Try again in 30–60s or switch to Offline mode.</div><div style="font-size:11px;background:#fff8e6;border:1px solid #fde68a;border-radius:8px;padding:10px;color:#92740a;line-height:1.8"><strong>Options:</strong><br>• Wait and retry<br>• Switch provider<br>• Use Offline mode (no limits)</div></div>`
+      :`<div class="rph-panel-body" style="color:var(--coral)">⚠️ ${esc(e.message)}</div>`;
+    wrap.innerHTML=errHtml;badge.textContent=is429?'⚠️ Rate limited':'❌ Error';
+    if(is429){setTimeout(()=>{const s=document.createElement('div');s.style.cssText='margin:0 14px 10px;padding:8px 12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;display:flex;align-items:center;gap:10px';s.innerHTML=`<span style="font-size:11px;color:#4ade80;flex:1">💡 Offline mode also uses Bloom-aware rephrasing — no limits</span><button onclick="setRphMode('offline');runRephrase()" style="padding:5px 12px;background:#22c55e;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">⚡ Use Offline</button>`;wrap.appendChild(s);},100);}
   }
 }
 
