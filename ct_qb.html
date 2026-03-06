@@ -171,6 +171,17 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .pa-row-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .pa-qnum{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--sky2),var(--sky));color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fm)}
 .pa-qtitle{font-size:13px;font-weight:700;color:var(--ink2);flex:1}
+/* ── Bloom Filter Strip ── */
+.bloom-filter-strip{display:flex;align-items:center;gap:6px;padding:6px 0 8px;flex-wrap:wrap;border-bottom:1px dashed var(--grey3);margin-bottom:10px}
+.bfs-lbl{font-size:9px;font-weight:800;color:var(--grey6);text-transform:uppercase;letter-spacing:.5px;font-family:var(--fm);white-space:nowrap}
+.bfc{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:14px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid transparent;transition:all .15s;user-select:none;font-family:var(--fm)}
+.bfc[data-k="K1"]{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}.bfc[data-k="K1"].on{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.bfc[data-k="K2"]{background:#f0fdf4;color:#166534;border-color:#bbf7d0}.bfc[data-k="K2"].on{background:#16a34a;color:#fff;border-color:#16a34a}
+.bfc[data-k="K3"]{background:#fff7ed;color:#c2410c;border-color:#fed7aa}.bfc[data-k="K3"].on{background:#ea580c;color:#fff;border-color:#ea580c}
+.bfc[data-k="K4"]{background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff}.bfc[data-k="K4"].on{background:#9333ea;color:#fff;border-color:#9333ea}
+.bfc[data-k="K5"]{background:#fff1f2;color:#be123c;border-color:#fda4af}.bfc[data-k="K5"].on{background:#e11d48;color:#fff;border-color:#e11d48}
+.bfc[data-k="K6"]{background:#fefce8;color:#854d0e;border-color:#fde047}.bfc[data-k="K6"].on{background:#ca8a04;color:#fff;border-color:#ca8a04}
+.bfc-all{background:var(--grey2);color:var(--grey7);border-color:var(--grey3);font-size:9.5px}.bfc-all.on{background:var(--grey7);color:#fff;border-color:var(--grey7)}
 /* SA/MCQ TOGGLE */
 .sa-mcq-toggle{display:flex;background:var(--grey2);border-radius:20px;padding:3px;gap:2px;border:1px solid var(--grey3)}
 .smt-opt{padding:5px 14px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;transition:all var(--t);color:var(--grey5);white-space:nowrap}
@@ -959,6 +970,59 @@ function mkQCard(q,onSelect,isSelected=false){
   return card;
 }
 
+/* ══════════════════════════════════════════════════
+   BLOOM FILTER HELPERS — used in Part A / B / C
+   ══════════════════════════════════════════════════ */
+
+/* Read selected Bloom levels from a filter strip element */
+function getBloomFilter(stripId){
+  const chips=document.querySelectorAll(`#${stripId} .bfc[data-k]`);
+  if(!chips.length)return null; // no strip = no filter
+  const sel=[...chips].filter(c=>c.classList.contains('on')).map(c=>c.dataset.k);
+  return sel.length===6||sel.length===0?null:sel; // null = all = no filter
+}
+
+/* Apply bloom filter to a pool; returns pool unchanged if no filter set */
+function applyBloomFilter(pool,stripId){
+  const bloomKs=getBloomFilter(stripId);
+  if(!bloomKs)return pool;
+  return pool.filter(q=>bloomKs.includes((q.k||'').toUpperCase()));
+}
+
+/* Build bloom filter chip strip HTML (for injection into Part A/B/C) */
+function buildBloomFilterStrip(id, onChangeCb){
+  const div=document.createElement('div');
+  div.className='bloom-filter-strip';
+  div.id=id;
+  div.innerHTML=`<span class="bfs-lbl">🎯 Bloom Filter:</span>
+    <span class="bfc bfc-all on" data-all onclick="toggleBloomAll(this,'${id}','${onChangeCb}')">All Levels</span>
+    ${['K1','K2','K3','K4','K5','K6'].map(k=>{
+      const bd=BLOOM_DATA[k];
+      return `<span class="bfc" data-k="${k}" onclick="toggleBloomChip(this,'${id}','${onChangeCb}')">${k} ${bd.name}</span>`;
+    }).join('')}
+    <span id="${id}_avail" style="margin-left:auto;font-size:9px;font-family:var(--fm);color:var(--grey5)"></span>`;
+  return div;
+}
+
+function toggleBloomAll(el,stripId,cbName){
+  const chips=document.querySelectorAll(`#${stripId} .bfc[data-k]`);
+  const allBtn=el;
+  // Turn off all individual, turn on All
+  chips.forEach(c=>c.classList.remove('on'));
+  allBtn.classList.add('on');
+  if(cbName)window[cbName]&&window[cbName]();
+}
+
+function toggleBloomChip(el,stripId,cbName){
+  el.classList.toggle('on');
+  // If all 6 selected or 0 selected → switch to All
+  const chips=[...document.querySelectorAll(`#${stripId} .bfc[data-k]`)];
+  const onCount=chips.filter(c=>c.classList.contains('on')).length;
+  const allBtn=document.querySelector(`#${stripId} .bfc-all`);
+  if(allBtn)allBtn.classList.toggle('on',onCount===0||onCount===6);
+  if(cbName)window[cbName]&&window[cbName]();
+}
+
 /* ── PART A BUILDER — REDESIGNED (SA/MCQ per question, unit only) ── */
 function buildPartA(){
   const body=document.getElementById('partABody');body.innerHTML='';
@@ -1000,6 +1064,13 @@ function buildPartA(){
     row.dataset.type=defaultMCQ?'mcq':'sa';
     row.id=`pa_row_${qno}`;
     body.appendChild(row);
+    // Inject Bloom filter strip before the pa-body
+    const paBody=row.querySelector('.pa-body');
+    if(paBody){
+      const bfs=buildBloomFilterStrip(`pa_bloom_${qno}`,`_onPABloomChange_${qno}`);
+      window[`_onPABloomChange_${qno}`]=()=>onPAChange(qno);
+      row.insertBefore(bfs,paBody);
+    }
   }
 }
 
@@ -1026,11 +1097,19 @@ function onPAChange(qno){
     delete G.manualSlots[String(qno)];
     return;
   }
-  const pool=G.bank.filter(q=>q.unit===unit&&q.marks===2&&(isMCQ?q.is_mcq:!q.is_mcq));
+  const basePool=G.bank.filter(q=>q.unit===unit&&q.marks===2&&(isMCQ?q.is_mcq:!q.is_mcq));
+  const pool=applyBloomFilter(basePool,`pa_bloom_${qno}`);
+  const bloomKs=getBloomFilter(`pa_bloom_${qno}`);
+  const bloomNote=bloomKs?` · Bloom: ${bloomKs.join(', ')}`:'';
   if(avDiv){
     const cls=pool.length>3?'av-good':pool.length>0?'av-warn':'av-none';
-    avDiv.innerHTML=`<span class="av ${cls}"><span class="av-count">${pool.length}</span> ${isMCQ?'MCQ':'SA'} questions available</span>`;
+    avDiv.innerHTML=`<span class="av ${cls}"><span class="av-count">${pool.length}</span> ${isMCQ?'MCQ':'SA'} available${bloomNote}</span>`;
+    if(bloomKs&&basePool.length!==pool.length)
+      avDiv.innerHTML+=`<span style="font-size:9px;color:var(--grey5);margin-left:4px">(${basePool.length} total)</span>`;
   }
+  // Update strip availability label
+  const sa=document.getElementById(`pa_bloom_${qno}_avail`);
+  if(sa)sa.textContent=bloomKs?`${pool.length}/${basePool.length} match`:'';
   if(chooserArea){
     chooserArea.innerHTML='';
     delete G.manualSlots[String(qno)];
@@ -1045,7 +1124,8 @@ function autoFillPartA(){
     const isMCQ=type==='mcq';
     let bestUnit='',bestCount=0;
     G.units.forEach(u=>{
-      const cnt=G.bank.filter(q=>q.unit===u&&q.marks===2&&(isMCQ?q.is_mcq:!q.is_mcq)).length;
+      const basePool=G.bank.filter(q=>q.unit===u&&q.marks===2&&(isMCQ?q.is_mcq:!q.is_mcq));
+      const cnt=applyBloomFilter(basePool,`pa_bloom_${qno}`).length;
       if(cnt>bestCount){bestCount=cnt;bestUnit=u;}
     });
     const sel=document.getElementById(`pa_unit_${qno}`);
@@ -1069,10 +1149,13 @@ function buildPartB(){
   const body=document.getElementById('partBBody');body.innerHTML='';
   const uOpts=G.units.map(u=>`<option value="${u}">${u}</option>`).join('');
   const topCtrl=document.createElement('div');
-  topCtrl.innerHTML=`<div class="fr2" style="margin-bottom:16px;max-width:480px">
+  topCtrl.innerHTML=`<div class="fr2" style="margin-bottom:12px;max-width:480px">
     <div class="fg"><label>Unit (for Q6)</label><select class="fsel" id="pb_unit" onchange="onPBChange()"><option value="">— Select Unit —</option>${uOpts}</select></div>
     <div></div></div>`;
   body.appendChild(topCtrl);
+  // Bloom filter strip for Part B
+  const bfs=buildBloomFilterStrip('pb_bloom','onPBChange');
+  body.appendChild(bfs);
   body.appendChild(buildSideCard('pb','a','Q6 (a)','b','8'));
   body.appendChild(buildSideCard('pb','b','Q6 (b)','b','8'));
 }
@@ -1113,9 +1196,17 @@ function onSideChange(prefix,side){
   const type=document.getElementById(`${prefix}_type_${side}`)?.value||'single';
   const totalMarks=prefix==='pb'?8:16;
   const slotMarks=type==='single'?totalMarks:totalMarks/2;
-  const pool=G.bank.filter(q=>q.unit===unit&&q.marks===slotMarks);
+  const bloomStripId=prefix==='pb'?'pb_bloom':`${prefix}_bloom`;
+  const basePool=G.bank.filter(q=>q.unit===unit&&q.marks===slotMarks);
+  const pool=applyBloomFilter(basePool,bloomStripId);
+  const bloomKs=getBloomFilter(bloomStripId);
   const avEl=document.getElementById(`${prefix}_av_${side}`);
-  if(avEl){avEl.className=`av ${pool.length>2?'av-good':pool.length>0?'av-warn':'av-none'}`;avEl.innerHTML=`<span class="av-count">${pool.length}</span> avail (${slotMarks}M)`;}
+  if(avEl){
+    avEl.className=`av ${pool.length>2?'av-good':pool.length>0?'av-warn':'av-none'}`;
+    const bloomNote=bloomKs?` · ${bloomKs.join(',')}`:'' ;
+    avEl.innerHTML=`<span class="av-count">${pool.length}</span> avail (${slotMarks}M${bloomNote})`;
+    if(bloomKs&&basePool.length!==pool.length)avEl.title=`${basePool.length} total, ${pool.length} match Bloom filter`;
+  }
   const slotsEl=document.getElementById(`${prefix}_slots_${side}`);slotsEl.innerHTML='';
   if(!unit){slotsEl.innerHTML='<div class="nosel-box">Select a unit above</div>';return;}
   const qLabel=prefix==='pb'?'Q6':`Q${prefix.replace('pc','')}`;
@@ -1138,12 +1229,20 @@ function buildPartC(){
     const section=document.createElement('div');section.className='pbc-section pbc-c';
     section.innerHTML=`
       <div style="font-size:13px;font-weight:800;color:var(--coral);font-family:var(--fm);margin-bottom:12px">Q${qno} — 16 Marks</div>
-      <div class="fr2" style="margin-bottom:12px;max-width:480px">
+      <div class="fr2" style="margin-bottom:8px;max-width:480px">
         <div class="fg"><label>Unit (for Q${qno})</label><select class="fsel" id="pc${qno}_unit" onchange="onPCUnitChange(${qno})"><option value="">— Select Unit —</option>${uOpts}</select></div>
         <div></div>
       </div>
+      <div id="pc${qno}_bloom_wrap"></div>
       <div id="pc${qno}_sides"><div class="nosel-box">Select a unit to configure sides</div></div>`;
     body.appendChild(section);
+    // Inject bloom filter strip
+    const bfsWrap=section.querySelector(`#pc${qno}_bloom_wrap`);
+    if(bfsWrap){
+      const bfs=buildBloomFilterStrip(`pc${qno}_bloom`,`_onPCBloomChange_${qno}`);
+      window[`_onPCBloomChange_${qno}`]=()=>{onSideChangePC(qno,'a');onSideChangePC(qno,'b');};
+      bfsWrap.appendChild(bfs);
+    }
   });
 }
 
@@ -1161,9 +1260,16 @@ function onSideChangePC(qno,side){
   const unit=document.getElementById(`${prefix}_unit`)?.value||'';
   const type=document.getElementById(`${prefix}_type_${side}`)?.value||'single';
   const slotMarks=type==='single'?16:8;
-  const pool=G.bank.filter(q=>q.unit===unit&&q.marks===slotMarks);
+  const bloomStripId=`pc${qno}_bloom`;
+  const basePool=G.bank.filter(q=>q.unit===unit&&q.marks===slotMarks);
+  const pool=applyBloomFilter(basePool,bloomStripId);
+  const bloomKs=getBloomFilter(bloomStripId);
   const avEl=document.getElementById(`${prefix}_av_${side}`);
-  if(avEl){avEl.className=`av ${pool.length>2?'av-good':pool.length>0?'av-warn':'av-none'}`;avEl.innerHTML=`<span class="av-count">${pool.length}</span> avail (${slotMarks}M)`;}
+  if(avEl){
+    avEl.className=`av ${pool.length>2?'av-good':pool.length>0?'av-warn':'av-none'}`;
+    const bloomNote=bloomKs?` · ${bloomKs.join(',')}`:'' ;
+    avEl.innerHTML=`<span class="av-count">${pool.length}</span> avail (${slotMarks}M${bloomNote})`;
+  }
   const slotsEl=document.getElementById(`${prefix}_slots_${side}`);if(!slotsEl)return;slotsEl.innerHTML='';
   if(type==='single'){
     buildGenericChooser(slotsEl,null,`${prefix}_${side}`,`Q${qno}(${side}) — ${slotMarks}M`,pool);
@@ -1704,8 +1810,11 @@ async function doGenerate(){
     const isMCQ=type==='mcq';
     const unit=document.getElementById(`pa_unit_${qno}`)?.value||'';
     if(!unit){warns.push(`Q${qno}: No unit selected`);slots[String(qno)]={uid:`na${qno}`,text:`[Q${qno} — not configured]`,marks:2,co:'?',k:'?',paras:[],images:[],is_mcq:isMCQ,has_equation:false,has_nested_table:false};continue;}
-    const pool=G.bank.filter(q=>q.unit===unit&&q.marks===2&&(isMCQ?q.is_mcq:!q.is_mcq));
-    const q=pick(pool,used);
+    const basePool=G.bank.filter(q=>q.unit===unit&&q.marks===2&&(isMCQ?q.is_mcq:!q.is_mcq));
+    const pool=applyBloomFilter(basePool,`pa_bloom_${qno}`);
+    const bloomKs=getBloomFilter(`pa_bloom_${qno}`);
+    if(bloomKs)dbgOk(`Q${qno} Bloom filter: ${bloomKs.join(',')} → ${pool.length}/${basePool.length} questions`);
+    const q=pick(pool.length?pool:basePool,used); // fallback to unfiltered if 0
     slots[String(qno)]=q||{uid:`na${qno}`,text:`[Not available — Q${qno}]`,marks:2,co:'?',k:'?',paras:[],images:[],is_mcq:isMCQ,has_equation:false,has_nested_table:false};
     dbgOk(`Q${qno}: ${(slots[String(qno)]?.text||'').substring(0,60)}`);
   }
@@ -1721,13 +1830,21 @@ async function doGenerate(){
       if(type==='single'){
         const sk=`pb_${side}`;
         if(G.manualSlots[sk])slots[`6 (${side})`]=G.manualSlots[sk];
-        else{const pool=G.bank.filter(q=>q.unit===pbUnit&&q.marks===8);slots[`6 (${side})`]=pick(pool,used)||{uid:'na6'+side,text:'[Not available]',marks:8,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};}
+        else{
+          const bp=G.bank.filter(q=>q.unit===pbUnit&&q.marks===8);
+          const pool=applyBloomFilter(bp,'pb_bloom');
+          slots[`6 (${side})`]=pick(pool.length?pool:bp,used)||{uid:'na6'+side,text:'[Not available]',marks:8,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};
+        }
         if(slots[`6 (${side})`]?.uid)used.add(slots[`6 (${side})`].uid);
       }else{
         for(const sub of['i','ii']){
           const sk=`pb_${side}_${sub}`;
           if(G.manualSlots[sk])slots[`6 (${side}) (${sub})`]=G.manualSlots[sk];
-          else{const pool=G.bank.filter(q=>q.unit===pbUnit&&q.marks===4);slots[`6 (${side}) (${sub})`]=pick(pool,used)||{uid:'na6'+side+sub,text:'[Not available]',marks:4,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};}
+          else{
+            const bp=G.bank.filter(q=>q.unit===pbUnit&&q.marks===4);
+            const pool=applyBloomFilter(bp,'pb_bloom');
+            slots[`6 (${side}) (${sub})`]=pick(pool.length?pool:bp,used)||{uid:'na6'+side+sub,text:'[Not available]',marks:4,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};
+          }
           if(slots[`6 (${side}) (${sub})`]?.uid)used.add(slots[`6 (${side}) (${sub})`].uid);
         }
       }
@@ -1744,16 +1861,25 @@ async function doGenerate(){
     for(const side of['a','b']){
       const type=document.getElementById(`pc${qno}_type_${side}`)?.value||'single';
       pcModes[qno][side]=type;
+      const bloomStripId=`pc${qno}_bloom`;
       if(type==='single'){
         const sk=`pc${qno}_${side}`;
         if(G.manualSlots[sk])slots[`${qno} (${side})`]=G.manualSlots[sk];
-        else{const pool=G.bank.filter(q=>q.unit===unit&&q.marks===16);slots[`${qno} (${side})`]=pick(pool,used)||{uid:'na'+qno+side,text:'[Not available]',marks:16,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};}
+        else{
+          const bp=G.bank.filter(q=>q.unit===unit&&q.marks===16);
+          const pool=applyBloomFilter(bp,bloomStripId);
+          slots[`${qno} (${side})`]=pick(pool.length?pool:bp,used)||{uid:'na'+qno+side,text:'[Not available]',marks:16,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};
+        }
         if(slots[`${qno} (${side})`]?.uid)used.add(slots[`${qno} (${side})`].uid);
       }else{
         for(const sub of['i','ii']){
           const sk=`pc${qno}_${side}_${sub}`;
           if(G.manualSlots[sk])slots[`${qno} (${side}) (${sub})`]=G.manualSlots[sk];
-          else{const pool=G.bank.filter(q=>q.unit===unit&&q.marks===8);slots[`${qno} (${side}) (${sub})`]=pick(pool,used)||{uid:'na'+qno+side+sub,text:'[Not available]',marks:8,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};}
+          else{
+            const bp=G.bank.filter(q=>q.unit===unit&&q.marks===8);
+            const pool=applyBloomFilter(bp,bloomStripId);
+            slots[`${qno} (${side}) (${sub})`]=pick(pool.length?pool:bp,used)||{uid:'na'+qno+side+sub,text:'[Not available]',marks:8,co:'?',k:'?',paras:[],images:[],has_equation:false,has_nested_table:false};
+          }
           if(slots[`${qno} (${side}) (${sub})`]?.uid)used.add(slots[`${qno} (${side}) (${sub})`].uid);
         }
       }
