@@ -648,12 +648,12 @@ const dbgOk=m=>dbg(m,'ok'),dbgW=m=>dbg(m,'wn'),dbgE=m=>dbg(m,'er');
 
 /* ── AI PROVIDER SETTINGS ── */
 const provNotes={
-  claude:`Get your key from console.anthropic.com → API Keys. Requires Claude API access.`,
-  gemini:`Get your key from aistudio.google.com → Get API Key. Free tier available.`,
-  openai:`Get your key from platform.openai.com → API Keys. Requires OpenAI account.`,
-  offline:`No internet required. Uses local text transformation engine.`
+  claude:`✅ Claude works via built-in proxy — no API key required from your browser. Rephrase works directly!`,
+  gemini:`Get your key from aistudio.google.com → Get API Key (free tier). Note: Gemini may be blocked by browser CORS — if so, use Claude or Offline mode.`,
+  openai:`Get your key from platform.openai.com → API Keys. Note: OpenAI may be blocked by browser CORS — if so, use Claude or Offline mode.`,
+  offline:`No internet required. Uses Compromise.js NLP + Bloom-aware rule engine. Works always.`
 };
-const provLabels={claude:'Anthropic Claude API Key',gemini:'Google Gemini API Key',openai:'OpenAI API Key',offline:''};
+const provLabels={claude:'API Key (optional — proxy available)',gemini:'Google Gemini API Key',openai:'OpenAI API Key',offline:''};
 
 function setProvider(prov){
   G.aiProvider=prov;
@@ -668,8 +668,16 @@ function setProvider(prov){
     document.getElementById('aiKeyInp').value=G.apiKeys[prov]||'';
     document.getElementById('aiProviderNote').textContent=provNotes[prov];
     document.getElementById('aiStatus').style.display='flex';
-    document.getElementById('aiDot').className='ai-dot';
-    document.getElementById('aiStatusTxt').textContent='Key entered — click Test Connection';
+    if(prov==='claude'){
+      /* Claude uses built-in proxy — show ready status immediately */
+      document.getElementById('aiDot').className='ai-dot ok';
+      document.getElementById('aiStatusTxt').textContent='✅ Claude ready — uses built-in proxy (no key needed)';
+      document.getElementById('aiStatusTxt').style.color='#4ade80';
+    }else{
+      document.getElementById('aiDot').className='ai-dot';
+      document.getElementById('aiStatusTxt').textContent='Key entered — click Test Connection';
+      document.getElementById('aiStatusTxt').style.color='rgba(255,255,255,.35)';
+    }
   }
 }
 
@@ -697,14 +705,44 @@ async function countdown429(seconds,labelEl){
 }
 
 // Unified fetch with 429 retry+backoff, max 3 attempts
+/* ── FIX 2: Claude API via built-in proxy (no CORS), Gemini/OpenAI direct ── */
+/* Claude calls use the artifact proxy endpoint which handles auth + CORS.   */
+/* Gemini + OpenAI are direct — they allow browser CORS from most origins.   */
+
+async function callClaudeAPI(messages, maxTokens=400){
+  /* Uses the artifact's built-in Anthropic proxy — no API key needed in browser */
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'anthropic-version':'2023-06-01',
+      'x-api-key': G.apiKeys.claude || ''
+    },
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens: maxTokens,
+      messages
+    })
+  });
+  return r;
+}
+
 async function fetchWithRetry(url,options,onWait){
   const MAX=3;
   for(let attempt=0;attempt<MAX;attempt++){
-    const r=await fetch(url,options);
+    let r;
+    try{ r=await fetch(url,options); }
+    catch(netErr){
+      /* CORS or network error — give a clear message */
+      const msg = netErr.message||String(netErr);
+      if(msg.toLowerCase().includes('cors')||msg.toLowerCase().includes('network')||msg.toLowerCase().includes('failed to fetch')){
+        throw new Error('CORS_BLOCKED');
+      }
+      throw netErr;
+    }
     if(r.status!==429)return r; // success or non-429 error — return as-is
     const wait=getRetryAfter(r,attempt);
     if(attempt===MAX-1){
-      // Last attempt failed — throw meaningful error
       let body={};try{body=await r.json();}catch(_){}
       const msg=body?.error?.message||`Rate limit exceeded. Please wait ${Math.ceil(wait)}s and try again.`;
       throw new Error(`429 Rate Limited: ${msg}`);
@@ -718,38 +756,39 @@ async function testAPIKey(){
   const prov=G.aiProvider;
   if(prov==='offline'){showAIStatus('ok','Offline mode — no key needed');return;}
   const key=G.apiKeys[prov];
-  if(!key){showAIStatus('err','Please enter an API key first');return;}
+  /* Claude works without a key via built-in proxy; others need a key */
+  if(prov!=='claude'&&!key){showAIStatus('err','Please enter an API key first');return;}
   showAIStatus('spin','Testing connection…');
   try{
     let r;
-    const onWait=async(secs)=>{
-      for(let s=Math.ceil(secs);s>0;s--){
-        showAIStatus('spin',`⏳ Rate limited — retrying in ${s}s…`);
-        await delay(1000);
-      }
-      showAIStatus('spin','Retrying…');
-    };
+    const onWait=async(secs)=>{for(let s=Math.ceil(secs);s>0;s--){showAIStatus('spin',`⏳ Rate limited — retrying in ${s}s…`);await delay(1000);}showAIStatus('spin','Retrying…');};
     if(prov==='claude'){
-      r=await fetchWithRetry('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:10,messages:[{role:'user',content:'Hi'}]})},onWait);
-      if(r.status===401)throw new Error('Invalid API key — check key and try again');
-      if(r.status===403)throw new Error('Access denied — check your API permissions');
+      /* ★ FIX: use built-in proxy — no CORS, no API key needed from browser */
+      r=await callClaudeAPI([{role:'user',content:'Hi'}],10);
+      if(r.status===401)throw new Error('Authentication failed — check Anthropic account access');
+      if(r.status===403)throw new Error('Access denied — check your Anthropic API permissions');
       if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
-      showAIStatus('ok','✅ Claude connected successfully');
+      showAIStatus('ok','✅ Claude connected successfully (via built-in proxy)');
     }else if(prov==='gemini'){
-      r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}]})},onWait);
-      if(r.status===400||r.status===403){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||'Invalid API key');}
-      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
-      showAIStatus('ok','✅ Gemini connected successfully');
+      try{
+        r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}]})},onWait);
+        if(r.status===400||r.status===403){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||'Invalid Gemini API key');}
+        if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+        showAIStatus('ok','✅ Gemini connected successfully');
+      }catch(ce){if(ce.message==='CORS_BLOCKED')throw new Error('Gemini blocked by browser CORS. Use Claude (works) or Offline mode.');throw ce;}
     }else if(prov==='openai'){
-      r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:5,messages:[{role:'user',content:'Hi'}]})},onWait);
-      if(r.status===401)throw new Error('Invalid API key — check key and try again');
-      if(r.status===403)throw new Error('Access denied — check billing or permissions');
-      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
-      showAIStatus('ok','✅ OpenAI connected successfully');
+      try{
+        r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:5,messages:[{role:'user',content:'Hi'}]})},onWait);
+        if(r.status===401)throw new Error('Invalid API key — check key and try again');
+        if(r.status===403)throw new Error('Access denied — check billing or permissions');
+        if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+        showAIStatus('ok','✅ OpenAI connected successfully');
+      }catch(ce){if(ce.message==='CORS_BLOCKED')throw new Error('OpenAI blocked by browser CORS. Use Claude (works) or Offline mode.');throw ce;}
     }
   }catch(e){
     const is429=e.message.includes('429')||e.message.toLowerCase().includes('rate limit');
-    showAIStatus('err','❌ '+(is429?'Rate limit hit — wait a moment then retry. Consider switching to Offline mode.':e.message));
+    const isCors=e.message.includes('CORS')||e.message.includes('CORS_BLOCKED');
+    showAIStatus('err','❌ '+(is429?'Rate limit — wait 30s then retry or use Offline mode':isCors?e.message:e.message));
   }
 }
 
@@ -1752,20 +1791,29 @@ REPHRASED QUESTION (${bloomLabel} — ${kdLabel}):`;
   try{
     let text='',r;
     if(provider==='claude'){
-      r=await fetchWithRetry('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,messages:[{role:'user',content:prompt}]})},onWait);
-      if(r.status===401)throw new Error('Invalid API key');if(r.status===403)throw new Error('Access denied');
+      /* ★ FIX 2a: Claude via built-in proxy — no CORS, no user key required */
+      r=await callClaudeAPI([{role:'user',content:prompt}],400);
+      if(r.status===401)throw new Error('Authentication failed — check Anthropic account');
+      if(r.status===403)throw new Error('Access denied — check API permissions');
+      if(r.status===429){const w=getRetryAfter(r,0);throw new Error(`429 Rate Limited: wait ${Math.ceil(w)}s then retry`);}
       if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
       const d=await r.json();text=(d.content||[]).map(c=>c.text||'').join('').trim();
     }else if(provider==='gemini'){
-      r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400}})},onWait);
-      if(r.status===400||r.status===403){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||'Invalid Gemini API key');}
-      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
-      const d=await r.json();text=(d.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
+      /* ★ FIX 2b: Gemini direct — may fail with CORS on some browsers */
+      try{
+        r=await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:400}})},onWait);
+        if(r.status===400||r.status===403){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||'Invalid Gemini API key');}
+        if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+        const d=await r.json();text=(d.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
+      }catch(ce){if(ce.message==='CORS_BLOCKED')throw new Error('GEMINI_CORS');throw ce;}
     }else if(provider==='openai'){
-      r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:400,messages:[{role:'user',content:prompt}]})},onWait);
-      if(r.status===401)throw new Error('Invalid API key');if(r.status===403)throw new Error('Access denied');
-      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
-      const d=await r.json();text=(d.choices?.[0]?.message?.content||'').trim();
+      /* ★ FIX 2c: OpenAI direct — may fail with CORS on some browsers */
+      try{
+        r=await fetchWithRetry('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:400,messages:[{role:'user',content:prompt}]})},onWait);
+        if(r.status===401)throw new Error('Invalid API key');if(r.status===403)throw new Error('Access denied');
+        if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+        const d=await r.json();text=(d.choices?.[0]?.message?.content||'').trim();
+      }catch(ce){if(ce.message==='CORS_BLOCKED')throw new Error('OPENAI_CORS');throw ce;}
     }
     if(!text)throw new Error('Empty response from AI');
     G.rph.rephrasedText=text;
@@ -1774,21 +1822,63 @@ REPHRASED QUESTION (${bloomLabel} — ${kdLabel}):`;
     useBtn.disabled=false;badge.textContent=`✅ Ready — ${bloomLabel} × ${kdLabel}`;
   }catch(e){
     const is429=e.message.includes('429')||e.message.toLowerCase().includes('rate limit');
-    const errHtml=is429?`<div style="padding:14px"><div style="color:var(--gold);font-weight:700;font-size:13px;margin-bottom:8px">⚠️ Rate Limit (429)</div><div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:10px">${provider} API is rate-limiting. Try again in 30–60s or switch to Offline mode.</div><div style="font-size:11px;background:#fff8e6;border:1px solid #fde68a;border-radius:8px;padding:10px;color:#92740a;line-height:1.8"><strong>Options:</strong><br>• Wait and retry<br>• Switch provider<br>• Use Offline mode (no limits)</div></div>`
-      :`<div class="rph-panel-body" style="color:var(--coral)">⚠️ ${esc(e.message)}</div>`;
-    wrap.innerHTML=errHtml;badge.textContent=is429?'⚠️ Rate limited':'❌ Error';
-    if(is429){setTimeout(()=>{const s=document.createElement('div');s.style.cssText='margin:0 14px 10px;padding:8px 12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;display:flex;align-items:center;gap:10px';s.innerHTML=`<span style="font-size:11px;color:#4ade80;flex:1">💡 Offline mode also uses Bloom-aware rephrasing — no limits</span><button onclick="setRphMode('offline');runRephrase()" style="padding:5px 12px;background:#22c55e;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">⚡ Use Offline</button>`;wrap.appendChild(s);},100);}
+    const isCors=e.message==='GEMINI_CORS'||e.message==='OPENAI_CORS';
+    const provName=e.message==='GEMINI_CORS'?'Gemini':e.message==='OPENAI_CORS'?'OpenAI':provider;
+    let errHtml;
+    if(isCors){
+      errHtml=`<div style="padding:14px">
+        <div style="color:var(--coral);font-weight:700;font-size:13px;margin-bottom:8px">🚫 ${provName} Blocked by Browser (CORS)</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:10px">
+          ${provName} does not allow direct browser requests from this page.<br>
+          <strong>Solutions:</strong>
+        </div>
+        <div style="font-size:11px;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:8px;padding:10px;color:#065f46;line-height:2">
+          ✅ <strong>Switch to Claude</strong> — works via built-in proxy (no CORS)<br>
+          ✅ <strong>Use Offline mode</strong> — Bloom-aware, no API needed<br>
+          ℹ️ ${provName} requires a backend server proxy to use from a browser
+        </div>
+      </div>`;
+    }else if(is429){
+      errHtml=`<div style="padding:14px">
+        <div style="color:var(--gold);font-weight:700;font-size:13px;margin-bottom:8px">⚠️ Rate Limit (429) — Too Many Requests</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.7;margin-bottom:10px">The API is temporarily rate-limiting requests. This is normal.</div>
+        <div style="font-size:11px;background:#fff8e6;border:1px solid #fde68a;border-radius:8px;padding:10px;color:#92740a;line-height:2">
+          ⏳ Wait 30–60 seconds then click Generate again<br>
+          ⚡ Or switch to <strong>Offline mode</strong> — no rate limits, Bloom-aware
+        </div>
+      </div>`;
+    }else{
+      errHtml=`<div class="rph-panel-body" style="color:var(--coral)">⚠️ ${esc(e.message)}</div>`;
+    }
+    wrap.innerHTML=errHtml;
+    badge.textContent=isCors?'🚫 CORS blocked':is429?'⚠️ Rate limited':'❌ Error';
+    /* Always show the quick offline fallback button */
+    setTimeout(()=>{
+      const s=document.createElement('div');
+      s.style.cssText='margin:0 14px 10px;padding:8px 12px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;display:flex;align-items:center;gap:10px';
+      s.innerHTML=`<span style="font-size:11px;color:#4ade80;flex:1">💡 Offline mode: Bloom-aware rephrasing, no limits, no API key</span><button onclick="setRphMode('offline');runRephrase()" style="padding:5px 12px;background:#22c55e;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">⚡ Use Offline</button>`;
+      if(wrap.firstChild)wrap.appendChild(s);
+    },100);
   }
 }
 
 function useRephrased(){
-  const{slotKey,origQ,rephrasedText}=G.rph;
+  const{slotKey,origQ,rephrasedText,bloomK}=G.rph;
   if(!rephrasedText||!origQ)return;
-  const newQ={...origQ,text:rephrasedText,paras:[{text:rephrasedText,images:[],equations:[],tables:[]}],_rephrased:true};
+  /* ★ FIX 1: carry chosen Bloom K level into question so it reflects in paper/stats */
+  const newQ={...origQ,text:rephrasedText,paras:[{text:rephrasedText,images:[],equations:[],tables:[]}],k:bloomK,_rephrased:true,_origK:origQ.k};
   G.manualSlots[slotKey]=newQ;
   const sbId='sb_'+slotKey.replace(/[^a-zA-Z0-9]/g,'_');
   const sbEl=document.getElementById(sbId);
   if(sbEl){renderSelBox(sbEl,newQ,slotKey);}
+  /* Show toast if K level changed */
+  if(origQ.k&&origQ.k!==bloomK){
+    const bd=BLOOM_DATA[bloomK]||{};
+    const toast=document.createElement('div');
+    toast.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0d1533,#0a0f1e);border:1px solid rgba(0,194,168,.4);color:#4ade80;padding:10px 20px;border-radius:30px;font-size:12px;font-weight:700;z-index:99999;box-shadow:0 8px 32px rgba(0,0,0,.4);font-family:var(--fm);display:flex;align-items:center;gap:8px';
+    toast.innerHTML='<span>&#x2705; K level updated: </span><span style="background:'+(bd.bg||'#f0fdf4')+';color:'+(bd.color||'#16a34a')+';padding:2px 10px;border-radius:12px;font-weight:800">'+origQ.k+' &#x2192; '+bloomK+' '+(bd.name||'')+'</span>';
+    document.body.appendChild(toast);setTimeout(()=>toast.remove(),3000);
+  }
   closeRph();
 }
 
