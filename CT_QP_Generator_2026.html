@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>2026 Regulation · Cycle Test QP Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --ink:#05080f;--ink2:#1a2035;--ink3:#2d3655;
+  --sky:#0057ff;--sky2:#1a6fff;--sky3:#4d94ff;--sky4:#a8caff;--sky5:#ddeeff;--sky6:#f0f7ff;
+  --teal:#00c2a8;--coral:#ff5a36;--gold:#f5a623;--lime:#22c55e;--purple:#7c3aed;--groq:#f55036;
+  --grey1:#f8f9fc;--grey2:#eef1f8;--grey3:#dde2ee;--grey4:#b8c1d9;--grey5:#8691ab;--grey6:#5a6480;--grey7:#3a4258;
+  --white:#ffffff;
+  --r6:6px;--r10:10px;--r14:14px;--r20:20px;
+  --s1:0 1px 3px rgba(5,8,31,.08);--s2:0 4px 16px rgba(5,8,31,.1);--s3:0 12px 40px rgba(5,8,31,.14);
+  --t:.18s cubic-bezier(.4,0,.2,1);
+  --ff:'DM Sans',sans-serif;--fm:'DM Mono',monospace;
+}
+/* ── THEME PALETTES (swap via [data-theme] on <html>) ── */
+[data-theme="midnight"]{
+  --ink:#e8ecf7;--ink2:#c7d0e8;--ink3:#a4afd0;
+  --sky:#5b8cff;--sky2:#4577ff;--sky3:#7aa3ff;--sky4:#31406e;--sky5:#1a2547;--sky6:#141c33;
+  --teal:#2dd9be;--coral:#ff7a5c;--gold:#ffbd4a;--lime:#4ade80;--purple:#a78bfa;
+  --grey1:#0b0f1c;--grey2:#131a2c;--grey3:#232c46;--grey4:#3a4562;--grey5:#7986ab;--grey6:#aab4d4;--grey7:#d6ddf2;
+  --white:#111730;
+}
+[data-theme="emerald"]{
+  --sky:#059669;--sky2:#10b981;--sky3:#34d399;--sky4:#a7f3d0;--sky5:#e7fbf3;--sky6:#f2fdf8;
+  --teal:#0891b2;--coral:#ea580c;--gold:#d97706;--purple:#7c3aed;
+}
+[data-theme="sunset"]{
+  --sky:#ea580c;--sky2:#f97316;--sky3:#fb923c;--sky4:#fed7aa;--sky5:#fff3e6;--sky6:#fff8f1;
+  --teal:#dc2626;--coral:#e11d48;--gold:#ca8a04;--purple:#c026d3;
+}
+[data-theme="violet"]{
+  --sky:#7c3aed;--sky2:#8b5cf6;--sky3:#a78bfa;--sky4:#ddd6fe;--sky5:#f3effe;--sky6:#faf8ff;
+  --teal:#0891b2;--coral:#e11d48;--gold:#d97706;--purple:#c026d3;
+}
+.theme-picker{display:flex;align-items:center;gap:5px;margin-left:8px;padding-left:8px;border-left:1px solid rgba(255,255,255,.12)}
+.theme-dot{width:16px;height:16px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,.25);transition:all var(--t);flex-shrink:0}
+.theme-dot:hover{transform:scale(1.18)}
+.theme-dot.act{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.3)}
+.theme-dot[data-t="ocean"]{background:linear-gradient(135deg,#1a6fff,#00c2a8)}
+.theme-dot[data-t="midnight"]{background:linear-gradient(135deg,#0b0f1c,#5b8cff)}
+.theme-dot[data-t="emerald"]{background:linear-gradient(135deg,#059669,#34d399)}
+.theme-dot[data-t="sunset"]{background:linear-gradient(135deg,#ea580c,#fb923c)}
+.theme-dot[data-t="violet"]{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);color:var(--ink);background:var(--grey1);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(0,87,255,.04) 0,transparent 50%),radial-gradient(circle at 80% 80%,rgba(0,194,168,.04) 0,transparent 50%);pointer-events:none;z-index:0}
+
+/* TOPBAR */
+.tb{position:sticky;top:0;z-index:600;background:var(--ink);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 20px;height:54px;gap:12px}
+.tb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--sky3),var(--teal),var(--sky3),transparent)}
+.tb-logo{width:32px;height:32px;background:linear-gradient(135deg,var(--sky2),var(--teal));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 0 16px rgba(0,87,255,.4)}
+.tb-t{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.2px}
+.tb-s{font-size:10px;color:var(--sky4);font-family:var(--fm);letter-spacing:.2px}
+.tb-pill{margin-left:auto;padding:3px 10px;border-radius:20px;font-size:10px;font-family:var(--fm);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--sky4);transition:var(--t)}
+.tb-pill.ok{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.3);color:#4ade80}
+.tb-ver{font-size:9px;font-family:var(--fm);color:var(--grey5);padding:2px 7px;background:rgba(255,255,255,.05);border-radius:10px;margin-left:6px}
+
+/* STEP NAV */
+.snav{background:var(--white);border-bottom:1px solid var(--grey3);padding:0 20px;overflow-x:auto;position:sticky;top:54px;z-index:500}
+.snav-inner{display:flex;max-width:1320px;margin:0 auto}
+.sn-item{display:flex;align-items:center;gap:6px;padding:11px 12px 11px 0;border-bottom:2.5px solid transparent;white-space:nowrap;cursor:pointer;position:relative;transition:all var(--t)}
+.sn-item:not(:last-child)::after{content:'›';position:absolute;right:1px;color:var(--grey3);font-size:13px}
+.sn-num{width:22px;height:22px;border-radius:50%;background:var(--grey2);color:var(--grey5);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--t)}
+.sn-lbl{font-size:11px;font-weight:600;color:var(--grey5);transition:color var(--t)}
+.sn-item.act{border-bottom-color:var(--sky)}.sn-item.act .sn-num{background:var(--sky);color:#fff;box-shadow:0 0 0 3px rgba(0,87,255,.15)}.sn-item.act .sn-lbl{color:var(--ink);font-weight:700}
+.sn-item.dn .sn-num{background:var(--lime);color:#fff}.sn-item.dn .sn-lbl{color:var(--lime)}
+
+/* LAYOUT */
+.main{max-width:1320px;margin:0 auto;padding:20px 20px 120px;position:relative;z-index:1}
+.sec-hdr{display:flex;align-items:center;gap:10px;margin:28px 0 10px;flex-wrap:wrap}
+.sec-hdr:first-child{margin-top:0}
+.sec-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:#fff}
+.sec-dot.blue{background:linear-gradient(135deg,var(--sky2),var(--sky))}.sec-dot.teal{background:linear-gradient(135deg,var(--teal),#00a896)}.sec-dot.coral{background:linear-gradient(135deg,var(--coral),#e04020)}.sec-dot.lime{background:linear-gradient(135deg,var(--lime),#16a34a)}.sec-dot.purple{background:linear-gradient(135deg,var(--purple),#6d28d9)}.sec-dot.gold{background:linear-gradient(135deg,var(--gold),#c8790a)}
+.sec-hdr h2{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.sec-tag{font-size:9px;font-weight:700;font-family:var(--fm);text-transform:uppercase;padding:2px 8px;border-radius:20px;letter-spacing:.5px}
+.st-blue{background:var(--sky5);color:var(--sky);border:1px solid var(--sky4)}.st-teal{background:#e0faf7;color:var(--teal);border:1px solid #9ee8e0}.st-coral{background:#fff1ee;color:var(--coral);border:1px solid #ffbcad}.st-purple{background:#f5f3ff;color:var(--purple);border:1px solid #ddd6fe}.st-gold{background:#fff8e6;color:#92740a;border:1px solid #fde68a}
+
+/* CARD */
+.card{background:var(--white);border:1px solid var(--grey3);border-radius:var(--r14);box-shadow:var(--s1);margin-bottom:12px;overflow:hidden;transition:box-shadow var(--t)}
+.card:hover{box-shadow:var(--s2)}
+.card-hdr{padding:12px 18px;border-bottom:1px solid var(--grey2);display:flex;align-items:center;gap:8px;background:linear-gradient(to right,var(--sky6),var(--white))}
+.card-hdr h3{font-size:13px;font-weight:700;color:var(--ink2)}
+.card-body{padding:18px}
+.card.anim-in{animation:slideUp .35s cubic-bezier(.22,1,.36,1) both}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* AI SETTINGS CARD */
+.ai-settings-card{background:linear-gradient(135deg,#0a0f1e,#0d1533);border:1px solid rgba(124,58,237,.3);border-radius:var(--r14);padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
+.ai-settings-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--sky),var(--groq),var(--teal))}
+.ai-provider-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.ai-ptab{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);background:rgba(255,255,255,.04);transition:all var(--t);display:flex;align-items:center;gap:5px}
+.ai-ptab:hover{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.8)}
+.ai-ptab.act-claude{background:rgba(245,166,35,.12);border-color:rgba(245,166,35,.4);color:#f5a623}
+.ai-ptab.act-gemini{background:rgba(66,133,244,.15);border-color:rgba(66,133,244,.4);color:#4285f4}
+.ai-ptab.act-openai{background:rgba(16,163,127,.12);border-color:rgba(16,163,127,.4);color:#10a37f}
+.ai-ptab.act-groq{background:rgba(245,80,54,.14);border-color:rgba(245,80,54,.45);color:#f55036}
+.ai-ptab.act-offline{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.35);color:#22c55e}
+.ai-key-row{display:flex;gap:8px;align-items:flex-end}
+.ai-key-inp{flex:1;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#fff;padding:9px 13px;border-radius:var(--r6);font-family:var(--fm);font-size:12px;outline:none;transition:all var(--t)}
+.ai-key-inp:focus{border-color:rgba(124,58,237,.6);box-shadow:0 0 0 3px rgba(124,58,237,.15);background:rgba(255,255,255,.09)}
+.ai-key-inp::placeholder{color:rgba(255,255,255,.25)}
+.ai-key-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.6px;font-family:var(--fm);margin-bottom:4px}
+.ai-test-btn{padding:9px 16px;border-radius:var(--r6);font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid rgba(124,58,237,.5);background:rgba(124,58,237,.15);color:#c4b5fd;transition:all var(--t);white-space:nowrap}
+.ai-test-btn:hover{background:rgba(124,58,237,.3);border-color:rgba(124,58,237,.8)}
+.ai-status{font-size:10px;font-family:var(--fm);margin-top:8px;display:flex;align-items:center;gap:6px}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--grey5);flex-shrink:0}
+.ai-dot.ok{background:var(--lime);box-shadow:0 0 6px rgba(34,197,94,.5)}.ai-dot.err{background:var(--coral)}.ai-dot.spin{background:var(--gold);animation:pulse 1s infinite}
+.ai-provider-note{font-size:10px;color:rgba(255,255,255,.3);margin-top:8px;font-family:var(--fm);line-height:1.6}
+.ai-provider-note a{color:#a8caff}
+.offline-info{padding:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:var(--r6);font-size:11px;color:rgba(255,255,255,.6);line-height:1.7}
+.offline-info strong{color:#4ade80}
+
+/* UPLOAD */
+.up-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rich-badge{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;font-family:var(--fm);background:#fff7ed;color:#9a3412;border:1px solid #fed7aa}
+.uz{border:2px dashed var(--grey3);border-radius:var(--r14);padding:28px 16px;text-align:center;cursor:pointer;transition:all .25s;background:var(--grey1);position:relative;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.uz:hover{border-color:var(--sky3);background:var(--sky6);transform:translateY(-1px)}.uz.ov{border-color:var(--sky);background:var(--sky5);border-style:solid;transform:scale(1.015)}.uz.done{border-color:var(--lime);background:#f0fdf4;border-style:solid}
+.uz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.uz-ic{font-size:28px;line-height:1}.uz-tit{font-size:13px;font-weight:700;color:var(--ink2)}.uz-sub{font-size:10px;color:var(--grey5);font-family:var(--fm)}.uz-ok{font-size:11px;color:var(--lime);font-weight:700}.uz-sz{font-size:9px;color:var(--grey5);font-family:var(--fm)}
+
+/* META */
+.meta-rib{display:flex;flex-wrap:wrap;background:linear-gradient(135deg,var(--ink),var(--ink2));border-radius:var(--r10);overflow:hidden;margin-top:10px}
+.mr-item{padding:10px 14px;border-right:1px solid rgba(255,255,255,.07);flex:1;min-width:90px}.mr-item:last-child{border-right:none}
+.mr-k{font-size:8px;font-weight:700;color:var(--sky4);text-transform:uppercase;letter-spacing:.8px;font-family:var(--fm)}.mr-v{font-size:12px;font-weight:700;color:#fff;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:4px}.fg label{font-size:9px;font-weight:700;color:var(--grey6);text-transform:uppercase;letter-spacing:.7px}
+.fi,.fsel{border:1.5px solid var(--grey3);background:var(--white);color:var(--ink);padding:8px 11px;border-radius:var(--r6);font-family:var(--ff);font-size:12.5px;outline:none;transition:all var(--t);width:100%}
+.fi:focus,.fsel:focus{border-color:var(--sky3);box-shadow:0 0 0 3px rgba(0,87,255,.1)}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.fr4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+
+/* ALERT */
+.alert{padding:9px 13px;border-radius:var(--r6);font-size:11.5px;display:flex;align-items:flex-start;gap:7px;margin-top:8px}
+.a-info{background:var(--sky5);border:1px solid var(--sky4);color:var(--sky)}.a-warn{background:#fff8e6;border:1px solid #ffd980;color:#92740a}.a-ok{background:#f0fdf4;border:1px solid #a7f3d0;color:#065f46}.a-err{background:#fff1ee;border:1px solid #ffbcad;color:var(--coral)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border:none;border-radius:var(--r6);font-family:var(--ff);font-size:12px;font-weight:600;cursor:pointer;transition:all var(--t)}
+.btn-prim{background:linear-gradient(135deg,var(--sky2),var(--sky));color:#fff;box-shadow:0 2px 10px rgba(0,87,255,.28)}.btn-prim:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,87,255,.4)}
+.btn-sec{background:var(--white);color:var(--ink3);border:1.5px solid var(--grey3)}.btn-sec:hover:not(:disabled){border-color:var(--sky3);color:var(--sky)}
+.btn-teal{background:linear-gradient(135deg,var(--teal),#00a896);color:#fff;box-shadow:0 2px 10px rgba(0,194,168,.3)}.btn-teal:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,194,168,.45)}
+.btn-purple{background:linear-gradient(135deg,var(--purple),#6d28d9);color:#fff;box-shadow:0 2px 10px rgba(124,58,237,.28)}.btn-purple:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 20px rgba(124,58,237,.4)}
+.btn-groq{background:linear-gradient(135deg,var(--groq),#c8341c);color:#fff;box-shadow:0 2px 10px rgba(245,80,54,.3)}.btn-groq:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 20px rgba(245,80,54,.45)}
+.btn-big{padding:13px 32px;font-size:14px;border-radius:var(--r10)}.btn:disabled{opacity:.35;cursor:not-allowed!important;transform:none!important}
+.btn-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}
+
+/* STATS BAR */
+.stats-bar{display:flex;flex-wrap:wrap;background:linear-gradient(135deg,var(--ink),var(--ink2));border-radius:var(--r10);overflow:hidden;margin-top:10px}
+.sb-item{padding:10px 14px;border-right:1px solid rgba(255,255,255,.07);flex:1;min-width:78px}.sb-item:last-child{border-right:none}
+.sb-k{font-size:8px;font-weight:700;color:var(--sky4);text-transform:uppercase;letter-spacing:.8px;font-family:var(--fm)}.sb-v{font-size:17px;font-weight:800;color:#fff;line-height:1.2}
+
+/* TAB BAR */
+.tab-bar{display:flex;gap:0;border-bottom:1px solid var(--grey3);overflow-x:auto}
+.tab-btn{padding:9px 16px;font-size:11.5px;font-weight:600;color:var(--grey5);cursor:pointer;border-bottom:2.5px solid transparent;transition:all var(--t);white-space:nowrap}
+.tab-btn.act{color:var(--sky);border-bottom-color:var(--sky);background:var(--sky6)}
+.tab-pane{display:none;padding:14px}.tab-pane.show{display:block;animation:fadeIn .2s ease}
+
+/* SUMMARY TABLE */
+.sum-tbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.sum-tbl th{background:var(--ink2);color:#fff;padding:7px 9px;font-size:10px;text-align:center;font-family:var(--fm)}
+.sum-tbl td{padding:6px 9px;border-bottom:1px solid var(--grey2);text-align:center}
+.sum-tbl tr:nth-child(even) td{background:var(--grey1)}
+.sum-tbl td.lbl{text-align:left;font-weight:700;color:var(--ink2);font-family:var(--fm)}
+.sum-tbl td.tot{font-weight:800;color:var(--sky)}
+.sum-tbl tr.totrow td{background:var(--sky6);font-weight:800;border-top:2px solid var(--sky4)}
+
+/* Q POOL / CHOOSER (reused across all parts) */
+.pa-row{border:1.5px solid var(--grey3);border-radius:var(--r14);padding:16px;margin-bottom:10px;background:var(--white);transition:all var(--t)}
+.pair-card{border:1.5px solid var(--sky4);border-radius:var(--r14);padding:14px;margin-bottom:14px;background:linear-gradient(135deg,var(--sky6),var(--white))}
+.pair-hdr{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1.5px dashed var(--sky4)}
+.pair-title{font-size:12.5px;font-weight:800;color:var(--ink2);flex:1}
+.pair-body .pa-row{margin-bottom:8px;background:var(--white)}
+.kl-consolidated{background:linear-gradient(135deg,var(--ink),var(--ink2));border-radius:var(--r10);padding:12px 16px;margin-top:10px}
+.kl-title{font-size:10px;font-weight:700;color:var(--sky4);text-transform:uppercase;letter-spacing:.6px;font-family:var(--fm);margin-bottom:8px}
+.kl-badges{display:flex;gap:8px;flex-wrap:wrap}
+.kl-badge{padding:4px 12px;border-radius:16px;font-size:11px;font-weight:700;font-family:var(--fm);background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);border:1.5px solid rgba(255,255,255,.15)}
+.kl-badge.set{background:rgba(0,194,168,.15);color:#5eead4;border-color:rgba(0,194,168,.4)}
+.pa-row:hover{border-color:var(--sky4);box-shadow:var(--s1)}
+.pa-row-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.pa-qnum{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--sky2),var(--sky));color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fm)}
+.pa-qnum.mcq{background:linear-gradient(135deg,var(--gold),#c8790a)}
+.pa-qnum.b{background:linear-gradient(135deg,var(--teal),#00a896)}
+.pa-qnum.c{background:linear-gradient(135deg,var(--coral),#e04020)}
+.pa-qtitle{font-size:13px;font-weight:700;color:var(--ink2);flex:1}
+.pa-marks-badge{font-size:10px;font-weight:800;font-family:var(--fm);padding:3px 9px;border-radius:20px;background:var(--sky5);color:var(--sky);border:1px solid var(--sky4)}
+.pa-body{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start}
+.pa-unit-sel{display:flex;flex-direction:column;gap:6px}
+.pa-avail{font-size:9.5px;font-family:var(--fm);margin-top:4px;color:var(--grey5)}
+.av{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;font-family:var(--fm)}
+.av-good{background:rgba(0,194,168,.12);border:1px solid rgba(0,194,168,.35);color:var(--teal)}.av-warn{background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.35);color:var(--gold)}.av-none{background:var(--grey2);border:1px solid var(--grey3);color:var(--grey5)}
+
+.qchooser{border:1.5px solid var(--grey3);border-radius:var(--r10);overflow:hidden;margin-top:8px;transition:all .3s}
+.qchooser.open{border-color:var(--sky3);box-shadow:0 0 0 3px rgba(0,87,255,.08)}
+.qch-hdr{display:flex;align-items:center;gap:8px;padding:8px 12px;background:linear-gradient(to right,var(--sky6),var(--white));cursor:pointer;user-select:none}.qch-hdr:hover{background:var(--sky5)}
+.qch-title{font-size:11px;font-weight:700;color:var(--ink2);flex:1}.qch-toggle{font-size:11px;color:var(--grey5);transition:transform .25s}.qchooser.open .qch-toggle{transform:rotate(180deg)}
+.qch-body{display:none;padding:10px;background:var(--grey1)}.qchooser.open .qch-body{display:block;animation:fadeIn .2s ease}
+.qpool{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;max-height:340px;overflow-y:auto;padding-bottom:2px}
+.qpool::-webkit-scrollbar{width:4px}.qpool::-webkit-scrollbar-thumb{background:var(--sky4);border-radius:2px}
+
+.qcard{border:1.5px solid var(--grey3);border-radius:var(--r10);padding:10px 11px;cursor:pointer;background:var(--white);transition:all .18s;position:relative;overflow:hidden}
+.qcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--sky3),var(--sky4));opacity:0;transition:opacity .18s}
+.qcard:hover{border-color:var(--sky3);box-shadow:var(--s2);transform:translateY(-1px)}.qcard:hover::before{opacity:1}
+.qcard.selected{border-color:var(--sky);background:var(--sky6);box-shadow:0 0 0 2.5px rgba(0,87,255,.18)}.qcard.selected::before{opacity:1;background:linear-gradient(90deg,var(--sky),var(--teal))}
+.qcard-q{font-size:11.5px;color:var(--ink2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.qcard-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.qm-unit{background:var(--sky5);color:var(--sky);border:1px solid var(--sky4);padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;font-family:var(--fm)}
+.qm-k{background:var(--grey2);color:var(--grey6);border:1px solid var(--grey3);padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;font-family:var(--fm)}
+.qm-co{background:#faf5ff;color:#7c3aed;border:1px solid #ddd6fe;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;font-family:var(--fm)}
+.qm-portion{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;font-family:var(--fm)}
+.qm-portion.p2{background:#fff1f2;color:#be123c;border-color:#fecdd3}
+.qpool-empty{text-align:center;padding:20px;color:var(--grey5);font-size:12px}
+
+.sel-q-box{background:linear-gradient(135deg,var(--sky6),var(--white));border:1.5px solid var(--sky4);border-radius:var(--r10);padding:10px 12px;margin-top:6px;position:relative;animation:fadeIn .25s ease}
+.sel-q-txt{font-size:12px;color:var(--ink2);line-height:1.6;white-space:pre-line}
+.sel-q-opts{font-size:11.5px;color:var(--ink3);margin-top:6px;line-height:1.8;padding-left:6px}
+.sel-q-meta{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.sel-q-actions{display:flex;gap:6px;margin-top:8px}
+.sel-q-actions .btn{padding:5px 11px;font-size:10.5px}
+.nosel-box{border:1.5px dashed var(--grey3);border-radius:var(--r10);padding:10px 12px;color:var(--grey5);font-size:11.5px;text-align:center;margin-top:6px;background:var(--grey1)}
+
+/* BLOOM */
+.bloom-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.bloom-c{background:var(--sky6);border:1.5px solid var(--sky4);border-radius:var(--r14);padding:14px;text-align:center;transition:all var(--t)}
+.bloom-c:hover{transform:translateY(-2px);box-shadow:var(--s2)}
+.bc-k{font-size:10px;font-weight:700;color:var(--sky);font-family:var(--fm)}.bc-n{font-size:9px;color:var(--grey5);margin:1px 0 6px}.bc-v{font-size:26px;font-weight:800;color:var(--ink);line-height:1}
+.bloom-c.tot{background:linear-gradient(135deg,var(--ink),var(--ink2));border-color:var(--ink3)}.bloom-c.tot .bc-k,.bloom-c.tot .bc-n{color:var(--sky4)}.bloom-c.tot .bc-v{color:#fff}
+
+/* PREVIEW TABLE */
+.qp-wrap{overflow-x:auto;border-radius:var(--r10);border:1px solid var(--grey3)}
+.qp-tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-family:'Times New Roman',serif}
+.qp-tbl th{background:var(--ink);color:#fff;padding:10px;font-size:10.5px;font-weight:700;text-align:center;border:1px solid var(--ink3)}
+.qp-tbl td{padding:8px 10px;border:1px solid var(--grey2);vertical-align:top}
+.qpt-co{text-align:center;font-size:10px;font-style:italic;color:var(--grey5);width:76px;font-family:var(--fm)}.qpt-qn{text-align:center;font-weight:800;width:60px;font-family:var(--fm);color:var(--sky);font-size:11.5px}.qpt-q{text-align:justify;line-height:1.8;white-space:pre-line}.qpt-m{text-align:center;font-weight:700;width:48px;font-family:var(--fm)}
+.qptr-ph td{background:var(--ink)!important;color:#fff!important;text-align:center!important;font-weight:700!important;font-size:12.5px!important;border:1px solid var(--ink2)!important;padding:10px!important;font-family:var(--ff)!important}
+.qptr-or td{background:var(--sky6);text-align:center;font-weight:800;color:var(--sky);letter-spacing:4px;font-family:var(--fm);font-size:10.5px;padding:5px}
+.qptr-odd td{background:var(--white)}.qptr-even td{background:var(--sky6)}
+
+/* DOWNLOAD PANEL */
+.dl-panel{display:none;background:linear-gradient(135deg,var(--ink),var(--ink2));border-radius:var(--r20);padding:40px;text-align:center;position:relative;overflow:hidden;margin-top:14px}
+.dl-panel::before{content:'';position:absolute;top:-50%;left:-30%;width:180%;height:200%;background:radial-gradient(ellipse at 60% 40%,rgba(0,87,255,.12),transparent 55%);pointer-events:none}
+.dl-panel.show{display:block;animation:slideUp .4s cubic-bezier(.22,1,.36,1)}
+.dl-panel h3{font-size:22px;font-weight:800;color:#fff;margin-bottom:4px}.dl-panel p{color:var(--sky4);font-size:11px;margin-bottom:22px;font-family:var(--fm)}
+
+/* SPINNER */
+.spin-ov{position:fixed;inset:0;background:rgba(5,8,15,.88);backdrop-filter:blur(4px);z-index:2000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.spin-ov.show{display:flex}
+.spin-ring{width:52px;height:52px;border:3.5px solid rgba(255,255,255,.12);border-top-color:var(--sky3);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-t{color:#fff;font-size:14px;font-weight:700}
+.spin-s{color:var(--sky4);font-size:11px;font-family:var(--fm)}
+.prog-track{width:240px;height:5px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;margin-top:4px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--sky3),var(--teal));width:0%;transition:width .3s}
+
+/* NOTICE */
+.notice{background:var(--sky6);border:1px solid var(--sky4);border-radius:var(--r10);padding:10px 14px;font-size:11.5px;color:var(--ink3);display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}
+
+/* REPHRASE MODAL */
+.rph-modal{position:fixed;inset:0;background:rgba(5,8,15,.72);backdrop-filter:blur(3px);z-index:1900;display:none;align-items:center;justify-content:center;padding:20px}
+.rph-modal.show{display:flex}
+.rph-box{background:var(--white);border-radius:var(--r20);width:100%;max-width:900px;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--s3)}
+.rph-hdr{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--grey2);background:linear-gradient(135deg,var(--ink),var(--ink2))}
+.rph-hdr h3{color:#fff;font-size:15px}
+.rph-hdr-sub{font-size:10px;color:var(--sky4);font-family:var(--fm)}
+.rph-close{margin-left:auto;background:rgba(255,255,255,.08);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px}
+.rph-mode-bar{display:flex;gap:0;background:var(--grey2)}
+.rph-mode-btn{flex:1;text-align:center;padding:9px;font-size:11.5px;font-weight:700;color:var(--grey6);cursor:pointer;border-bottom:2.5px solid transparent}
+.rph-mode-btn.act{color:var(--sky);border-bottom-color:var(--sky);background:var(--sky6)}
+.rph-provider-row{display:flex;align-items:center;gap:8px;padding:10px 20px;background:var(--grey1);border-bottom:1px solid var(--grey2);flex-wrap:wrap}
+.rph-prov-lbl{font-size:10px;font-weight:700;color:var(--grey6);text-transform:uppercase;font-family:var(--fm)}
+.rph-prov-btn{padding:5px 12px;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--grey3);background:var(--white);color:var(--grey6)}
+.rph-prov-btn.act{background:var(--sky);color:#fff;border-color:var(--sky)}
+.rph-body{display:grid;grid-template-columns:1fr 1fr;gap:0;overflow-y:auto;flex:1}
+.rph-panel{padding:16px 20px;border-right:1px solid var(--grey2)}
+.rph-panel:last-child{border-right:none}
+.rph-panel-hdr{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--grey6);margin-bottom:10px;font-family:var(--fm)}
+.rph-panel-body{font-size:13px;line-height:1.8;color:var(--ink2);white-space:pre-line}
+.rph-footer{display:flex;align-items:center;gap:10px;padding:14px 20px;border-top:1px solid var(--grey2);background:var(--grey1)}
+.rph-opt{padding:4px 12px;border-radius:16px;font-size:10.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--grey3);background:var(--white);color:var(--grey6)}
+.rph-opt.act{background:var(--sky);color:#fff;border-color:var(--sky)}
+.rph-gen-btn{margin-left:auto;padding:7px 18px;border-radius:var(--r6);background:linear-gradient(135deg,var(--purple),#6d28d9);color:#fff;border:none;font-weight:700;font-size:11.5px;cursor:pointer}
+.rph-style-row{display:flex;gap:8px;padding:10px 20px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--grey2)}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,87,255,.25)}50%{box-shadow:0 0 0 6px rgba(0,87,255,0)}}
+.pulse{animation:pulse 2s infinite}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--grey2)}::-webkit-scrollbar-thumb{background:var(--sky4);border-radius:3px}
+@media(max-width:900px){.unit-cols{grid-template-columns:repeat(2,1fr)}.bloom-grid{grid-template-columns:repeat(3,1fr)}.fr3,.fr4{grid-template-columns:1fr 1fr}.pa-body{grid-template-columns:1fr}.rph-body{grid-template-columns:1fr}.rph-panel{border-right:none;border-bottom:1px solid var(--grey2)}}
+</style>
+</head>
+<body>
+
+<!-- SPINNER -->
+<div class="spin-ov" id="spinOv">
+  <div class="spin-ring"></div>
+  <div class="spin-t" id="spinT">Processing…</div>
+  <div class="spin-s" id="spinS">Please wait</div>
+  <div class="prog-track"><div class="prog-fill" id="pgFill"></div></div>
+</div>
+
+<!-- TOPBAR -->
+<div class="tb">
+  <div class="tb-logo">📋</div>
+  <div><div class="tb-t">Cycle Test QP Generator</div><div class="tb-s">2026 Regulation · AQA Question Bank → Model Question Paper</div></div>
+  <span class="tb-ver">v1.1 · R2026</span>
+  <div class="tb-pill" id="bankPill">No AQA loaded</div>
+  <div class="theme-picker" id="themePicker">
+    <div class="theme-dot" data-t="ocean" title="Ocean (default)" onclick="setTheme('ocean')"></div>
+    <div class="theme-dot" data-t="midnight" title="Midnight (dark)" onclick="setTheme('midnight')"></div>
+    <div class="theme-dot" data-t="emerald" title="Emerald" onclick="setTheme('emerald')"></div>
+    <div class="theme-dot" data-t="sunset" title="Sunset" onclick="setTheme('sunset')"></div>
+    <div class="theme-dot" data-t="violet" title="Violet" onclick="setTheme('violet')"></div>
+  </div>
+</div>
+
+<!-- STEP NAV -->
+<div class="snav"><div class="snav-inner">
+  <div class="sn-item act" id="sn1"><div class="sn-num">1</div><div class="sn-lbl">Upload AQA</div></div>
+  <div class="sn-item" id="sn2"><div class="sn-num">2</div><div class="sn-lbl">AI Settings</div></div>
+  <div class="sn-item" id="sn3"><div class="sn-num">3</div><div class="sn-lbl">Exam Details</div></div>
+  <div class="sn-item" id="sn4"><div class="sn-num">4</div><div class="sn-lbl">Part A · SA</div></div>
+  <div class="sn-item" id="sn5"><div class="sn-num">5</div><div class="sn-lbl">Part A · MCQ</div></div>
+  <div class="sn-item" id="sn6"><div class="sn-num">6</div><div class="sn-lbl">Part B</div></div>
+  <div class="sn-item" id="sn7"><div class="sn-num">7</div><div class="sn-lbl">Part C</div></div>
+  <div class="sn-item" id="sn8"><div class="sn-num">8</div><div class="sn-lbl">Generate</div></div>
+</div></div>
+
+<div class="main">
+
+<!-- §1 UPLOAD -->
+<div class="sec-hdr"><div class="sec-dot blue">1</div><h2>Upload AQA Question Bank</h2><span class="sec-tag st-blue">.DOCX · Auto-detects Part A / Part A (MCQ) / Part B / Part C per Unit</span></div>
+<div class="card anim-in">
+  <div class="card-hdr"><span>📂</span><h3>AQA — Assessment Question Archive</h3></div>
+  <div class="card-body">
+    <div class="up-grid">
+      <div class="uz" id="aqaZ" ondragover="ev(event,'aqaZ','ov')" ondragleave="ev(event,'aqaZ','')" ondrop="dr(event,'aqaZ','aqa')">
+        <input type="file" id="aqaF" accept=".docx" onchange="handleAQA(this.files[0])"/>
+        <div class="uz-ic">📋</div><div class="uz-tit">AQA Question Bank (.docx)</div>
+        <div class="uz-sub">Drag &amp; drop or click to upload</div>
+        <div class="uz-ok" id="aqaOk" style="display:none"></div><div class="uz-sz" id="aqaSz"></div>
+      </div>
+      <div class="uz" id="tplZ" ondragover="ev(event,'tplZ','ov')" ondragleave="ev(event,'tplZ','')" ondrop="dr(event,'tplZ','tpl')">
+        <input type="file" id="tplF" accept=".docx" onchange="handleTpl(this.files[0])"/>
+        <div class="uz-ic">📄</div><div class="uz-tit">Question Paper Template (.docx)</div>
+        <div class="uz-sub">Optional — upload the exact Model Question Paper file</div>
+        <div class="uz-ok" id="tplOk" style="display:none"></div><div class="uz-sz" id="tplSz"></div>
+      </div>
+    </div>
+    <div class="notice"><span>ℹ️</span><span>Upload your <strong>exact Model Question Paper</strong> (like <em>Model_Question_CT_1_26CYT101-EVS.docx</em>) as the template and this tool fills it in directly — same fonts, table layout and header exactly as your original file. If you skip this, a built-in template of the same layout is used instead. Images, equations and nested tables inside AQA question cells are cloned into the output as-is.</span></div>
+    <div id="parseAlert" style="display:none"></div>
+    <div id="metaRib" style="display:none"></div>
+    <div id="coBlock" style="display:none;margin-top:10px"></div>
+  </div>
+</div>
+
+<div class="card" id="qaCard" style="display:none">
+  <div class="card-hdr"><span>📊</span><h3>Question Bank Summary</h3><span id="qaLbl" style="margin-left:auto;font-size:10px;color:var(--grey5);font-family:var(--fm)"></span></div>
+  <div class="stats-bar" id="statsBar"></div>
+  <div class="tab-bar" id="anaTab">
+    <div class="tab-btn act" onclick="stab('summary')">📈 Summary</div>
+    <div class="tab-btn" onclick="stab('a')">Part A — Summary</div>
+    <div class="tab-btn" onclick="stab('amcq')">Part A (MCQ)</div>
+    <div class="tab-btn" onclick="stab('b')">Part B</div>
+    <div class="tab-btn" onclick="stab('c')">Part C</div>
+  </div>
+  <div class="tab-pane show" id="tab-summary"><div id="tp-summary"></div></div>
+  <div class="tab-pane" id="tab-a"><div id="tp-a"></div></div>
+  <div class="tab-pane" id="tab-amcq"><div id="tp-amcq"></div></div>
+  <div class="tab-pane" id="tab-b"><div id="tp-b"></div></div>
+  <div class="tab-pane" id="tab-c"><div id="tp-c"></div></div>
+</div>
+
+<!-- §2 AI SETTINGS -->
+<div class="sec-hdr"><div class="sec-dot purple">2</div><h2>AI Reframe Settings</h2><span class="sec-tag st-purple">Claude · Gemini · ChatGPT · Groq (Llama) · Offline</span></div>
+<div class="ai-settings-card anim-in">
+  <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px;font-family:var(--fm);margin-bottom:10px">Select AI Provider</div>
+  <div class="ai-provider-tabs">
+    <div class="ai-ptab" id="ptab-claude" onclick="setProvider('claude')">🟠 Claude (Anthropic)</div>
+    <div class="ai-ptab" id="ptab-gemini" onclick="setProvider('gemini')">🔵 Gemini (Google)</div>
+    <div class="ai-ptab" id="ptab-openai" onclick="setProvider('openai')">🟢 ChatGPT (OpenAI)</div>
+    <div class="ai-ptab" id="ptab-groq" onclick="setProvider('groq')">🦙 Groq · Llama</div>
+    <div class="ai-ptab" id="ptab-offline" onclick="setProvider('offline')">⚡ Offline (No API)</div>
+  </div>
+  <div id="ai-key-panel">
+    <div class="ai-key-lbl" id="aiKeyLbl">API Key</div>
+    <div class="ai-key-row">
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+        <input class="ai-key-inp" id="aiKeyInp" type="password" placeholder="Paste your API key here…" oninput="onKeyChange()"/>
+      </div>
+      <button class="ai-test-btn" onclick="testAPIKey()">🔌 Test Connection</button>
+    </div>
+    <div class="ai-status" id="aiStatus"><div class="ai-dot" id="aiDot"></div><span id="aiStatusTxt" style="color:rgba(255,255,255,.35);font-size:10px">No key entered</span></div>
+    <div class="ai-provider-note" id="aiProviderNote"></div>
+  </div>
+  <div id="ai-offline-panel" style="display:none">
+    <div class="offline-info">
+      <strong>⚡ Offline Mode — Rule-based Reframing Engine</strong><br>
+      Rewrites question stems using an academic verb/phrase substitution engine (Define→Describe, Explain→Outline, etc.) and light restructuring.<br>
+      <span style="color:rgba(255,255,255,.35)">No API key or internet needed. Quality is lower than AI providers but always available as a fallback.</span>
+    </div>
+  </div>
+</div>
+
+<!-- §3 DETAILS -->
+<div class="sec-hdr"><div class="sec-dot blue">3</div><h2>Exam Header Details</h2></div>
+<div class="card anim-in">
+  <div class="card-hdr"><span>🎓</span><h3>Exam Identification</h3></div>
+  <div class="card-body">
+    <div class="fr3">
+      <div class="fg"><label>Exam Duration (Month &amp; Year)</label><input class="fi" id="monthDur" placeholder="e.g. September to December 2026"/></div>
+      <div class="fg"><label>Internal Assessment / Cycle Test</label><select class="fsel" id="assessment"><option>I</option><option>II</option><option>III</option></select></div>
+      <div class="fg"><label>Semester</label><select class="fsel" id="semester"><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option><option>VI</option><option>VII</option><option>VIII</option></select></div>
+    </div>
+  </div>
+</div>
+
+<!-- §4 PART A SA -->
+<div class="sec-hdr"><div class="sec-dot blue">4</div><h2>Part A — (Section I) Short Answer Questions</h2><span class="sec-tag st-blue">Q1–Q4 · 4 × 2 = 8 Marks</span></div>
+<div class="card anim-in">
+  <div class="card-hdr"><span>🔵</span><h3>Pick 4 short-answer questions (2 marks each)</h3></div>
+  <div class="card-body" id="partABody"><div class="qpool-empty">Upload AQA file to configure Part A…</div></div>
+</div>
+
+<!-- §5 PART A MCQ -->
+<div class="sec-hdr"><div class="sec-dot gold">5</div><h2>Part A — (Section II) Objective Type (MCQ) Questions</h2><span class="sec-tag st-gold">Q5–Q8 · 4 × 2 = 8 Marks</span></div>
+<div class="card anim-in">
+  <div class="card-hdr"><span>🟡</span><h3>Pick 4 MCQ-style questions (with 4 options + "Justify your answer")</h3></div>
+  <div class="card-body" id="partAMCQBody"><div class="qpool-empty">Upload AQA file to configure Part A (MCQ)…</div></div>
+</div>
+
+<!-- §6 PART B -->
+<div class="sec-hdr"><div class="sec-dot teal">6</div><h2>Part B — Competency Based Questions</h2><span class="sec-tag st-teal">Q9 (a/b) · Q10 (a/b) · OR choice · 2 × 5 = 10 Marks</span></div>
+<div class="card anim-in">
+  <div class="card-hdr"><span>🟢</span><h3>Pick scenario-based questions for Q9(a)/(b) and Q10(a)/(b)</h3></div>
+  <div class="card-body" id="partBBody"><div class="qpool-empty">Upload AQA file to configure Part B…</div></div>
+</div>
+
+<!-- §7 PART C -->
+<div class="sec-hdr"><div class="sec-dot coral">7</div><h2>Part C — Long Answer Questions</h2><span class="sec-tag st-coral">Q11 (a/b) · Q12 (a/b) · OR choice · 2 × 12 = 24 Marks</span></div>
+<div class="card anim-in">
+  <div class="card-hdr"><span>🟣</span><h3>Pick long-answer questions for Q11(a)/(b) and Q12(a)/(b)</h3></div>
+  <div class="card-body" id="partCBody"><div class="qpool-empty">Upload AQA file to configure Part C…</div></div>
+</div>
+
+<!-- §8 GENERATE -->
+<div class="sec-hdr"><div class="sec-dot lime">⚡</div><h2>Generate &amp; Download</h2></div>
+<div class="card anim-in">
+  <div class="card-body">
+    <div class="notice"><span>ℹ️</span><span>Total 16 slots: 4 SA + 4 MCQ (Part A) · 4 (Part B, 2 OR-pairs) · 4 (Part C, 2 OR-pairs). Max Marks: <strong>50</strong> · Duration: 90 minutes.</span></div>
+    <div id="slotProgress" style="display:none"></div>
+    <div id="klConsolidated" style="display:none"></div>
+    <div class="btn-row">
+      <button class="btn btn-teal" id="autoFillBtn" onclick="smartAutoFill()" style="display:none">🎲 Smart Auto-Fill All Slots</button>
+      <button class="btn btn-prim btn-big pulse" id="genBtn" onclick="doGenerate()" disabled>⚡ Generate Question Paper</button>
+      <button class="btn btn-purple" id="bulkAiBtn" onclick="doBulkReframe()" style="display:none">✨ AI-Reframe All Selected</button>
+      <button class="btn btn-sec" id="prvBtn" onclick="togPrv()" style="display:none">👁 Toggle Preview</button>
+    </div>
+    <div id="genAlert" style="display:none"></div>
+  </div>
+</div>
+
+<!-- PREVIEW -->
+<div id="prvSec" style="display:none">
+  <div class="sec-hdr"><div class="sec-dot lime">✓</div><h2>Question Paper Preview</h2></div>
+  <div class="card">
+    <div class="card-body">
+      <div id="qpHdr" style="text-align:center;padding:12px 0 14px;border-bottom:2px solid var(--ink);margin-bottom:14px"></div>
+      <div class="qp-wrap"><table class="qp-tbl" id="qpTbl"></table></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><span>📊</span><h3>Bloom's Taxonomy Distribution</h3></div>
+    <div class="card-body"><div class="bloom-grid" id="bloomCards"></div></div>
+  </div>
+</div>
+
+<!-- DOWNLOAD -->
+<div class="dl-panel" id="dlPanel">
+  <div style="font-size:52px;margin-bottom:12px;filter:drop-shadow(0 0 20px rgba(0,194,168,.4))">✅</div>
+  <h3>Question Paper Ready!</h3>
+  <p id="dlDesc">Cycle Test Question Paper generated successfully.</p>
+  <button class="btn btn-teal btn-big" onclick="dlDocx()">⬇ Download DOCX</button>
+</div>
+</div>
+
+<!-- REPHRASE MODAL -->
+<div class="rph-modal" id="rphModal">
+  <div class="rph-box">
+    <div class="rph-hdr">
+      <span style="font-size:20px">✨</span>
+      <div style="flex:1">
+        <h3>Reframe Question</h3>
+        <div class="rph-hdr-sub" id="rphProviderBadge">Provider: Offline</div>
+      </div>
+      <button class="rph-close" onclick="closeRph()">✕</button>
+    </div>
+    <div class="rph-mode-bar">
+      <div class="rph-mode-btn" id="rphModeOnline" onclick="setRphMode('online')">🌐 Online AI</div>
+      <div class="rph-mode-btn" id="rphModeOffline" onclick="setRphMode('offline')">⚡ Offline</div>
+    </div>
+    <div class="rph-provider-row" id="rphProviderRow">
+      <span class="rph-prov-lbl">Provider:</span>
+      <div class="rph-prov-btn" id="rpb-claude" onclick="setRphProvider('claude')">🟠 Claude</div>
+      <div class="rph-prov-btn" id="rpb-gemini" onclick="setRphProvider('gemini')">🔵 Gemini</div>
+      <div class="rph-prov-btn" id="rpb-openai" onclick="setRphProvider('openai')">🟢 ChatGPT</div>
+      <div class="rph-prov-btn" id="rpb-groq" onclick="setRphProvider('groq')">🦙 Groq/Llama</div>
+      <span id="rphApiStatus" style="margin-left:auto;font-size:10px;font-family:var(--fm);color:var(--grey5)"></span>
+    </div>
+    <div class="rph-style-row">
+      <span class="rph-prov-lbl">Style:</span>
+      <span class="rph-opt act" onclick="setRphStyle(this,'rephrase')">Rephrase</span>
+      <span class="rph-opt" onclick="setRphStyle(this,'simplify')">Simplify</span>
+      <span class="rph-opt" onclick="setRphStyle(this,'formal')">More Formal</span>
+      <span class="rph-opt" onclick="setRphStyle(this,'elaborate')">Elaborate</span>
+      <span class="rph-opt" onclick="setRphStyle(this,'concise')">Concise</span>
+      <button class="rph-gen-btn" onclick="runRephrase()">⚡ Generate</button>
+    </div>
+    <div class="rph-body">
+      <div class="rph-panel">
+        <div class="rph-panel-hdr">📋 Original Question</div>
+        <div class="rph-panel-body" id="rphOrig"></div>
+      </div>
+      <div class="rph-panel">
+        <div class="rph-panel-hdr" id="rphNewHdr">✨ Reframed Version</div>
+        <div id="rphNewWrap"><div class="rph-panel-body" style="color:var(--grey5);font-style:italic">Click ⚡ Generate to reframe…</div></div>
+      </div>
+    </div>
+    <div class="rph-footer">
+      <button class="btn btn-teal" id="rphUseBtn" onclick="useRephrased()" disabled>✅ Use This Version</button>
+      <button class="btn btn-sec" onclick="closeRph()">Cancel</button>
+      <span id="rphStatusBadge" style="font-size:10px;font-family:var(--fm);color:var(--grey5)"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+const WN='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+const TPL_B64='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';
+
+let G={
+  bank:[], meta:{department:'',course_code:'',course_name:''}, coOut:{}, units:[], dbgLog:[], docxBlob:null,
+  slots:{}, /* key -> question object (deep copy, possibly reframed) */
+  pairK:{}, /* 'B_9' -> 'K3' — the shared Knowledge Level locked in for an OR pair (Part B / Part C only) */
+  tplBuf:null, /* uploaded exact Model Question Paper template, optional */
+  imgMap:{}, /* rId -> {b64, ct} extracted from the AQA docx, for cloning images into the output */
+  aqaXd:null, /* keep the parsed AQA XML document alive so cloned nodes (images/equations/tables) remain valid */
+  aiProvider:'offline',
+  apiKeys:{claude:'',gemini:'',openai:'',groq:''},
+  rph:{slotKey:null,origQ:null,rephrasedText:null,style:'rephrase',mode:'offline',provider:'offline'}
+};
+const SLOTS_A=['1','2','3','4'];
+const SLOTS_AMCQ=['5','6','7','8'];
+const SLOTS_B=['9 (a)','9 (b)','10 (a)','10 (b)'];
+const SLOTS_C=['11 (a)','11 (b)','12 (a)','12 (b)'];
+const PAIRS_B=[['9 (a)','9 (b)'],['10 (a)','10 (b)']];
+const PAIRS_C=[['11 (a)','11 (b)'],['12 (a)','12 (b)']];
+
+/* ── UTILS ── */
+const toA=nl=>{const a=[];for(let i=0;i<nl.length;i++)a.push(nl[i]);return a;};
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtB(b){return b<1048576?(b/1024).toFixed(0)+'KB':(b/1048576).toFixed(1)+'MB';}
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
+function uid(){return 'q'+Math.random().toString(36).slice(2,10);}
+function b64ToArrayBuffer(b64){const bin=atob(b64);const len=bin.length;const buf=new Uint8Array(len);for(let i=0;i<len;i++)buf[i]=bin.charCodeAt(i);return buf.buffer;}
+
+/* ── AI PROVIDER SETTINGS ── */
+const provNotes={
+  claude:`Get a key from console.anthropic.com → API Keys. Used to reframe/rephrase questions with Claude.`,
+  gemini:`Get your key from aistudio.google.com → Get API Key (free tier). Note: browser CORS may block some networks — use Groq or Offline if blocked.`,
+  openai:`Get your key from platform.openai.com → API Keys.`,
+  groq:`Get a <strong>free</strong> key from <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a>. Runs Meta's Llama models (default: llama-3.3-70b-versatile) at very high speed — recommended provider for question reframing.`,
+  offline:`No internet required. Uses a rule-based academic phrase engine. Works always.`
+};
+const provLabels={claude:'Anthropic API Key',gemini:'Google Gemini API Key',openai:'OpenAI API Key',groq:'Groq API Key (Llama models)',offline:''};
+const GROQ_MODEL='llama-3.3-70b-versatile';
+
+function setProvider(prov){
+  G.aiProvider=prov;
+  document.querySelectorAll('.ai-ptab').forEach(t=>t.className='ai-ptab');
+  const tab=document.getElementById('ptab-'+prov); if(tab)tab.className=`ai-ptab act-${prov}`;
+  const kp=document.getElementById('ai-key-panel'), op=document.getElementById('ai-offline-panel');
+  if(prov==='offline'){kp.style.display='none';op.style.display='block';}
+  else{
+    kp.style.display='block';op.style.display='none';
+    document.getElementById('aiKeyLbl').textContent=provLabels[prov];
+    document.getElementById('aiKeyInp').value=G.apiKeys[prov]||'';
+    document.getElementById('aiProviderNote').innerHTML=provNotes[prov];
+    document.getElementById('aiStatus').style.display='flex';
+    document.getElementById('aiDot').className='ai-dot';
+    document.getElementById('aiStatusTxt').textContent=G.apiKeys[prov]?'Key entered — click Test Connection':'No key entered';
+    document.getElementById('aiStatusTxt').style.color='rgba(255,255,255,.35)';
+  }
+  const bb=document.getElementById('bulkAiBtn'); if(bb)bb.textContent = prov==='groq'?'🦙 AI-Reframe All Selected (Groq/Llama)':'✨ AI-Reframe All Selected';
+}
+function onKeyChange(){
+  const val=document.getElementById('aiKeyInp').value.trim();
+  G.apiKeys[G.aiProvider]=val;
+  document.getElementById('aiDot').className='ai-dot';
+  document.getElementById('aiStatusTxt').textContent=val?'Key entered — click Test Connection':'No key entered';
+  document.getElementById('aiStatusTxt').style.color='rgba(255,255,255,.35)';
+}
+function showAIStatus(state,msg){
+  const dot=document.getElementById('aiDot');const txt=document.getElementById('aiStatusTxt');
+  dot.className='ai-dot '+(state==='ok'?'ok':state==='err'?'err':state==='spin'?'spin':'');
+  txt.textContent=msg;
+  txt.style.color=state==='ok'?'#4ade80':state==='err'?'#f87171':state==='spin'?'#fbbf24':'rgba(255,255,255,.35)';
+}
+setProvider('offline');
+
+/* ── THEME SWITCHER (persisted via localStorage — this is a standalone downloaded file, not a claude.ai artifact) ── */
+function setTheme(name){
+  try{
+    if(name==='ocean') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme',name);
+    document.querySelectorAll('.theme-dot').forEach(d=>d.classList.toggle('act', d.dataset.t===name));
+    localStorage.setItem('ctqp_theme',name);
+  }catch(e){ console.warn('theme switch failed', e.message); }
+}
+(function initTheme(){
+  let saved='ocean';
+  try{ saved=localStorage.getItem('ctqp_theme')||'ocean'; }catch(e){}
+  setTheme(saved);
+})();
+
+async function testAPIKey(){
+  const prov=G.aiProvider;
+  if(prov==='offline'){showAIStatus('ok','Offline mode — no key needed');return;}
+  const key=G.apiKeys[prov];
+  if(!key){showAIStatus('err','Please enter an API key first');return;}
+  showAIStatus('spin','Testing connection…');
+  try{
+    if(prov==='claude'){
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':key},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:10,messages:[{role:'user',content:'Hi'}]})});
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+      showAIStatus('ok','✅ Claude connected successfully');
+    }else if(prov==='gemini'){
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}]})});
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+      showAIStatus('ok','✅ Gemini connected successfully');
+    }else if(prov==='openai'){
+      const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:5,messages:[{role:'user',content:'Hi'}]})});
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+      showAIStatus('ok','✅ OpenAI connected successfully');
+    }else if(prov==='groq'){
+      const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:GROQ_MODEL,max_tokens:5,messages:[{role:'user',content:'Hi'}]})});
+      if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+      showAIStatus('ok','✅ Groq (Llama) connected successfully');
+    }
+  }catch(e){
+    const isCors=(e.message||'').toLowerCase().includes('failed to fetch');
+    showAIStatus('err','❌ '+(isCors?'Network/CORS blocked — try Groq or Offline mode':e.message));
+  }
+}
+
+/* Unified AI text call. Returns plain text. */
+async function callAIProvider(prov,key,systemMsg,userMsg,maxTokens){
+  if(prov==='claude'){
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':key},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:maxTokens,system:systemMsg,messages:[{role:'user',content:userMsg}]})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+    const d=await r.json(); return (d.content||[]).map(c=>c.text||'').join('').trim();
+  }
+  if(prov==='gemini'){
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:systemMsg+'\n\n'+userMsg}]}]})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+    const d=await r.json(); return (d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
+  }
+  if(prov==='openai'){
+    const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:maxTokens,messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}]})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+    const d=await r.json(); return (d.choices?.[0]?.message?.content||'').trim();
+  }
+  if(prov==='groq'){
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:GROQ_MODEL,max_tokens:maxTokens,temperature:0.6,messages:[{role:'system',content:systemMsg},{role:'user',content:userMsg}]})});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+    const d=await r.json(); return (d.choices?.[0]?.message?.content||'').trim();
+  }
+  throw new Error('Unknown provider');
+}
+
+/* Offline rule-based reframe */
+const OFFLINE_SUBS=[[/\bdefine\b/gi,'Describe'],[/\bexplain\b/gi,'Outline'],[/\bwhat is\b/gi,'What do you understand by'],[/\bwhat are\b/gi,'What do you understand by'],[/\blist\b/gi,'Enumerate'],[/\bdiscuss\b/gi,'Elaborate on'],[/\bwrite\b/gi,'State'],[/\bdescribe\b/gi,'Explain'],[/\bmention\b/gi,'State'],[/\bstate\b/gi,'Specify'],[/\bgive\b/gi,'Provide'],[/\bshow\b/gi,'Demonstrate'],[/\bcompare\b/gi,'Contrast']];
+function offlineReframe(text,style){
+  let t=String(text||'');
+  for(const [re,rep] of OFFLINE_SUBS){ if(re.test(t)){ t=t.replace(re,rep); break; } }
+  if(style==='simplify') t=t.replace(/,\s*which\b/gi,'.').replace(/\butilis(e|ation)\b/gi,'use');
+  if(style==='formal') t=t.replace(/\bdon't\b/gi,'do not').replace(/\bcan't\b/gi,'cannot');
+  if(style==='concise') t=t.split('. ').slice(0,2).join('. ');
+  if(style==='elaborate') t=t+' Support your answer with a relevant example.';
+  return t.trim();
+}
+
+/* ── AQA PARSER (2026 Regulation format: PART A / PART A (MCQ) / PART B (5 mark) / PART C (12 mark), per UNIT) ── */
+function cellTxt(cell){const lines=[];for(const p of cell.getElementsByTagNameNS(WN,'p')){let l='';for(const r of p.getElementsByTagNameNS(WN,'r'))for(const t of r.getElementsByTagNameNS(WN,'t'))l+=t.textContent;for(const m of p.getElementsByTagNameNS(MN,'oMath'))l+=' '+ommlText(m);if(l.trim())lines.push(l.trim());}return lines.join('\n');}
+function rowCells(row){return toA(row.getElementsByTagNameNS(WN,'tc')).map(tc=>cellTxt(tc));}
+function normPort(t){t=(t||'').trim().toUpperCase();return t==='II'?'II':'I';}
+const MN='http://schemas.openxmlformats.org/officeDocument/2006/math';
+const RELN='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+function ommlText(node){let t='';for(const x of node.getElementsByTagNameNS(MN,'t'))t+=x.textContent;for(const x of node.getElementsByTagNameNS(WN,'t'))t+=x.textContent;return t;}
+function tcRichFlags(tc){
+  if(!tc) return {img:false,eq:false,tbl:false};
+  return {
+    img: tc.getElementsByTagNameNS(WN,'drawing').length>0 || tc.getElementsByTagNameNS(WN,'pict').length>0,
+    eq: tc.getElementsByTagNameNS(MN,'oMath').length>0,
+    tbl: tc.getElementsByTagNameNS(WN,'tbl').length>0
+  };
+}
+async function buildImgMap(zip){
+  const map={};
+  try{
+    const relsX=await zip.file('word/_rels/document.xml.rels').async('string');
+    const rDoc=new DOMParser().parseFromString(relsX,'application/xml');
+    for(const rel of toA(rDoc.getElementsByTagName('Relationship'))){
+      if(!(rel.getAttribute('Type')||'').includes('/image')) continue;
+      const rId=rel.getAttribute('Id'), tgt=rel.getAttribute('Target');
+      const path=tgt.startsWith('/')?tgt.slice(1):('word/'+tgt.replace(/^\.\.\//,''));
+      const f=zip.file(path)||zip.file('word/media/'+tgt.split('/').pop());
+      if(f){
+        const b64=await f.async('base64');
+        const ext=(tgt.split('.').pop()||'png').toLowerCase();
+        const ct = ext==='png'?'image/png':ext==='gif'?'image/gif':ext==='bmp'?'image/bmp':'image/jpeg';
+        map[rId]={b64,ct,ext:ext==='jpeg'?'jpg':ext};
+      }
+    }
+  }catch(e){ console.warn('buildImgMap failed', e.message); }
+  return map;
+}
+
+async function parseAQA(ab){
+  const zip=await JSZip.loadAsync(ab);
+  const xs=await zip.file('word/document.xml').async('string');
+  const xd=new DOMParser().parseFromString(xs,'application/xml');
+  G.bank=[];G.meta={department:'',course_code:'',course_name:''};G.coOut={};
+  G.imgMap=await buildImgMap(zip);
+  G.aqaXd=xd; /* keep alive so cloned nodes stay valid at generation time */
+  const tbls=xd.getElementsByTagNameNS(WN,'tbl');
+
+  /* --- meta (department / course code / course name) from first tables --- */
+  let metaTxt='';
+  for(let ti=0;ti<Math.min(tbls.length,2);ti++){
+    for(const row of tbls[ti].getElementsByTagNameNS(WN,'tr')){
+      const cs=rowCells(row);
+      for(let ci=0;ci<cs.length-1;ci++){
+        const kk=cs[ci].toLowerCase().replace(/[:\s]+/g,''); const vv=(cs[ci+1]||'').trim();
+        if(kk.includes('department')&&vv&&!G.meta.department)G.meta.department=vv;
+        if(kk.includes('coursecode')&&vv&&!G.meta.course_code)G.meta.course_code=vv;
+        if(kk.includes('coursename')&&vv&&!G.meta.course_name)G.meta.course_name=vv;
+      }
+    }
+  }
+  /* --- CO statements (CO1 .. CO5 -> outcome text) anywhere in doc --- */
+  for(let ti=0;ti<tbls.length;ti++){
+    for(const row of tbls[ti].getElementsByTagNameNS(WN,'tr')){
+      const cs=rowCells(row);
+      for(let ci=0;ci<cs.length-1;ci++){
+        const c0=cs[ci].trim();
+        if(/^CO\d+$/i.test(c0)){
+          const vv=(cs[ci+1]||'').trim();
+          if(vv && !/^K-?\d*$/i.test(vv) && vv.length>3) G.coOut[c0.toUpperCase()]=vv;
+        }
+      }
+    }
+  }
+
+  /* --- main question extraction --- */
+  let curUnit=null, curSection=null; // section: A | AMCQ | B | C
+  const seen={};
+  for(let ti=0;ti<tbls.length;ti++){
+    const rows=toA(tbls[ti].getElementsByTagNameNS(WN,'tr'));
+    for(const row of rows){
+      const tcs=toA(row.getElementsByTagNameNS(WN,'tc'));
+      const cs=tcs.map(tc=>cellTxt(tc));
+      const rowTxt=cs.join(' | ');
+      const upper=rowTxt.toUpperCase();
+      const um=upper.match(/UNIT\s*[-–]?\s*(\d+)/);
+      if(um) curUnit='UNIT-'+um[1];
+
+      const isMcqHdr=/PART\s*[-–]{1,2}\s*A\s*\(\s*MCQ/i.test(upper);
+      const isAHdr=!isMcqHdr && /PART\s*[-–]{1,2}\s*A\b/i.test(upper);
+      const isBHdr=/PART\s*[-–]{1,2}\s*B\b/i.test(upper);
+      const isCHdr=/PART\s*[-–]{1,2}\s*C\b/i.test(upper);
+      if(isMcqHdr)curSection='AMCQ'; else if(isAHdr)curSection='A'; else if(isBHdr)curSection='B'; else if(isCHdr)curSection='C';
+
+      const isLabelRow = isMcqHdr||isAHdr||isBHdr||isCHdr ||
+        /Q\.?\s*NO/i.test(upper) || /KNOWLEDGE\s*LEVEL/i.test(upper) || /COMPETENCY\s*BASED/i.test(upper) ||
+        (um && cs.length<=4) || (upper.includes('CO')&&upper.includes('QUESTIONS')&&upper.includes('MARK'));
+      if(isLabelRow) continue;
+      if(!curUnit || !curSection) continue;
+
+      const q=extractRow(cs,tcs,curUnit,curSection);
+      if(q){
+        const dk=`${q.unit}_${q.section}_${q.text.substring(0,50)}`;
+        if(!seen[dk]){seen[dk]=true;q.uid=uid();G.bank.push(q);}
+      }
+    }
+  }
+  G.units=[...new Set(G.bank.map(q=>q.unit))].sort((a,b)=>+(a.split('-')[1])-+(b.split('-')[1]));
+}
+
+function extractRow(cs,tcs,unit,section){
+  let co=null,k=null,portion='I',level='',qText='',qCellIdx=-1;
+  for(let i=0;i<cs.length;i++){
+    const t=(cs[i]||'').trim();
+    if(!t) continue;
+    if(/^CO\s*\d+$/i.test(t)){ co=t.replace(/\s+/g,'').toUpperCase(); continue; }
+    if(/^K\s*\d+$/i.test(t)){ k=t.replace(/\s+/g,'').toUpperCase(); continue; }
+    if(/^(I|II)$/i.test(t)){ portion=normPort(t); continue; }
+    if(/^[EMD]$/i.test(t)){ level=t.toUpperCase(); continue; }
+    if(/^\d{1,2}$/.test(t)) continue; // seq no
+    if(t.length>qText.length){ qText=t; qCellIdx=i; } // longest remaining text cell = question content
+  }
+  if(!co||!k||!qText) return null;
+  const marks = section==='B' ? 5 : section==='C' ? 12 : 2;
+  const rich = tcRichFlags(tcs[qCellIdx]);
+  const q={unit,section,co,k,marks,portion,level,text:qText,options:[],scenario:'',
+    has_image:rich.img, has_equation:rich.eq, has_table:rich.tbl,
+    _qTcNode: (rich.img||rich.eq||rich.tbl) ? tcs[qCellIdx] : null};
+  if(section==='AMCQ'){
+    const parsed=parseMcqText(qText);
+    q.text=parsed.stem; q.options=parsed.options;
+  }else if(section==='B'){
+    const parsed=parseScenarioText(qText);
+    q.scenario=parsed.scenario; q.text=parsed.question;
+  }
+  return q;
+}
+function parseMcqText(raw){
+  /* Strip the "(Justify Your Answer)" instruction wherever it sits (often inline, at the end of the
+     stem's own sentence) instead of dropping the whole line, which used to eat the real question text. */
+  let lines=String(raw).split('\n').map(s=>s.replace(/\(?\s*justify\s+your\s+answer\s*\)?\.?/gi,' ').replace(/\s{2,}/g,' ').trim()).filter(Boolean);
+  if(!lines.length) return {stem:'',options:[]};
+  const labelRe=/^\(?([a-dA-D])\)?[\.\)]\s+/;
+  const stripLabel=l=>l.replace(labelRe,'').trim();
+  const labeledLines=lines.filter(l=>labelRe.test(l));
+  let stem,options;
+  if(labeledLines.length>=2){
+    /* explicit "a) ..." / "b) ..." style options are present */
+    const firstIdx=lines.findIndex(l=>labelRe.test(l));
+    stem=lines.slice(0,firstIdx).join(' ');
+    options=lines.slice(firstIdx).filter(l=>labelRe.test(l)).map(stripLabel);
+  }else if(lines.length>=2 && lines.length<=6){
+    /* Word auto-numbered list style: no literal "a)" text in the XML — first line is the stem,
+       every following short paragraph is one option, in document order. */
+    stem=lines[0];
+    options=lines.slice(1).map(stripLabel);
+  }else{
+    stem=lines.join(' ');
+    options=[];
+  }
+  return {stem:stem.trim(),options};
+}
+function parseScenarioText(raw){
+  const lines=String(raw).split('\n').map(s=>s.trim()).filter(Boolean);
+  let scenario='',question='';
+  for(const line of lines){
+    const sm=line.match(/^Scenario\s*:\s*(.*)$/i);
+    const qm=line.match(/^Question\s*:\s*(.*)$/i);
+    if(sm) scenario=(scenario?scenario+' ':'')+sm[1];
+    else if(qm) question=(question?question+' ':'')+qm[1];
+    else question=(question?question+' ':'')+line;
+  }
+  return {scenario,question:question||lines.join(' ')};
+}
+
+/* ── DRAG/DROP + UPLOAD ── */
+function ev(e,id,cls){e.preventDefault();const el=document.getElementById(id);el.className='uz'+(cls?' '+cls:'');}
+function dr(e,id,which){e.preventDefault();document.getElementById(id).className='uz';const f=e.dataTransfer.files[0];if(!f||!f.name.toLowerCase().endsWith('.docx'))return;if(which==='tpl')handleTpl(f);else handleAQA(f);}
+
+async function handleTpl(file){
+  if(!file)return;
+  G.tplBuf=await file.arrayBuffer();
+  document.getElementById('tplZ').classList.add('done');
+  document.getElementById('tplOk').style.display='block';
+  document.getElementById('tplOk').textContent='✓ '+file.name;
+  document.getElementById('tplSz').textContent=fmtB(file.size);
+}
+
+async function handleAQA(file){
+  if(!file)return;
+  showAlert('parseAlert','info','⏳ Parsing '+file.name+'…');
+  try{
+    await parseAQA(await file.arrayBuffer());
+    G.slots={}; G.pairK={}; /* fresh AQA — any earlier selections/knowledge-level locks no longer apply */
+    document.getElementById('aqaZ').classList.add('done');
+    document.getElementById('aqaOk').style.display='block';
+    document.getElementById('aqaOk').textContent='✓ '+file.name;
+    document.getElementById('aqaSz').textContent=fmtB(file.size);
+    const cA=G.bank.filter(q=>q.section==='A').length, cM=G.bank.filter(q=>q.section==='AMCQ').length;
+    const cB=G.bank.filter(q=>q.section==='B').length, cC=G.bank.filter(q=>q.section==='C').length;
+    showAlert('parseAlert','ok',`✅ Loaded ${G.bank.length} questions across ${G.units.length} unit(s) — Part A: ${cA} · Part A(MCQ): ${cM} · Part B: ${cB} · Part C: ${cC}`);
+    document.getElementById('bankPill').className='tb-pill ok';
+    document.getElementById('bankPill').textContent=G.bank.length+' questions loaded';
+    renderMeta();renderSummaryCard();
+    buildSlotGroup('partABody','A',SLOTS_A,2,'pa-qnum');
+    buildSlotGroup('partAMCQBody','AMCQ',SLOTS_AMCQ,2,'pa-qnum mcq');
+    buildPairedSlotGroup('partBBody','B',PAIRS_B,5,'pa-qnum b');
+    buildPairedSlotGroup('partCBody','C',PAIRS_C,12,'pa-qnum c');
+    updateKLevelConsolidated();
+    chkReady();chkGenReady();setStep(2);
+  }catch(ex){showAlert('parseAlert','err','❌ Parse failed: '+ex.message);console.error(ex);}
+}
+function chkReady(){document.getElementById('genBtn').disabled=!(G.bank.length>0);}
+function showAlert(id,type,msg){const el=document.getElementById(id);const ic={info:'ℹ️',ok:'✅',err:'❌',warn:'⚠️'};const cl={info:'a-info',ok:'a-ok',err:'a-err',warn:'a-warn'};el.style.display='flex';el.className='alert '+cl[type];el.innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;}
+
+function renderMeta(){
+  const el=document.getElementById('metaRib');el.style.display='flex';el.className='meta-rib';
+  el.innerHTML=[['Department',G.meta.department||'—'],['Course Code',G.meta.course_code||'—'],['Course Name',G.meta.course_name||'—'],['CO Statements',Object.keys(G.coOut).length],['Units',G.units.join(', ')||'—']]
+    .map(([k,v])=>`<div class="mr-item"><div class="mr-k">${esc(k)}</div><div class="mr-v" title="${esc(String(v))}">${esc(String(v))}</div></div>`).join('');
+  const cb=document.getElementById('coBlock');
+  if(Object.keys(G.coOut).length){cb.style.display='block';cb.innerHTML='<div class="fg"><label>Course Outcome Statements</label></div>'+
+    Object.entries(G.coOut).map(([co,txt])=>`<div style="font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--grey2)"><b style="color:var(--purple)">${esc(co)}:</b> ${esc(txt)}</div>`).join('');}
+}
+
+/* ── SUMMARY / ANALYSIS TABS ── */
+function stab(name){
+  document.querySelectorAll('#anaTab .tab-btn').forEach(b=>b.classList.remove('act'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('show'));
+  event.currentTarget.classList.add('act');
+  document.getElementById('tab-'+name).classList.add('show');
+}
+function renderSummaryCard(){
+  document.getElementById('qaCard').style.display='block';
+  document.getElementById('qaLbl').textContent=G.bank.length+' total questions';
+  const sb=document.getElementById('statsBar');
+  const cA=G.bank.filter(q=>q.section==='A').length, cM=G.bank.filter(q=>q.section==='AMCQ').length;
+  const cB=G.bank.filter(q=>q.section==='B').length, cC=G.bank.filter(q=>q.section==='C').length;
+  const pI=G.bank.filter(q=>q.portion==='I').length, pII=G.bank.filter(q=>q.portion==='II').length;
+  sb.innerHTML=[['Total',G.bank.length],['Part A',cA],['Part A (MCQ)',cM],['Part B',cB],['Part C',cC],['Portion I',pI],['Portion II',pII],['Units',G.units.length]]
+    .map(([k,v])=>`<div class="sb-item"><div class="sb-k">${esc(k)}</div><div class="sb-v">${v}</div></div>`).join('');
+
+  /* --- Summary tab: unit x part table + portion breakdown --- */
+  let html='<table class="sum-tbl"><thead><tr><th style="text-align:left">Unit</th><th>Part A (SA)</th><th>Part A (MCQ)</th><th>Part B</th><th>Part C</th><th>Portion I</th><th>Portion II</th><th>Total</th></tr></thead><tbody>';
+  let tot={A:0,AMCQ:0,B:0,C:0,I:0,II:0,all:0};
+  for(const u of G.units){
+    const qs=G.bank.filter(q=>q.unit===u);
+    const a=qs.filter(q=>q.section==='A').length, m=qs.filter(q=>q.section==='AMCQ').length, b=qs.filter(q=>q.section==='B').length, c=qs.filter(q=>q.section==='C').length;
+    const pi=qs.filter(q=>q.portion==='I').length, pii=qs.filter(q=>q.portion==='II').length;
+    tot.A+=a;tot.AMCQ+=m;tot.B+=b;tot.C+=c;tot.I+=pi;tot.II+=pii;tot.all+=qs.length;
+    html+=`<tr><td class="lbl">${esc(u)}</td><td>${a}</td><td>${m}</td><td>${b}</td><td>${c}</td><td>${pi}</td><td>${pii}</td><td class="tot">${qs.length}</td></tr>`;
+  }
+  html+=`<tr class="totrow"><td class="lbl">TOTAL</td><td>${tot.A}</td><td>${tot.AMCQ}</td><td>${tot.B}</td><td>${tot.C}</td><td>${tot.I}</td><td>${tot.II}</td><td>${tot.all}</td></tr>`;
+  html+='</tbody></table>';
+  html+='<div style="margin-top:14px" class="notice"><span>📌</span><span>CO coverage: '+(Object.keys(G.coOut).length?Object.keys(G.coOut).join(', '):'No CO statements detected in the AQA header table')+'</span></div>';
+  document.getElementById('tp-summary').innerHTML=html;
+
+  renderSectionSummary('tp-a','A','Part A — Short Answer (2 Marks)');
+  renderSectionSummary('tp-amcq','AMCQ','Part A (MCQ) — Objective Type (2 Marks)');
+  renderSectionSummary('tp-b','B','Part B — Competency Based (5 Marks)');
+  renderSectionSummary('tp-c','C','Part C — Long Answer (12 Marks)');
+}
+function renderSectionSummary(elId,section,title){
+  const qs=G.bank.filter(q=>q.section===section);
+  let html=`<div style="font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:8px">${esc(title)} — ${qs.length} question(s) available</div>`;
+  html+='<table class="sum-tbl"><thead><tr><th style="text-align:left">Unit</th><th>Count</th><th>Portion I</th><th>Portion II</th><th>COs</th></tr></thead><tbody>';
+  for(const u of G.units){
+    const uq=qs.filter(q=>q.unit===u);
+    const cos=[...new Set(uq.map(q=>q.co))].join(', ')||'—';
+    html+=`<tr><td class="lbl">${esc(u)}</td><td>${uq.length}</td><td>${uq.filter(q=>q.portion==='I').length}</td><td>${uq.filter(q=>q.portion==='II').length}</td><td>${esc(cos)}</td></tr>`;
+  }
+  html+='</tbody></table>';
+  document.getElementById(elId).innerHTML=html;
+}
+
+/* ── SLOT GROUP BUILDER (used for Part A, Part A MCQ, Part B, Part C) ── */
+const SECTION_LABEL={A:'Part A',AMCQ:'Part A (MCQ)',B:'Part B',C:'Part C'};
+const SECTION_MARKS={A:2,AMCQ:2,B:5,C:12};
+
+function slotDisplayLabel(section,slotKey){
+  if(section==='A') return 'Q'+slotKey;
+  if(section==='AMCQ') return 'Q'+slotKey;
+  return 'Q'+slotKey;
+}
+function buildSlotGroup(containerId,section,slotKeys,marks,qnumClass){
+  const el=document.getElementById(containerId);
+  if(!G.bank.some(q=>q.section===section)){el.innerHTML='<div class="qpool-empty">No '+esc(SECTION_LABEL[section])+' questions found in the uploaded AQA file.</div>';return;}
+  let html='';
+  for(let i=0;i<slotKeys.length;i++){
+    const key=slotKeys[i];
+    const orPair=(section==='B'||section==='C') && i%2===1; // show OR divider before b-slots
+    if(orPair) html+='<div style="text-align:center;font-family:var(--fm);font-weight:800;color:var(--sky);letter-spacing:3px;margin:4px 0">— OR —</div>';
+    html+=renderSlotRow(section,key,marks,qnumClass);
+  }
+  el.innerHTML=html;
+}
+function pairIdOf(section,key){ const m=String(key).match(/^\d+/); return section+'_'+(m?m[0]:key); }
+function buildPairedSlotGroup(containerId,section,pairs,marks,qnumClass){
+  const el=document.getElementById(containerId);
+  if(!G.bank.some(q=>q.section===section)){el.innerHTML='<div class="qpool-empty">No '+esc(SECTION_LABEL[section])+' questions found in the uploaded AQA file.</div>';return;}
+  const availableKs=[...new Set(G.bank.filter(q=>q.section===section).map(q=>q.k))].sort();
+  let html='';
+  for(const [keyA,keyB] of pairs){
+    const pairNum=keyA.match(/^\d+/)[0];
+    const pairId=section+'_'+pairNum;
+    const cur=G.pairK[pairId]||'';
+    html+=`<div class="pair-card" id="pair_${pairId}">
+      <div class="pair-hdr">
+        <div class="pair-title">Q${pairNum} — OR pair · (a) and (b) must share one Knowledge Level</div>
+        <div class="fg" style="min-width:240px">
+          <label>Knowledge Level for Q${pairNum} (a) &amp; (b)</label>
+          <select class="fsel" id="pairk_${pairId}" onchange="setPairK('${section}','${pairNum}',this.value)">
+            <option value="">— choose level —</option>
+            ${availableKs.map(k=>`<option value="${esc(k)}" ${k===cur?'selected':''}>${esc(k)} — ${esc((BLOOM_DESC[k]||'').split(' — ')[0]||k)}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="pair-body">
+        ${renderSlotRow(section,keyA,marks,qnumClass)}
+        <div style="text-align:center;font-family:var(--fm);font-weight:800;color:var(--sky);letter-spacing:3px;margin:2px 0 8px">— OR —</div>
+        ${renderSlotRow(section,keyB,marks,qnumClass)}
+      </div>
+    </div>`;
+  }
+  el.innerHTML=html;
+}
+function setPairK(section,pairNum,kval){
+  const pairId=section+'_'+pairNum;
+  G.pairK[pairId]=kval||null;
+  const keysInPair=(section==='B'?SLOTS_B:SLOTS_C).filter(k=>k.startsWith(pairNum+' ('));
+  for(const key of keysInPair){
+    delete G.slots[section+'|'+key]; // previous pick may no longer match the new Knowledge Level
+    const slotId=section+'__'+key.replace(/[^a-zA-Z0-9]/g,'');
+    const box=document.getElementById('selbox_'+slotId); if(box) box.innerHTML=slotSelectedBoxHTML(section,key);
+    const usel=document.getElementById('unitsel_'+slotId);
+    if(usel && usel.value) onUnitChange(section,key);
+    else{
+      const ch=document.getElementById('chooser_'+slotId); if(ch) ch.innerHTML='';
+      const av=document.getElementById('avail_'+slotId); if(av) av.innerHTML='';
+    }
+  }
+  chkGenReady();
+  updateKLevelConsolidated();
+}
+function updateKLevelConsolidated(){
+  const el=document.getElementById('klConsolidated'); if(!el) return;
+  const pairs=[['B','9'],['B','10'],['C','11'],['C','12']];
+  const anyBank=G.bank.length>0;
+  if(!anyBank){ el.style.display='none'; return; }
+  el.style.display='block';
+  el.innerHTML=`<div class="kl-consolidated"><div class="kl-title">📐 Knowledge Level — Consolidated (Part B &amp; Part C)</div><div class="kl-badges">${
+    pairs.map(([s,n])=>{ const k=G.pairK[s+'_'+n]; return `<span class="kl-badge${k?' set':''}">Q${n}: ${k?esc(k):'not set'}</span>`; }).join('')
+  }</div></div>`;
+}
+function renderSlotRow(section,key,marks,qnumClass){
+  const slotId=section+'__'+key.replace(/[^a-zA-Z0-9]/g,'');
+  const units=G.units.filter(u=>G.bank.some(q=>q.unit===u&&q.section===section));
+  return `<div class="pa-row" id="row_${slotId}">
+    <div class="pa-row-hdr">
+      <div class="pa-qnum ${qnumClass.split(' ').slice(1).join(' ')}">${esc(slotDisplayLabel(section,key))}</div>
+      <div class="pa-qtitle">${esc(SECTION_LABEL[section])} — Q${esc(key)}</div>
+      <span class="pa-marks-badge">${marks} Marks</span>
+    </div>
+    <div class="pa-body">
+      <div class="pa-unit-sel">
+        <div class="fg"><label>Unit</label>
+          <select class="fsel" id="unitsel_${slotId}" onchange="onUnitChange('${section}','${key}')">
+            <option value="">— choose unit —</option>
+            ${units.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="pa-avail" id="avail_${slotId}"></div>
+      </div>
+      <div>
+        <div id="chooser_${slotId}"></div>
+        <div id="selbox_${slotId}">${slotSelectedBoxHTML(section,key)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+function onUnitChange(section,key){
+  const slotId=section+'__'+key.replace(/[^a-zA-Z0-9]/g,'');
+  const unit=document.getElementById('unitsel_'+slotId).value;
+  const availEl=document.getElementById('avail_'+slotId);
+  if(!unit){availEl.innerHTML='';document.getElementById('chooser_'+slotId).innerHTML='';return;}
+  const isPaired=(section==='B'||section==='C');
+  const pairK=isPaired?G.pairK[pairIdOf(section,key)]:null;
+  if(isPaired && !pairK){
+    availEl.innerHTML=`<span class="av av-warn">choose a Knowledge Level above first</span>`;
+    document.getElementById('chooser_'+slotId).innerHTML='<div class="qpool-empty">Choose a Knowledge Level for this Q pair above — only questions at that level will be offered here, for (a) and (b) alike.</div>';
+    return;
+  }
+  let pool=G.bank.filter(q=>q.section===section && q.unit===unit && !isQUsedElsewhere(q.uid,section,key));
+  if(pairK) pool=pool.filter(q=>q.k===pairK);
+  availEl.innerHTML = pool.length ? `<span class="av av-good">${pool.length} available${pairK?' at '+esc(pairK):''}</span>` : `<span class="av av-warn">none available${pairK?' at '+esc(pairK):''} in this unit</span>`;
+  document.getElementById('chooser_'+slotId).innerHTML = renderChooser(section,key,unit,pool);
+}
+function isQUsedElsewhere(qUid,section,exceptKey){
+  for(const [k,v] of Object.entries(G.slots)){
+    if(v && v._srcUid===qUid && !(k===section+'|'+exceptKey)) return true;
+  }
+  return false;
+}
+function renderChooser(section,key,unit,pool){
+  const slotId=section+'__'+key.replace(/[^a-zA-Z0-9]/g,'');
+  if(!pool.length) return '<div class="qpool-empty">No unused questions available for this unit.</div>';
+  return `<div class="qchooser open" id="qch_${slotId}">
+    <div class="qch-hdr" onclick="document.getElementById('qch_${slotId}').classList.toggle('open')">
+      <span class="qch-title">Choose a question (${pool.length})</span><span class="qch-toggle">▾</span>
+    </div>
+    <div class="qch-body"><div class="qpool">
+      ${pool.map(q=>qCardHTML(q,section,key)).join('')}
+    </div></div>
+  </div>`;
+}
+function richBadges(q){
+  let b='';
+  if(q.has_image) b+='<span class="rich-badge">🖼️ Image</span>';
+  if(q.has_equation) b+='<span class="rich-badge">➗ Equation</span>';
+  if(q.has_table) b+='<span class="rich-badge">📊 Table</span>';
+  return b;
+}
+function qCardHTML(q,section,key){
+  const portCls = q.portion==='II' ? 'qm-portion p2' : 'qm-portion';
+  let preview=q.text;
+  if(q.section==='AMCQ'&&q.options.length) preview += '  ['+q.options.length+' options]';
+  if(q.section==='B'&&q.scenario) preview = 'Scenario: '+q.scenario+' — '+q.text;
+  return `<div class="qcard" onclick='selectQuestion(${JSON.stringify(section)},${JSON.stringify(key)},${JSON.stringify(q.uid)})'>
+    <div class="qcard-q">${esc(preview)}</div>
+    <div class="qcard-meta">
+      <span class="qm-unit">${esc(q.unit)}</span>
+      <span class="qm-co">${esc(q.co)}</span>
+      <span class="qm-k">${esc(q.k)}</span>
+      <span class="${portCls}">Portion ${esc(q.portion)}</span>
+      ${richBadges(q)}
+    </div>
+  </div>`;
+}
+function selectQuestion(section,key,qUid){
+  const q=G.bank.find(x=>x.uid===qUid); if(!q)return;
+  const {_qTcNode, ...plain}=q;
+  const copy=JSON.parse(JSON.stringify(plain));
+  copy._qTcNode=_qTcNode||null; /* live DOM reference — kept as-is, cloned (not mutated) at generation time */
+  copy._srcUid=q.uid;
+  G.slots[section+'|'+key]=copy;
+  const slotId=section+'__'+key.replace(/[^a-zA-Z0-9]/g,'');
+  document.getElementById('selbox_'+slotId).innerHTML=slotSelectedBoxHTML(section,key);
+  const ch=document.getElementById('qch_'+slotId); if(ch)ch.classList.remove('open');
+  chkGenReady();
+}
+function removeSlot(section,key){
+  delete G.slots[section+'|'+key];
+  const slotId=section+'__'+key.replace(/[^a-zA-Z0-9]/g,'');
+  document.getElementById('selbox_'+slotId).innerHTML=slotSelectedBoxHTML(section,key);
+  chkGenReady();
+}
+function slotSelectedBoxHTML(section,key){
+  const q=G.slots[section+'|'+key];
+  if(!q) return '<div class="nosel-box">No question selected yet — choose a unit above.</div>';
+  const isRich = q.has_image||q.has_equation||q.has_table;
+  let body='';
+  if(isRich){
+    body = esc(q.text)+' <span style="color:var(--grey5);font-style:italic">(original formatting — image/equation/table — will be cloned as-is into the output)</span>';
+  }else if(q.section==='AMCQ'){
+    body = esc(q.text);
+    if(q.options.length) body += '<div class="sel-q-opts">'+q.options.map((o,i)=>String.fromCharCode(97+i)+') '+esc(o)).join('<br>')+'</div><div style="margin-top:4px;font-style:italic;font-size:11px;color:var(--grey6)">Justify your answer.</div>';
+  }else if(q.section==='B'){
+    body = (q.scenario?'<b>Scenario:</b> '+esc(q.scenario)+'<br>':'')+esc(q.text);
+  }else{
+    body = esc(q.text);
+  }
+  return `<div class="sel-q-box">
+    <div class="sel-q-txt">${body}</div>
+    <div class="sel-q-meta">
+      <span class="qm-unit">${esc(q.unit)}</span><span class="qm-co">${esc(q.co)}</span><span class="qm-k">${esc(q.k)}</span>
+      <span class="qm-portion${q.portion==='II'?' p2':''}">Portion ${esc(q.portion)}</span>
+      ${richBadges(q)}
+    </div>
+    <div class="sel-q-actions">
+      <button class="btn btn-purple" onclick='openRph(${JSON.stringify(section)},${JSON.stringify(key)})' ${isRich?'disabled title="Contains image/equation/table — reframe not available"':''}>✨ AI Reframe</button>
+      <button class="btn btn-sec" onclick="removeSlot('${section}','${key}')">✕ Remove</button>
+    </div>
+  </div>`;
+}
+function chkGenReady(){
+  const anySel=Object.keys(G.slots).length>0;
+  document.getElementById('bulkAiBtn').style.display=anySel?'inline-flex':'none';
+  updateSlotProgress();
+}
+function updateSlotProgress(){
+  const el=document.getElementById('slotProgress');
+  if(!el) return;
+  if(!G.bank.length){ el.style.display='none'; return; }
+  const filled=ALL_SLOT_KEYS.filter(k=>G.slots[k]).length;
+  const total=ALL_SLOT_KEYS.length;
+  const pct=Math.round(filled/total*100);
+  const usedUidsArr=Object.values(G.slots).map(q=>q&&q._srcUid).filter(Boolean);
+  const dupCount=usedUidsArr.length-new Set(usedUidsArr).size;
+  el.style.display='block';
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
+    <div style="flex:1;height:8px;background:var(--grey2);border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--sky3),var(--teal));transition:width .3s"></div></div>
+    <span style="font-size:11px;font-weight:700;font-family:var(--fm);color:var(--grey6);white-space:nowrap">${filled}/${total} slots configured</span>
+  </div>${dupCount>0?`<div style="font-size:10.5px;font-weight:700;font-family:var(--fm);color:var(--coral);margin-top:2px">⚠ ${dupCount} question(s) reused in more than one slot — check before generating</div>`:''}`;
+  const afb=document.getElementById('autoFillBtn'); if(afb) afb.style.display = filled<total ? 'inline-flex' : 'none';
+}
+function smartAutoFill(){
+  if(!G.bank.length) return;
+  const usedUids=new Set(Object.values(G.slots).map(q=>q&&q._srcUid).filter(Boolean));
+  let unitCursor=0, filledCount=0;
+
+  function placeOne(section,key,pairK){
+    const slotKey=section+'|'+key;
+    if(G.slots[slotKey]){ unitCursor++; return; } // never overwrite an existing manual choice
+    let picked=null;
+    for(let attempt=0; attempt<G.units.length && !picked; attempt++){
+      const unit=G.units[(unitCursor+attempt)%G.units.length];
+      const pool=shuf(G.bank.filter(q=>q.section===section && q.unit===unit && !usedUids.has(q.uid) && (!pairK||q.k===pairK)));
+      if(pool.length) picked=pool[0];
+    }
+    if(!picked){
+      const pool=shuf(G.bank.filter(q=>q.section===section && !usedUids.has(q.uid) && (!pairK||q.k===pairK)));
+      if(pool.length) picked=pool[0];
+    }
+    if(picked){
+      const {_qTcNode,...plain}=picked;
+      const copy=JSON.parse(JSON.stringify(plain));
+      copy._qTcNode=_qTcNode||null; copy._srcUid=picked.uid;
+      G.slots[slotKey]=copy;
+      usedUids.add(picked.uid);
+      filledCount++;
+      const slotId=section+'__'+key.replace(/[^a-zA-Z0-9]/g,'');
+      const usel=document.getElementById('unitsel_'+slotId);
+      if(usel){ usel.value=picked.unit; onUnitChange(section,key); }
+      const box=document.getElementById('selbox_'+slotId);
+      if(box) box.innerHTML=slotSelectedBoxHTML(section,key);
+    }
+    unitCursor++;
+  }
+
+  /* Part A & Part A (MCQ) — no Knowledge Level pairing constraint */
+  for(const [section,keys] of [['A',SLOTS_A],['AMCQ',SLOTS_AMCQ]]){
+    for(const key of keys) placeOne(section,key,null);
+  }
+
+  /* Part B & Part C — (a) and (b) of each OR pair MUST share one Knowledge Level */
+  for(const [section,pairs] of [['B',PAIRS_B],['C',PAIRS_C]]){
+    for(const [keyA,keyB] of pairs){
+      const pairNum=keyA.match(/^\d+/)[0], pairId=section+'_'+pairNum;
+      if(G.slots[section+'|'+keyA] && G.slots[section+'|'+keyB]){ unitCursor+=2; continue; } // pair already complete
+      let pairK=G.pairK[pairId];
+      if(!pairK){
+        const counts={};
+        G.bank.filter(q=>q.section===section && !usedUids.has(q.uid)).forEach(q=>{counts[q.k]=(counts[q.k]||0)+1;});
+        const candidates=Object.entries(counts).filter(([,c])=>c>=2).map(([k])=>k);
+        if(candidates.length){
+          pairK=shuf(candidates)[0];
+          G.pairK[pairId]=pairK;
+          const psel=document.getElementById('pairk_'+pairId); if(psel) psel.value=pairK;
+        }
+      }
+      if(!pairK) continue; // no Knowledge Level has 2+ unused questions available — leave for manual pick
+      placeOne(section,keyA,pairK);
+      placeOne(section,keyB,pairK);
+    }
+  }
+
+  chkGenReady();
+  updateKLevelConsolidated();
+  if(filledCount>0) showAlert('genAlert','ok',`🎲 Smart Auto-Fill placed ${filledCount} question(s) into empty slots, spread across units — Part B/C pairs were kept at a single matching Knowledge Level. Review your choices below before generating.`);
+  else showAlert('genAlert','info','All slots were already filled — nothing to auto-fill.');
+}
+
+/* ── REPHRASE MODAL ── */
+function slotQText(q){
+  if(!q) return '';
+  if(q.section==='AMCQ'){
+    let t=q.text;
+    if(q.options.length) t+='\n'+q.options.map((o,i)=>String.fromCharCode(97+i)+') '+o).join('\n')+'\nJustify your answer.';
+    return t;
+  }
+  if(q.section==='B') return (q.scenario?'Scenario: '+q.scenario+'\n':'')+q.text;
+  return q.text;
+}
+function openRph(section,key){
+  const q=G.slots[section+'|'+key]; if(!q)return;
+  G.rph.slotKey=section+'|'+key; G.rph.origQ=q; G.rph.rephrasedText=null;
+  document.getElementById('rphOrig').textContent=slotQText(q);
+  document.getElementById('rphNewWrap').innerHTML='<div class="rph-panel-body" style="color:var(--grey5);font-style:italic">Click ⚡ Generate to reframe…</div>';
+  document.getElementById('rphUseBtn').disabled=true;
+  document.getElementById('rphStatusBadge').textContent='';
+  setRphMode(G.aiProvider==='offline'?'offline':'online');
+  setRphProvider(G.aiProvider==='offline'?'claude':G.aiProvider);
+  document.getElementById('rphModal').classList.add('show');
+}
+function closeRph(){document.getElementById('rphModal').classList.remove('show');}
+function setRphMode(m){
+  G.rph.mode=m;
+  document.getElementById('rphModeOnline').className='rph-mode-btn'+(m==='online'?' act':'');
+  document.getElementById('rphModeOffline').className='rph-mode-btn'+(m==='offline'?' act':'');
+  document.getElementById('rphProviderRow').style.display=m==='online'?'flex':'none';
+  document.getElementById('rphProviderBadge').textContent='Provider: '+(m==='offline'?'Offline (rule-based)':G.rph.provider);
+}
+function setRphProvider(p){
+  G.rph.provider=p;
+  document.querySelectorAll('.rph-prov-btn').forEach(b=>b.classList.remove('act'));
+  const btn=document.getElementById('rpb-'+p); if(btn)btn.classList.add('act');
+  document.getElementById('rphProviderBadge').textContent='Provider: '+p;
+  const key=G.apiKeys[p];
+  document.getElementById('rphApiStatus').textContent = key ? 'Key set ✓' : 'No key — set one in AI Settings above';
+}
+function setRphStyle(el,style){
+  G.rph.style=style;
+  document.querySelectorAll('.rph-style-row .rph-opt').forEach(o=>o.classList.remove('act'));
+  el.classList.add('act');
+}
+const BLOOM_DESC={K1:'Remember — recall facts/terminology',K2:'Understand — explain in own words',K3:'Apply — use in a new/practical situation',K4:'Analyze — break down and relate parts',K5:'Evaluate — justify/critique a decision',K6:'Create — synthesize new work'};
+function reframeSysPrompt(){
+  return 'You are an expert academic exam-question setter for an engineering college cycle test, following NBA/OBE outcome-based education conventions. '+
+    'You rewrite ONE question stem at a time so it stays at the exact same Bloom\'s Taxonomy level, marks weight and technical scope as the original — you never make it easier or harder, never change what topic or concept it tests, and never invent facts not implied by the original. '+
+    'For scenario-based (Part B) questions, rewrite only the scenario+question wording, keep it exam-appropriate and concise. For MCQ stems, rewrite ONLY the stem sentence — never output options or "Justify your answer". '+
+    'Return ONLY the rewritten question text: no preamble, no explanation, no markdown, no quotes.';
+}
+function reframeUserPrompt(q,style){
+  const co=q.co, bloom=BLOOM_DESC[q.k]||q.k;
+  const coText=G.coOut[co]?`Course Outcome (${co}): ${G.coOut[co]}`:`Course Outcome: ${co}`;
+  let kindNote='';
+  if(q.section==='AMCQ') kindNote='This is an MCQ stem (4 options + "Justify your answer" are handled separately — rewrite only the stem question).';
+  if(q.section==='B') kindNote='This is a competency-based scenario question — keep it realistic and application-oriented.';
+  return [
+    `Course: ${G.meta.course_name||''} (${G.meta.course_code||''})`,
+    coText,
+    `Bloom's level to preserve: ${q.k} — ${bloom}`,
+    `Marks: ${q.marks}`,
+    kindNote,
+    `Rewrite style requested: ${style}`,
+    `Original question: ${q.text}`
+  ].filter(Boolean).join('\n');
+}
+async function runRephrase(){
+  const q=G.rph.origQ; if(!q)return;
+  const wrap=document.getElementById('rphNewWrap');
+  wrap.innerHTML='<div class="rph-panel-body" style="color:var(--grey5)">⏳ Reframing…</div>';
+  try{
+    let result;
+    if(G.rph.mode==='offline'){
+      result=offlineReframe(q.text,G.rph.style);
+    }else{
+      const key=G.apiKeys[G.rph.provider];
+      if(!key) throw new Error('Please enter an API key for '+G.rph.provider+' in AI Settings, or switch to Offline mode.');
+      result=await callAIProvider(G.rph.provider,key,reframeSysPrompt(),reframeUserPrompt(q,G.rph.style),350);
+    }
+    G.rph.rephrasedText=result.trim();
+    wrap.innerHTML='<div class="rph-panel-body">'+esc(G.rph.rephrasedText)+'</div>';
+    document.getElementById('rphUseBtn').disabled=false;
+    document.getElementById('rphStatusBadge').textContent='✅ Ready';
+  }catch(e){
+    wrap.innerHTML='<div class="rph-panel-body" style="color:var(--coral)">❌ '+esc(e.message)+'</div>';
+    document.getElementById('rphStatusBadge').textContent='';
+  }
+}
+function useRephrased(){
+  if(!G.rph.slotKey||!G.rph.rephrasedText)return;
+  G.slots[G.rph.slotKey].text=G.rph.rephrasedText;
+  const [section,key]=G.rph.slotKey.split('|');
+  const slotId=section+'__'+key.replace(/[^a-zA-Z0-9]/g,'');
+  document.getElementById('selbox_'+slotId).innerHTML=slotSelectedBoxHTML(section,key);
+  closeRph();
+}
+async function doBulkReframe(){
+  const entries=Object.entries(G.slots);
+  if(!entries.length)return;
+  showSpin('AI-Reframing selected questions…','Starting…',0);
+  const prov=G.aiProvider, key=G.apiKeys[prov];
+  let done=0;
+  for(const [slotKey,q] of entries){
+    setSpinProg(Math.round((done/entries.length)*100));
+    document.getElementById('spinS').textContent=`${slotKey} (${done+1}/${entries.length})`;
+    if(q.has_image||q.has_equation||q.has_table){ done++; continue; } /* skip rich-content questions — reframe would destroy media */
+    try{
+      let result;
+      if(prov==='offline'||!key){ result=offlineReframe(q.text,'rephrase'); }
+      else{
+        result=await callAIProvider(prov,key,reframeSysPrompt(),reframeUserPrompt(q,'rephrase'),350);
+      }
+      q.text=result.trim();
+      const [section,skey]=slotKey.split('|');
+      const slotId=section+'__'+skey.replace(/[^a-zA-Z0-9]/g,'');
+      const box=document.getElementById('selbox_'+slotId); if(box)box.innerHTML=slotSelectedBoxHTML(section,skey);
+    }catch(e){ console.warn('bulk reframe failed for',slotKey,e.message); }
+    done++;
+  }
+  setSpinProg(100);
+  await delay(300);
+  hideSpin();
+  showAlert('genAlert','ok','✅ AI-Reframe complete for '+entries.length+' question(s).');
+}
+
+/* ── UI UTILS ── */
+function setStep(n){for(let i=1;i<=8;i++){const el=document.getElementById(`sn${i}`);if(!el)continue;const sn=el.querySelector('.sn-num');if(i<n){el.className='sn-item dn';sn.textContent='✓';}else if(i===n){el.className='sn-item act';sn.textContent=i;}else{el.className='sn-item';sn.textContent=i;}}}
+function showSpin(t,s,p){document.getElementById('spinT').textContent=t;document.getElementById('spinS').textContent=s;document.getElementById('pgFill').style.width=p+'%';document.getElementById('spinOv').classList.add('show');}
+function setSpinProg(p){document.getElementById('pgFill').style.width=p+'%';}
+function hideSpin(){document.getElementById('spinOv').classList.remove('show');}
+function togPrv(){const s=document.getElementById('prvSec');s.style.display=s.style.display==='none'?'block':'none';}
+document.getElementById('rphModal').addEventListener('click',function(e){if(e.target===this)closeRph();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeRph();});
+
+/* ── GENERATE ── */
+const QNO_MAP={ '1':'A|1','2':'A|2','3':'A|3','4':'A|4','5':'AMCQ|5','6':'AMCQ|6','7':'AMCQ|7','8':'AMCQ|8',
+  '9 (a)':'B|9 (a)','9 (b)':'B|9 (b)','10 (a)':'B|10 (a)','10 (b)':'B|10 (b)',
+  '11 (a)':'C|11 (a)','11 (b)':'C|11 (b)','12 (a)':'C|12 (a)','12 (b)':'C|12 (b)' };
+/* Real, hand-edited Word templates are never perfectly consistent — "9 (b)" vs "9(b)" vs "9 (B)" vs a
+   stray non-breaking space vs a trailing period all mean the same cell to a human but not to a plain
+   string match. Every lookup goes through this normaliser (strip ALL whitespace incl. \u00A0, lowercase,
+   drop stray periods) so the exact original formatting in the uploaded template never matters. */
+function normQno(s){ return String(s||'').toLowerCase().replace(/[\s\u00A0]+/g,'').replace(/\.+$/,''); }
+const QNO_MAP_NORM={}; for(const [k,v] of Object.entries(QNO_MAP)) QNO_MAP_NORM[normQno(k)]=v;
+const ALL_SLOT_KEYS=[...SLOTS_A.map(k=>'A|'+k),...SLOTS_AMCQ.map(k=>'AMCQ|'+k),...SLOTS_B.map(k=>'B|'+k),...SLOTS_C.map(k=>'C|'+k)];
+
+async function doGenerate(){
+  const missing=ALL_SLOT_KEYS.filter(k=>!G.slots[k]);
+  const usedUidsArr=Object.values(G.slots).map(q=>q&&q._srcUid).filter(Boolean);
+  const dupCount=usedUidsArr.length-new Set(usedUidsArr).size;
+  if(missing.length){
+    showAlert('genAlert','warn',`⚠️ ${missing.length} slot(s) not yet selected: ${missing.map(k=>k.split('|')[1]).join(', ')}. You can still generate — those cells will be marked [Not Configured].`);
+  }else if(dupCount>0){
+    showAlert('genAlert','warn',`⚠️ ${dupCount} question(s) are selected in more than one slot. Generating anyway — use Smart Auto-Fill or pick a different question if you want every slot unique.`);
+  }else{
+    document.getElementById('genAlert').style.display='none';
+  }
+  showSpin('Generating Question Paper…','Filling template…',20);
+  try{
+    const config={
+      monthDuration:document.getElementById('monthDur').value||'MONTH – MONTH YYYY',
+      assessment:document.getElementById('assessment').value,
+      semester:document.getElementById('semester').value
+    };
+    setSpinProg(50);
+    const {blob,bloom,unmatchedSelected}=await buildDocx2026(config);
+    G.docxBlob=blob;
+    setSpinProg(80);
+    renderPreview(config,bloom);
+    setSpinProg(100);
+    await delay(200);
+    hideSpin();
+    if(unmatchedSelected && unmatchedSelected.length){
+      const labels=unmatchedSelected.map(k=>k.split('|')[1]).join(', ');
+      showAlert('genAlert','err',`❌ You selected a question for ${labels}, but the template has no matching Q. No. cell for ${unmatchedSelected.length>1?'them':'it'} — that ${unmatchedSelected.length>1?'row was':'row was'} left blank in the download. Check that the template's Q. No. column reads exactly "${unmatchedSelected.map(k=>k.split('|')[1]).join('", "')}" (spacing/case doesn't matter, but the number and (a)/(b) letter must be there).`);
+    }
+    document.getElementById('dlPanel').classList.add('show');
+    document.getElementById('dlDesc').textContent=`Cycle Test ${config.assessment} · ${G.meta.course_code||'QP'} — ${16-missing.length}/16 questions placed.`;
+    document.getElementById('prvBtn').style.display='inline-flex';
+    document.getElementById('prvSec').style.display='block';
+    setStep(8);
+  }catch(ex){hideSpin();showAlert('genAlert','err','❌ Generation failed: '+ex.message);console.error(ex);}
+}
+
+function mkPara(xd,text,opts={}){
+  const w=n=>xd.createElementNS(WN,'w:'+n);
+  const p=w('p'),pPr=w('pPr'),jc=w('jc');
+  jc.setAttributeNS(WN,'w:val',opts.center?'center':(opts.justify?'both':'left'));
+  pPr.appendChild(jc);p.appendChild(pPr);
+  if(!text||!String(text).trim())return p;
+  const run=w('r'),rPr=w('rPr');
+  if(opts.bold)rPr.appendChild(w('b'));
+  if(opts.italic){rPr.appendChild(w('i'));rPr.appendChild(w('iCs'));}
+  const sz=w('sz');sz.setAttributeNS(WN,'w:val',String(opts.sz||22));rPr.appendChild(sz);
+  const szC=w('szCs');szC.setAttributeNS(WN,'w:val',String(opts.sz||22));rPr.appendChild(szC);
+  const rf=w('rFonts');rf.setAttributeNS(WN,'w:ascii','Times New Roman');rf.setAttributeNS(WN,'w:hAnsi','Times New Roman');rf.setAttributeNS(WN,'w:cs','Times New Roman');rPr.appendChild(rf);
+  run.appendChild(rPr);
+  const t=w('t');t.textContent=String(text);t.setAttribute('xml:space','preserve');run.appendChild(t);
+  p.appendChild(run);
+  return p;
+}
+function setCellC(tc,xd,paras){const tcPr=tc.getElementsByTagNameNS(WN,'tcPr')[0];while(tc.firstChild)tc.removeChild(tc.firstChild);if(tcPr)tc.appendChild(tcPr);for(const p of paras)tc.appendChild(p);}
+function getTblTxt(tbl){let t='';for(const n of tbl.getElementsByTagNameNS(WN,'t'))t+=n.textContent+' ';return t;}
+function getRowTxt(row){let t='';for(const n of row.getElementsByTagNameNS(WN,'t'))t+=n.textContent+' ';return t;}
+function fixPH(xd,rps){
+  for(const t of toA(xd.getElementsByTagNameNS(WN,'t'))){
+    let txt=t.textContent;let changed=false;
+    for(const [k,v] of rps){ if(txt.includes(k)){txt=txt.split(k).join(v);changed=true;} }
+    if(changed)t.textContent=txt;
+  }
+}
+/* Generic pattern-based header fill for a REAL uploaded Model Question Paper (no <token> placeholders,
+   e.g. "26XXXXXX - XXXXXXXXXXXX", "(September to December 2026)", "DEPARTMENT OF I YEAR ENGINEERING"). */
+function fixHeaderPatterns(xd,config){
+  const paras=toA(xd.getElementsByTagNameNS(WN,'p'));
+  for(const p of paras){
+    const runs=toA(p.getElementsByTagNameNS(WN,'r'));
+    if(!runs.length) continue;
+    const full=runs.map(r=>{const ts=r.getElementsByTagNameNS(WN,'t');return ts.length?ts[0].textContent:'';}).join('');
+    if(!full.trim()) continue;
+    let newText=null;
+    if(/DEGREE\s+EXAMINATIONS/i.test(full) && /\(.*\)/.test(full) && (G.meta.course_code||config.monthDuration)){
+      newText=full.replace(/\([^)]*\)\s*$/,'('+(config.monthDuration||'')+')');
+    }else if(/^DEPARTMENT\s+OF\s+/i.test(full.trim())){
+      newText=full.replace(/^(\s*DEPARTMENT\s+OF\s+).*/i,'$1'+(G.meta.department||'').toUpperCase());
+    }else if(/^\s*26X{4,}/i.test(full) || (/^\s*[0-9]{2}[A-Z]{2,4}[0-9]{2,4}\s*[-–]/.test(full) && /X{3,}/.test(full))){
+      newText=(G.meta.course_code||'')+' – '+(G.meta.course_name||'');
+    }else if(/Internal\s+Assessment\s*:/i.test(full)){
+      newText=full.replace(/(Internal\s+Assessment\s*:\s*)\S+/i,'$1'+(config.assessment||''));
+    }else if(/^\s*Semester\s*:/i.test(full.trim())){
+      newText=full.replace(/(Semester\s*:\s*)\S+/i,'$1'+(config.semester||''));
+    }
+    if(newText!==null && newText!==full){
+      /* put whole new text in the first run, blank out the rest to avoid duplicated fragments */
+      const firstT=runs[0].getElementsByTagNameNS(WN,'t')[0];
+      if(firstT) firstT.textContent=newText;
+      for(let i=1;i<runs.length;i++){ const t2=runs[i].getElementsByTagNameNS(WN,'t')[0]; if(t2) t2.textContent=''; }
+    }
+  }
+}
+/* ── rich-cell cloning (images / equations / nested tables) ── */
+function collectEmbedRIds(node,acc){
+  if(node.nodeType!==1) return;
+  if(node.getAttributeNS) {
+    const v=node.getAttributeNS(RELN,'embed'); if(v) acc.add(v);
+    const v2=node.getAttributeNS(RELN,'id'); if(v2) acc.add(v2);
+  }
+  for(let i=0;i<node.childNodes.length;i++) collectEmbedRIds(node.childNodes[i],acc);
+}
+function remapEmbedRIds(node,remap){
+  if(node.nodeType!==1) return;
+  if(node.getAttributeNS){
+    const v=node.getAttributeNS(RELN,'embed');
+    if(v && remap[v]) node.setAttributeNS(RELN,'r:embed',remap[v]);
+  }
+  for(let i=0;i<node.childNodes.length;i++) remapEmbedRIds(node.childNodes[i],remap);
+}
+async function cloneRichCell(targetDoc,targetTc,srcTc,targetZip,ridState){
+  const tcPr=targetTc.getElementsByTagNameNS(WN,'tcPr')[0];
+  while(targetTc.firstChild) targetTc.removeChild(targetTc.firstChild);
+  if(tcPr) targetTc.appendChild(tcPr);
+  /* find/allocate rIds for any images referenced inside srcTc */
+  const used=new Set(); collectEmbedRIds(srcTc,used);
+  const remap={};
+  for(const oldId of used){
+    const img=G.imgMap[oldId]; if(!img) continue;
+    if(!ridState.cache[oldId]){
+      ridState.maxRId++;
+      const newId='rId'+ridState.maxRId;
+      const mediaPath='word/media/aqa_'+ridState.maxRId+'.'+img.ext;
+      targetZip.file(mediaPath,img.b64,{base64:true});
+      ridState.newRels.push(`<Relationship Id="${newId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/aqa_${ridState.maxRId}.${img.ext}"/>`);
+      ridState.cache[oldId]=newId;
+    }
+    remap[oldId]=ridState.cache[oldId];
+  }
+  for(let i=0;i<srcTc.childNodes.length;i++){
+    const ch=srcTc.childNodes[i];
+    if(ch.nodeType!==1) continue;
+    if((ch.localName||'')==='tcPr') continue;
+    let imported;
+    try{ imported=targetDoc.importNode(ch,true); }catch(e){ continue; }
+    remapEmbedRIds(imported,remap);
+    targetTc.appendChild(imported);
+  }
+}
+function slotQuestionParas(xd,q){
+  if(!q) return [mkPara(xd,'[Not Configured]',{italic:true})];
+  if(q.section==='AMCQ'){
+    const paras=[mkPara(xd,q.text,{justify:true})];
+    (q.options||[]).forEach((o,i)=>paras.push(mkPara(xd,String.fromCharCode(97+i)+') '+o,{})));
+    paras.push(mkPara(xd,'Justify your answer.',{italic:true}));
+    return paras;
+  }
+  if(q.section==='B'){
+    const paras=[];
+    if(q.scenario) paras.push(mkPara(xd,'Scenario: '+q.scenario,{justify:true}));
+    paras.push(mkPara(xd,q.text,{justify:true}));
+    return paras;
+  }
+  return [mkPara(xd,q.text,{justify:true})];
+}
+
+function directChildAncestor(node,body){let n=node;while(n&&n.parentNode!==body)n=n.parentNode;return n;}
+
+async function buildDocx2026(config){
+  const usingUploadedTpl = !!G.tplBuf;
+  const zip=await JSZip.loadAsync(usingUploadedTpl ? G.tplBuf : b64ToArrayBuffer(TPL_B64));
+  const xs=await zip.file('word/document.xml').async('string');
+  const xd=new DOMParser().parseFromString(xs,'application/xml');
+
+  /* token-based fill (works with our built-in template) */
+  const rps=[['<department>',G.meta.department||''],['<course code>',G.meta.course_code||''],['<course name>',G.meta.course_name||''],
+    ['<assessment>',config.assessment||''],['<sem>',config.semester||''],['<month duration>',config.monthDuration||'']];
+  fixPH(xd,rps);
+  /* generic pattern-based fill (works with the real, un-tokenised Model Question Paper) */
+  if(usingUploadedTpl) fixHeaderPatterns(xd,config);
+
+  const bloomF={K1:0,K2:0,K3:0,K4:0,K5:0};
+
+  /* rId allocation state for cloning images from the AQA file into this target zip */
+  const rX=await (zip.file('word/_rels/document.xml.rels')?.async('string') || Promise.resolve('<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>'));
+  let maxRId=0; for(const m of rX.matchAll(/Id="rId(\d+)"/g)){ const n=+m[1]; if(n>maxRId) maxRId=n; }
+  const ridState={maxRId, cache:{}, newRels:[]};
+
+  /* --- universal row scan: fill every Q.No row (only the FIRST occurrence of each key — extra
+         occurrences belong to duplicate blocks further down the doc and are dropped by truncation).
+         Restricted to tables that actually look like the Q table (contain "Q. NO" and "MARK"),
+         so decorative tables (e.g. the floating Reg. No. grid) are never touched. --- */
+  const allTblsForScan=toA(xd.getElementsByTagNameNS(WN,'tbl'));
+  const qCandidateTbls=allTblsForScan.filter(t=>{ const tt=getTblTxt(t).toUpperCase(); return /Q\.?\s*NO/.test(tt) && tt.includes('MARK'); });
+  const coCandidateTbls=allTblsForScan.filter(t=>{ const tt=getTblTxt(t).toUpperCase(); return tt.includes('CO INDEX')||tt.includes('COURSE OUTCOME'); });
+  const scanTbls = qCandidateTbls.length ? qCandidateTbls : allTblsForScan;
+  const coScanTbls = coCandidateTbls.length ? coCandidateTbls : scanTbls;
+
+  const filledKeys=new Set();
+  const allRows=scanTbls.flatMap(t=>toA(t.getElementsByTagNameNS(WN,'tr')));
+  let lastFilledRow=null, firstQRow=null;
+  for(const row of allRows){
+    const tcs=toA(row.getElementsByTagNameNS(WN,'tc'));
+    if(tcs.length<2) continue; // need at least a Q.No cell + something after it
+    let qnoIdx=-1, slotKeyFound=null;
+    for(let i=0;i<tcs.length;i++){
+      const norm=normQno(cellTxt(tcs[i]));
+      if(norm && QNO_MAP_NORM[norm]){ qnoIdx=i; slotKeyFound=QNO_MAP_NORM[norm]; break; }
+    }
+    if(qnoIdx<0) continue;
+    const slotKey=slotKeyFound;
+    if(filledKeys.has(slotKey)) continue; // duplicate block further down — leave for truncation
+    filledKeys.add(slotKey);
+    if(!firstQRow) firstQRow=row;
+    const coIdx=qnoIdx-1, quesIdx=qnoIdx+1, marksIdx=tcs.length-1;
+    const q=G.slots[slotKey];
+    if(coIdx>=0) setCellC(tcs[coIdx],xd,[mkPara(xd, q?`${q.co}, ${q.k}`:'', {italic:true,center:true,sz:18})]);
+    if(quesIdx<tcs.length){
+      if(q && (q.has_image||q.has_equation||q.has_table) && q._qTcNode){
+        await cloneRichCell(xd,tcs[quesIdx],q._qTcNode,zip,ridState);
+      }else{
+        setCellC(tcs[quesIdx],xd, slotQuestionParas(xd,q));
+      }
+    }
+    if(marksIdx>quesIdx) setCellC(tcs[marksIdx],xd,[mkPara(xd,String(SECTION_MARKS[slotKey.split('|')[0]]),{bold:true,center:true,sz:20})]);
+    if(q){ const kk=(q.k||'').toUpperCase(); if(kk in bloomF) bloomF[kk]+=q.marks||0; }
+    lastFilledRow=row;
+  }
+  /* Diagnostics: a slot the user actually picked a question for, but whose Q.No cell was never found
+     anywhere in the template, means the template's numbering doesn't match what we expect — surface
+     this explicitly instead of silently leaving the cell blank. */
+  const unmatchedSelected=Object.keys(G.slots).filter(k=>!filledKeys.has(k));
+  if(ridState.newRels.length){
+    zip.file('word/_rels/document.xml.rels', rX.replace('</Relationships>', ridState.newRels.join('\n')+'\n</Relationships>'));
+  }
+
+  /* --- CO Index rows: any row whose first cell text is exactly CO<n> --- */
+  const usedCOs=[...new Set(Object.values(G.slots).map(q=>q&&q.co).filter(Boolean))].sort();
+  let coFillCount=0;
+  const coRows=coScanTbls.flatMap(t=>toA(t.getElementsByTagNameNS(WN,'tr')));
+  for(const row of coRows){
+    const tcs=toA(row.getElementsByTagNameNS(WN,'tc'));
+    if(!tcs.length) continue;
+    const c0=cellTxt(tcs[0]).trim();
+    if(!/^CO\d+$/i.test(c0)) continue;
+    if(coFillCount<usedCOs.length){
+      const co=usedCOs[coFillCount];
+      setCellC(tcs[0],xd,[mkPara(xd,co,{bold:true,center:true,sz:20})]);
+      if(tcs[1]) setCellC(tcs[1],xd,[mkPara(xd,G.coOut[co]||'',{sz:20})]);
+      if(tcs[2]){
+        const btl=[...new Set(Object.values(G.slots).filter(q=>q&&q.co===co).map(q=>q.k))].join('/');
+        setCellC(tcs[2],xd,[mkPara(xd,btl,{bold:true,center:true,sz:20})]);
+      }
+    }
+    coFillCount++;
+  }
+
+  /* --- Bloom distribution: first row containing "REMEMBER", value row is the one right after --- */
+  let bloomHeaderRow=null, bloomValueRow=null;
+  const bloomRows=allTblsForScan.flatMap(t=>toA(t.getElementsByTagNameNS(WN,'tr')));
+  for(let i=0;i<bloomRows.length;i++){
+    if(getRowTxt(bloomRows[i]).toUpperCase().includes('REMEMBER')){ bloomHeaderRow=bloomRows[i]; bloomValueRow=bloomRows[i+1]||null; break; }
+  }
+  if(bloomHeaderRow && bloomValueRow){
+    const hTcs=toA(bloomHeaderRow.getElementsByTagNameNS(WN,'tc')), vTcs=toA(bloomValueRow.getElementsByTagNameNS(WN,'tc'));
+    const tot=Object.values(bloomF).reduce((a,b)=>a+b,0);
+    for(let ci=0;ci<hTcs.length&&ci<vTcs.length;ci++){
+      const ht=cellTxt(hTcs[ci]).toUpperCase(); let val='';
+      if(ht.includes('K-1'))val=String(bloomF.K1); else if(ht.includes('K-2'))val=String(bloomF.K2);
+      else if(ht.includes('K-3'))val=String(bloomF.K3); else if(ht.includes('K-4'))val=String(bloomF.K4);
+      else if(ht.includes('K-5'))val=String(bloomF.K5); else if(ht.includes('TOTAL'))val=String(tot);
+      setCellC(vTcs[ci],xd,[mkPara(xd,val,{bold:true,center:true,sz:20})]);
+    }
+  }
+
+  /* --- truncate the document to just the block we filled (drops repeated/blank blocks further down,
+         e.g. when the uploaded file is the multi-block original Model_Question_CT docx) --- */
+  const anchorRow = bloomValueRow || lastFilledRow || firstQRow;
+  if(anchorRow){
+    const bodies=xd.getElementsByTagNameNS(WN,'body');
+    const body=bodies[0];
+    if(body){
+      let anchorNode=anchorRow;
+      // walk up to the nearest ancestor that is a direct child of <w:body>
+      let n=anchorNode; while(n && n.parentNode!==body) n=n.parentNode;
+      if(n){
+        const bodyChildren=toA(body.childNodes).filter(c=>c.nodeType===1);
+        const idx=bodyChildren.indexOf(n);
+        if(idx>=0){
+          const sectPr=bodyChildren.find(c=>(c.localName||'')==='sectPr');
+          const toRemove=bodyChildren.slice(idx+1).filter(c=>c!==sectPr);
+          for(const c of toRemove) if(c.parentNode) c.parentNode.removeChild(c);
+          if(sectPr && sectPr.parentNode===body) body.appendChild(sectPr); // keep it last
+        }
+      }
+    }
+  }
+
+  zip.file('word/document.xml',new XMLSerializer().serializeToString(xd));
+  const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',compression:'DEFLATE'});
+  return {blob,bloom:bloomF,unmatchedSelected};
+}
+
+/* ── PREVIEW ── */
+function renderPreview(config,bloom){
+  document.getElementById('qpHdr').innerHTML=`
+    <div style="font-size:14px;font-weight:800;font-family:'Times New Roman',serif">B.E. / B.TECH. DEGREE EXAMINATIONS (${esc(config.monthDuration)})</div>
+    <div style="font-size:11px;color:var(--grey6);margin:2px 0">DEPARTMENT OF ${esc((G.meta.department||'').toUpperCase())}</div>
+    <div style="font-size:13px;font-weight:800;color:var(--sky)">${esc(G.meta.course_code)} – ${esc(G.meta.course_name)}</div>
+    <div style="font-size:10.5px;color:var(--grey5)">2026 Regulation · Cycle Test ${esc(config.assessment)} · Semester ${esc(config.semester)} · Max: 50 Marks · Time: 1 hr 30 min</div>`;
+  const tbl=document.getElementById('qpTbl');tbl.innerHTML='';
+  const thead=tbl.createTHead(),hr=thead.insertRow();
+  [['CO, BTL','76px'],['Q. No.','60px'],['Question',''],['Marks','46px']].forEach(([h,w])=>{const th=document.createElement('th');th.textContent=h;if(w)th.style.width=w;hr.appendChild(th);});
+  const tbody=tbl.createTBody();let ri=0;
+  const addH=t=>{const tr=tbody.insertRow();tr.className='qptr-ph';const td=tr.insertCell();td.colSpan=4;td.textContent=t;};
+  const addOR=()=>{const tr=tbody.insertRow();tr.className='qptr-or';const td=tr.insertCell();td.colSpan=4;td.textContent='— OR —';};
+  const addQ=(lbl,slotKey)=>{
+    const q=G.slots[slotKey];
+    const tr=tbody.insertRow();tr.className=ri++%2===0?'qptr-odd':'qptr-even';
+    const tc=tr.insertCell();tc.className='qpt-co';tc.textContent=q?`${q.co}, ${q.k}`:'—';
+    const tn=tr.insertCell();tn.className='qpt-qn';tn.textContent=lbl;
+    const tq=tr.insertCell();tq.className='qpt-q';tq.textContent=q?slotQText(q):'[Not Configured]';
+    const tm=tr.insertCell();tm.className='qpt-m';tm.textContent=q?q.marks:'';
+  };
+  addH('Part A – (Section I) Short Answer Questions (4 × 2 = 8 Marks)');
+  SLOTS_A.forEach(k=>addQ(k,'A|'+k));
+  addH('Part A – (Section II) Objective Type Questions (4 × 2 = 8 Marks)');
+  SLOTS_AMCQ.forEach(k=>addQ(k,'AMCQ|'+k));
+  addH('Part B – Competency Based Questions (2 × 5 = 10 Marks)');
+  addQ('9 (a)','B|9 (a)');addOR();addQ('9 (b)','B|9 (b)');
+  addQ('10 (a)','B|10 (a)');addOR();addQ('10 (b)','B|10 (b)');
+  addH('Part C – Long Answer Questions (2 × 12 = 24 Marks)');
+  addQ('11 (a)','C|11 (a)');addOR();addQ('11 (b)','C|11 (b)');
+  addQ('12 (a)','C|12 (a)');addOR();addQ('12 (b)','C|12 (b)');
+
+  const bc=document.getElementById('bloomCards');const nm={K1:'Remember',K2:'Understand',K3:'Apply',K4:'Analyze',K5:'Evaluate'};
+  const tot=Object.values(bloom).reduce((a,b)=>a+b,0);
+  bc.innerHTML=['K1','K2','K3','K4','K5'].map(k=>`<div class="bloom-c"><div class="bc-k">${k}</div><div class="bc-n">${nm[k]}</div><div class="bc-v">${bloom[k]}</div></div>`).join('')+`<div class="bloom-c tot"><div class="bc-k">Total</div><div class="bc-n">All Marks</div><div class="bc-v">${tot}</div></div>`;
+}
+
+/* ── DOWNLOAD ── */
+function dlDocx(){
+  if(!G.docxBlob)return;
+  const url=URL.createObjectURL(G.docxBlob);const a=document.createElement('a');a.href=url;
+  const cc=(G.meta.course_code||'QP').replace(/[^a-zA-Z0-9]/g,'_');
+  const ia=document.getElementById('assessment').value;
+  a.download=`CT${ia}_${cc}_R2026.docx`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
