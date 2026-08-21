@@ -1201,20 +1201,48 @@ function smartAutoFill(){
   if(!G.bank.length) return;
   const usedUids=new Set(Object.values(G.slots).map(q=>q&&q._srcUid).filter(Boolean));
   let unitCursor=0, filledCount=0;
+  let lastPortion=null; // alternate I/II across successive auto-picks
+
+  function slotIdOf(section,key){ return section+'__'+key.replace(/[^a-zA-Z0-9]/g,''); }
+  function lockedUnitFor(section,key){
+    const sel=document.getElementById('unitsel_'+slotIdOf(section,key));
+    return sel && sel.value ? sel.value : null;
+  }
+  function pickFromPool(pool){
+    if(!pool.length) return null;
+    // prefer the portion opposite to the last one we placed, to keep I/II balanced
+    const wantPortion = lastPortion==='I' ? 'II' : lastPortion==='II' ? 'I' : null;
+    let candidates = wantPortion ? pool.filter(q=>q.portion===wantPortion) : pool;
+    if(!candidates.length) candidates=pool; // fall back if that portion has nothing left here
+    const picked = shuf(candidates)[0];
+    lastPortion = picked.portion;
+    return picked;
+  }
 
   function placeOne(section,key,pairK){
     const slotKey=section+'|'+key;
     if(G.slots[slotKey]){ unitCursor++; return; } // never overwrite an existing manual choice
+
     let picked=null;
-    for(let attempt=0; attempt<G.units.length && !picked; attempt++){
-      const unit=G.units[(unitCursor+attempt)%G.units.length];
-      const pool=shuf(G.bank.filter(q=>q.section===section && q.unit===unit && !usedUids.has(q.uid) && (!pairK||q.k===pairK)));
-      if(pool.length) picked=pool[0];
+    const lockedUnit=lockedUnitFor(section,key);
+
+    if(lockedUnit){
+      // Unit was already chosen by hand — auto-fill must stay inside that unit, only the question is auto-picked.
+      const pool=G.bank.filter(q=>q.section===section && q.unit===lockedUnit && !usedUids.has(q.uid) && (!pairK||q.k===pairK));
+      picked=pickFromPool(pool);
+      // do NOT fall back to other units — if nothing fits here, leave the slot for manual selection.
+    }else{
+      for(let attempt=0; attempt<G.units.length && !picked; attempt++){
+        const unit=G.units[(unitCursor+attempt)%G.units.length];
+        const pool=G.bank.filter(q=>q.section===section && q.unit===unit && !usedUids.has(q.uid) && (!pairK||q.k===pairK));
+        picked=pickFromPool(pool);
+      }
+      if(!picked){
+        const pool=G.bank.filter(q=>q.section===section && !usedUids.has(q.uid) && (!pairK||q.k===pairK));
+        picked=pickFromPool(pool);
+      }
     }
-    if(!picked){
-      const pool=shuf(G.bank.filter(q=>q.section===section && !usedUids.has(q.uid) && (!pairK||q.k===pairK)));
-      if(pool.length) picked=pool[0];
-    }
+
     if(picked){
       const {_qTcNode,...plain}=picked;
       const copy=JSON.parse(JSON.stringify(plain));
@@ -1222,9 +1250,9 @@ function smartAutoFill(){
       G.slots[slotKey]=copy;
       usedUids.add(picked.uid);
       filledCount++;
-      const slotId=section+'__'+key.replace(/[^a-zA-Z0-9]/g,'');
+      const slotId=slotIdOf(section,key);
       const usel=document.getElementById('unitsel_'+slotId);
-      if(usel){ usel.value=picked.unit; onUnitChange(section,key); }
+      if(usel){ usel.value=picked.unit; onUnitChange(section,key); } // keeps a manually-chosen unit as-is (picked.unit === lockedUnit here)
       const box=document.getElementById('selbox_'+slotId);
       if(box) box.innerHTML=slotSelectedBoxHTML(section,key);
     }
@@ -1240,8 +1268,16 @@ function smartAutoFill(){
   for(const [section,pairs] of [['B',PAIRS_B],['C',PAIRS_C]]){
     for(const [keyA,keyB] of pairs){
       const pairNum=keyA.match(/^\d+/)[0], pairId=section+'_'+pairNum;
-      if(G.slots[section+'|'+keyA] && G.slots[section+'|'+keyB]){ unitCursor+=2; continue; } // pair already complete
-      let pairK=G.pairK[pairId];
+      const slotAFilled=G.slots[section+'|'+keyA], slotBFilled=G.slots[section+'|'+keyB];
+      if(slotAFilled && slotBFilled){ unitCursor+=2; continue; } // pair already complete — leave untouched entirely
+
+      /* If either (a) or (b) was already picked by hand, its Knowledge Level is now locked for the pair —
+         auto-fill must never contradict a manual choice. */
+      let pairK = (slotAFilled && slotAFilled.k) || (slotBFilled && slotBFilled.k) || G.pairK[pairId];
+      if(pairK && G.pairK[pairId]!==pairK){
+        G.pairK[pairId]=pairK;
+        const psel=document.getElementById('pairk_'+pairId); if(psel) psel.value=pairK;
+      }
       if(!pairK){
         const counts={};
         G.bank.filter(q=>q.section===section && !usedUids.has(q.uid)).forEach(q=>{counts[q.k]=(counts[q.k]||0)+1;});
@@ -1260,7 +1296,7 @@ function smartAutoFill(){
 
   chkGenReady();
   updateKLevelConsolidated();
-  if(filledCount>0) showAlert('genAlert','ok',`🎲 Smart Auto-Fill placed ${filledCount} question(s) into empty slots, spread across units — Part B/C pairs were kept at a single matching Knowledge Level. Review your choices below before generating.`);
+  if(filledCount>0) showAlert('genAlert','ok',`🎲 Smart Auto-Fill placed ${filledCount} question(s) into empty slots — units you'd already selected were kept as-is, and Portion I / Portion II were alternated where possible. Part B/C pairs were kept at a single matching Knowledge Level. Review your choices below before generating.`);
   else showAlert('genAlert','info','All slots were already filled — nothing to auto-fill.');
 }
 
